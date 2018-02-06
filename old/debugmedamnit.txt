@@ -1,0 +1,36 @@
+mri same in old and newold code
+TP not same.
+1- so follow TP and see where the difference is. 
+- TP stuff seems to be same outside of generateTPslice
+- not really: replaced with old generate TP slice and got same messedupness, just extra lines are created... so problem outside??
+I am here now
+
+2- once that is done, try the real rigid way of doing it and compare. maybe provide results for both...
+3- once that is done, if rigid resuts are back to bring in the 0.6, try the new new code and see what it does as results...
+
+Ok, so the old rigid way is now giving me the new results... I wonder what is fishy...
+- see if the right images are used 
+- find the old images for that slice and compare - NOT same
+  TP rigid not same, TP TPs same, MR rigid not same, MR articulated same, MR TPS same
+- calculate the kappa with the old images and compare: old images = old kappa
+
+problem: not the same images are produced..
+i think all the entries are the same, the MRI image shift is not though. so try  the upper ones to see if the same thing is produced...
+bad bad bad upper ones. could i have bad tx files? - unlikely cause the articulated is fine... but check in case.
+
+slice 10: the new resampled resembles the resampledsegfull, which makes sense...
+get same results as before visually. test kappas.. GOOD!!!!
+
+back to 2-
+a- try the newold results with old rigid way on slice 10.. good!
+b- try newold results with new rigid way
+
+try the new new code on that slice; just to see what happens... good!
+
+slice 1 new new code: 0.83, 0.87, 0.97
+slice1 newold code: obviously not doing anything...
+
+TODO:
+check if both codes have same MRI parameters
+as is generate results using newofold and new for all patients...
+

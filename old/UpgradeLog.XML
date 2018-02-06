@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="full_registration_dialog">
+</Property><Property Name="Solution File" Value="D:\full_registration_dialog\full_registration_dialog.sln">
+</Property><Property Name="User Options File" Value="D:\full_registration_dialog\full_registration_dialog.suo">
+</Property><Property Name="Date" Value="December-02-10">
+</Property><Property Name="Time" Value="17:15 PM">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="full_registration_dialog.sln" Description="File successfully backed up as D:\full_registration_dialog\full_registration_dialog.sln.old">
+</Event><Event ErrorLevel="0" Project="" Source="full_registration_dialog.suo" Description="File successfully backed up as D:\full_registration_dialog\full_registration_dialog.suo.old">
+</Event><Event ErrorLevel="0" Project="full_registration_dialog" Source="full_registration_dialog\full_registration_dialog.vcproj" Description="Converting project file 'D:\full_registration_dialog\full_registration_dialog\full_registration_dialog.vcproj'.">
+</Event><Event ErrorLevel="1" Project="full_registration_dialog" Source="full_registration_dialog\full_registration_dialog.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="0" Project="full_registration_dialog" Source="full_registration_dialog\full_registration_dialog.vcproj" Description="Done converting to new project file 'D:\full_registration_dialog\full_registration_dialog\full_registration_dialog.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="full_registration_dialog" Source="full_registration_dialog\full_registration_dialog.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="full_registration_dialog.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="full_registration_dialog.sln" Description="Converted">
+</Event></UpgradeLog>

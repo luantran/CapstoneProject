@@ -195,3 +195,4 @@ class Ui_MainWindow(QMainWindow):
         #     with f:
         #         data = f.read()
         #         print(data)
+

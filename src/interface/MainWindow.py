@@ -7,8 +7,11 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMainWindow
 
-class Ui_MainWindow(object):
+
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1096, 795)
@@ -27,6 +30,9 @@ class Ui_MainWindow(object):
         self.pushButton.setEnabled(True)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 1, 1, 1, 1)
+
+        self.pushButton.clicked.connect(self.showDialog)
+
         self.pushButton_2 = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 4, 1, 1, 1)
@@ -175,8 +181,17 @@ class Ui_MainWindow(object):
         self.checkBox_5.setText(_translate("MainWindow", "Saggital MRIs"))
         self.checkBox_4.setText(_translate("MainWindow", "MRI"))
         self.checkBox_3.setText(_translate("MainWindow", "External Landmarks"))
-        self.pushButton_8.setText(_translate("MainWindow", "Save"))
+        self.pushButton_8.setText(_translate("MainWindow", "Save Registered Data"))
         self.label_5.setText(_translate("MainWindow", "Save"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
 
+    def showDialog(self):
+        fname = QFileDialog.getExistingDirectory(self, 'Open Directory', '/home/luantran/')
+        print(fname)
+        # if fname[0]:
+        #     f = open(fname[0], 'r')
+        #
+        #     with f:
+        #         data = f.read()
+        #         print(data)

@@ -10,7 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 
-class Ui_MainWindow(object):
+class Ui_MainWindow(QMainWindow):
     def setupUi(self, MainWindow):
         #Define Bold Font
         font = QtGui.QFont()
@@ -34,23 +34,29 @@ class Ui_MainWindow(object):
         self.loadGrid = QtWidgets.QGridLayout(self.loadGridWidget)
         self.loadGrid.setContentsMargins(0, 0, 0, 0)
         self.loadGrid.setObjectName("loadGrid")
+
         #Buttons
 
         #Load XRay Button
         self.loadXRayButton = QtWidgets.QPushButton(self.loadGridWidget)
+        self.loadXRayButton.setEnabled(True)
         self.loadXRayButton.setObjectName("loadXRayButton")
         self.loadGrid.addWidget(self.loadXRayButton, 2, 1, 1, 1)
+        self.loadXRayButton.clicked.connect(self.selectXRayFile)
 
         #Load MRI Button
         self.loadMRIButton = QtWidgets.QPushButton(self.loadGridWidget)
         self.loadMRIButton.setEnabled(True)
         self.loadMRIButton.setObjectName("loadMRIButton")
         self.loadGrid.addWidget(self.loadMRIButton, 1, 1, 1, 1)
+        self.loadMRIButton.clicked.connect(self.selectMRIDirectory)
 
-        #Surface Topography Button
+        #Load Surface Topography Button
         self.loadSTButton = QtWidgets.QPushButton(self.loadGridWidget)
+        self.loadSTButton.setEnabled(True)
         self.loadSTButton.setObjectName("loadSTButton")
         self.loadGrid.addWidget(self.loadSTButton, 4, 1, 1, 1)
+        self.loadSTButton.clicked.connect(self.selectSurfaceTopography)
 
         #Load Label
         self.loadLabel = QtWidgets.QLabel(self.loadGridWidget)
@@ -228,4 +234,16 @@ class Ui_MainWindow(object):
         self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
+
+    def selectMRIDirectory(self):
+        dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
+        print("MRI: " + dirName)
+
+    def selectXRayFile(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
+        print("Xray: " + filename[0])
+
+    def selectSurfaceTopography(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
+        print("SF: " + filename[0])
 

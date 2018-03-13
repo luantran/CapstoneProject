@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1096</width>
-    <height>795</height>
+    <height>761</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,16 +23,16 @@
       <height>131</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout">
+    <layout class="QGridLayout" name="loadGrid">
      <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="loadXRayButton">
        <property name="text">
         <string>Load X-Ray</string>
        </property>
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="loadMRIButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -42,14 +42,14 @@
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="loadSTButton">
        <property name="text">
         <string>Load Surface Topology</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="loadLabel">
        <property name="font">
         <font>
          <pointsize>14</pointsize>
@@ -64,21 +64,6 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="gridLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>259</x>
-      <y>9</y>
-      <width>831</width>
-      <height>731</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QGraphicsView" name="graphicsView"/>
-     </item>
-    </layout>
-   </widget>
    <widget class="QWidget" name="gridLayoutWidget_3">
     <property name="geometry">
      <rect>
@@ -88,9 +73,9 @@
       <height>71</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_4">
+    <layout class="QGridLayout" name="registrationGrid">
      <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_4">
+      <widget class="QPushButton" name="registerButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -100,7 +85,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="regitsrationLabel">
        <property name="font">
         <font>
          <pointsize>14</pointsize>
@@ -124,30 +109,30 @@
       <height>366</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_5">
+    <layout class="QGridLayout" name="viewGrid">
      <item row="1" column="1">
-      <widget class="QCheckBox" name="checkBox">
+      <widget class="QCheckBox" name="xRayCheckBox">
        <property name="text">
         <string>X-Ray</string>
        </property>
       </widget>
      </item>
      <item row="8" column="1">
-      <widget class="QCheckBox" name="checkBox_7">
+      <widget class="QCheckBox" name="mriVertebraeCheckBox">
        <property name="text">
         <string>MRI vertebrae</string>
        </property>
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QCheckBox" name="checkBox_6">
+      <widget class="QCheckBox" name="vertebralLMCheckBox">
        <property name="text">
         <string>Vertebral Landmarks</string>
        </property>
       </widget>
      </item>
      <item row="9" column="1">
-      <spacer name="horizontalSpacer_2">
+      <spacer name="secondSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -160,21 +145,21 @@
       </spacer>
      </item>
      <item row="10" column="1">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="sliceLabel">
        <property name="text">
         <string>View registered slice</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QCheckBox" name="checkBox_2">
+      <widget class="QCheckBox" name="stCheckBox">
        <property name="text">
         <string>Surface</string>
        </property>
       </widget>
      </item>
      <item row="5" column="1">
-      <spacer name="horizontalSpacer">
+      <spacer name="firstSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -187,7 +172,7 @@
       </spacer>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="viewLabel">
        <property name="font">
         <font>
          <pointsize>14</pointsize>
@@ -201,7 +186,7 @@
       </widget>
      </item>
      <item row="11" column="1">
-      <widget class="QSpinBox" name="spinBox">
+      <widget class="QSpinBox" name="sliceSpinBox">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -211,21 +196,21 @@
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QCheckBox" name="checkBox_5">
+      <widget class="QCheckBox" name="sMRICheckBox">
        <property name="text">
         <string>Saggital MRIs</string>
        </property>
       </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QCheckBox" name="checkBox_4">
+      <widget class="QCheckBox" name="mriCheckBox">
        <property name="text">
         <string>MRI</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QCheckBox" name="checkBox_3">
+      <widget class="QCheckBox" name="externalLMCheckBox">
        <property name="text">
         <string>External Landmarks</string>
        </property>
@@ -242,9 +227,9 @@
       <height>71</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_7">
+    <layout class="QGridLayout" name="saveGrid">
      <item row="2" column="1">
-      <widget class="QPushButton" name="pushButton_8">
+      <widget class="QPushButton" name="saveButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -254,7 +239,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="saveLabel">
        <property name="font">
         <font>
          <pointsize>14</pointsize>
@@ -263,18 +248,28 @@
         </font>
        </property>
        <property name="text">
-        <string>Save</string>
+        <string>Save Registered File</string>
        </property>
       </widget>
      </item>
     </layout>
    </widget>
-   <zorder>gridLayoutWidget</zorder>
-   <zorder>gridLayoutWidget_2</zorder>
-   <zorder>gridLayoutWidget_3</zorder>
-   <zorder>label_2</zorder>
-   <zorder>gridLayoutWidget_4</zorder>
-   <zorder>gridLayoutWidget_5</zorder>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>259</x>
+      <y>9</y>
+      <width>831</width>
+      <height>691</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -9,8 +9,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
+from src.registration import registration
 
-class Ui_MainWindow(QMainWindow):
+class Ui_MainWindow(QMainWindow, registration):
+
     def setupUi(self, MainWindow):
         #Define Bold Font
         font = QtGui.QFont()

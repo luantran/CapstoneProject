@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from src.interface import MainWindow
 
+
 class AppWindow(QDialog):
     def __init__(self):
         super().__init__()

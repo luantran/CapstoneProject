@@ -10,142 +10,184 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 
-
-class Ui_MainWindow(QMainWindow):
+class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        #Define Bold Font
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        font.setBold(True)
+        font.setWeight(75)
+
+        #Main Window
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1096, 795)
+        MainWindow.resize(1096, 761)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
+
+        #Central Widget
         self.centralwidget.setObjectName("centralwidget")
-        self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(10, 10, 241, 131))
-        self.gridLayoutWidget.setObjectName("gridLayoutWidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
-        self.gridLayout.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout.setObjectName("gridLayout")
-        self.pushButton_3 = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.pushButton_3.setObjectName("pushButton_3")
-        self.gridLayout.addWidget(self.pushButton_3, 2, 1, 1, 1)
-        self.pushButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.pushButton.setEnabled(True)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout.addWidget(self.pushButton, 1, 1, 1, 1)
 
-        self.pushButton.clicked.connect(self.showDialog)
+        ################  Load Grid  ################
 
-        self.pushButton_2 = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout.addWidget(self.pushButton_2, 4, 1, 1, 1)
-        self.label = QtWidgets.QLabel(self.gridLayoutWidget)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label.setFont(font)
-        self.label.setObjectName("label")
-        self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
-        self.gridLayoutWidget_2 = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget_2.setGeometry(QtCore.QRect(259, 9, 831, 731))
-        self.gridLayoutWidget_2.setObjectName("gridLayoutWidget_2")
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.gridLayoutWidget_2)
-        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.graphicsView = QtWidgets.QGraphicsView(self.gridLayoutWidget_2)
-        self.graphicsView.setObjectName("graphicsView")
-        self.gridLayout_2.addWidget(self.graphicsView, 0, 0, 1, 1)
-        self.gridLayoutWidget_3 = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget_3.setGeometry(QtCore.QRect(10, 160, 241, 71))
-        self.gridLayoutWidget_3.setObjectName("gridLayoutWidget_3")
-        self.gridLayout_4 = QtWidgets.QGridLayout(self.gridLayoutWidget_3)
-        self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_4.setObjectName("gridLayout_4")
-        self.pushButton_4 = QtWidgets.QPushButton(self.gridLayoutWidget_3)
-        self.pushButton_4.setEnabled(True)
-        self.pushButton_4.setObjectName("pushButton_4")
-        self.gridLayout_4.addWidget(self.pushButton_4, 2, 1, 1, 1)
-        self.label_2 = QtWidgets.QLabel(self.gridLayoutWidget_3)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_2.setFont(font)
-        self.label_2.setObjectName("label_2")
-        self.gridLayout_4.addWidget(self.label_2, 1, 1, 1, 1)
-        self.gridLayoutWidget_4 = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget_4.setGeometry(QtCore.QRect(10, 250, 241, 366))
-        self.gridLayoutWidget_4.setObjectName("gridLayoutWidget_4")
-        self.gridLayout_5 = QtWidgets.QGridLayout(self.gridLayoutWidget_4)
-        self.gridLayout_5.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_5.setObjectName("gridLayout_5")
-        self.checkBox = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox.setObjectName("checkBox")
-        self.gridLayout_5.addWidget(self.checkBox, 1, 1, 1, 1)
-        self.checkBox_7 = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox_7.setObjectName("checkBox_7")
-        self.gridLayout_5.addWidget(self.checkBox_7, 8, 1, 1, 1)
-        self.checkBox_6 = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox_6.setObjectName("checkBox_6")
-        self.gridLayout_5.addWidget(self.checkBox_6, 4, 1, 1, 1)
-        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_5.addItem(spacerItem, 9, 1, 1, 1)
-        self.label_6 = QtWidgets.QLabel(self.gridLayoutWidget_4)
-        self.label_6.setObjectName("label_6")
-        self.gridLayout_5.addWidget(self.label_6, 10, 1, 1, 1)
-        self.checkBox_2 = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox_2.setObjectName("checkBox_2")
-        self.gridLayout_5.addWidget(self.checkBox_2, 2, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_5.addItem(spacerItem1, 5, 1, 1, 1)
-        self.label_3 = QtWidgets.QLabel(self.gridLayoutWidget_4)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_3.setFont(font)
-        self.label_3.setObjectName("label_3")
-        self.gridLayout_5.addWidget(self.label_3, 0, 1, 1, 1)
-        self.spinBox = QtWidgets.QSpinBox(self.gridLayoutWidget_4)
+        self.loadGridWidget = QtWidgets.QWidget(self.centralwidget)
+        self.loadGridWidget.setGeometry(QtCore.QRect(10, 10, 241, 131))
+        self.loadGridWidget.setObjectName("loadGridWidget")
+        self.loadGrid = QtWidgets.QGridLayout(self.loadGridWidget)
+        self.loadGrid.setContentsMargins(0, 0, 0, 0)
+        self.loadGrid.setObjectName("loadGrid")
+        #Buttons
+
+        #Load XRay Button
+        self.loadXRayButton = QtWidgets.QPushButton(self.loadGridWidget)
+        self.loadXRayButton.setObjectName("loadXRayButton")
+        self.loadGrid.addWidget(self.loadXRayButton, 2, 1, 1, 1)
+
+        #Load MRI Button
+        self.loadMRIButton = QtWidgets.QPushButton(self.loadGridWidget)
+        self.loadMRIButton.setEnabled(True)
+        self.loadMRIButton.setObjectName("loadMRIButton")
+        self.loadGrid.addWidget(self.loadMRIButton, 1, 1, 1, 1)
+
+        #Surface Topography Button
+        self.loadSTButton = QtWidgets.QPushButton(self.loadGridWidget)
+        self.loadSTButton.setObjectName("loadSTButton")
+        self.loadGrid.addWidget(self.loadSTButton, 4, 1, 1, 1)
+
+        #Load Label
+        self.loadLabel = QtWidgets.QLabel(self.loadGridWidget)
+        self.loadLabel.setFont(font)
+        self.loadLabel.setObjectName("loadLabel")
+        self.loadGrid.addWidget(self.loadLabel, 0, 1, 1, 1)
+
+
+        ################  Registration Grid  ################
+
+        self.registrationGridWidget = QtWidgets.QWidget(self.centralwidget)
+        self.registrationGridWidget.setGeometry(QtCore.QRect(10, 160, 241, 71))
+        self.registrationGridWidget.setObjectName("registrationGridWidget")
+        self.registrationGrid = QtWidgets.QGridLayout(self.registrationGridWidget)
+        self.registrationGrid.setContentsMargins(0, 0, 0, 0)
+        self.registrationGrid.setObjectName("registrationGrid")
+
+        #Register Button
+        self.registerButton = QtWidgets.QPushButton(self.registrationGridWidget)
+        self.registerButton.setEnabled(True)
+        self.registerButton.setObjectName("registerButton")
+        self.registrationGrid.addWidget(self.registerButton, 2, 1, 1, 1)
+
+        #Registration Label
+        self.regitsrationLabel = QtWidgets.QLabel(self.registrationGridWidget)
+        self.regitsrationLabel.setFont(font)
+        self.regitsrationLabel.setObjectName("regitsrationLabel")
+        self.registrationGrid.addWidget(self.regitsrationLabel, 1, 1, 1, 1)
+
+
+        ################  View Grid  ################
+
+        self.viewGridWidget = QtWidgets.QWidget(self.centralwidget)
+        self.viewGridWidget.setGeometry(QtCore.QRect(10, 250, 241, 366))
+        self.viewGridWidget.setObjectName("viewGridWidget")
+        self.viewGrid = QtWidgets.QGridLayout(self.viewGridWidget)
+        self.viewGrid.setContentsMargins(0, 0, 0, 0)
+        self.viewGrid.setObjectName("viewGrid")
+
+        #Checkboxes
+
+        #X-Ray Checkbox
+        self.xRayCheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.xRayCheckBox.setObjectName("xRayCheckBox")
+        self.viewGrid.addWidget(self.xRayCheckBox, 1, 1, 1, 1)
+
+        #MRI Vertebrae Checkbox
+        self.mriVertebraeCheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.mriVertebraeCheckBox.setObjectName("mriVertebraeCheckBox")
+        self.viewGrid.addWidget(self.mriVertebraeCheckBox, 8, 1, 1, 1)
+
+        #Vertebral Landmarks Checkbox
+        self.vertebralLMCheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.vertebralLMCheckBox.setObjectName("vertebralLMCheckBox")
+        self.viewGrid.addWidget(self.vertebralLMCheckBox, 4, 1, 1, 1)
+
+        # Saggital MRI Checkbox
+        self.sMRICheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.sMRICheckBox.setObjectName("sMRICheckBox")
+        self.viewGrid.addWidget(self.sMRICheckBox, 7, 1, 1, 1)
+
+        # MRI Checkbox
+        self.mriCheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.mriCheckBox.setObjectName("mriCheckBox")
+        self.viewGrid.addWidget(self.mriCheckBox, 6, 1, 1, 1)
+
+        # External Landmarks Checkbox
+        self.externalLMCheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.externalLMCheckBox.setObjectName("externalLMCheckBox")
+        self.viewGrid.addWidget(self.externalLMCheckBox, 3, 1, 1, 1)
+
+        # Surface Tography Checkbox
+        self.stCheckBox = QtWidgets.QCheckBox(self.viewGridWidget)
+        self.stCheckBox.setObjectName("stCheckBox")
+        self.viewGrid.addWidget(self.stCheckBox, 2, 1, 1, 1)
+
+        #First Spacer
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.viewGrid.addItem(spacerItem1, 9, 1, 1, 1)
+
+        #Second Spacer
+        spacerItem2 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.viewGrid.addItem(spacerItem2, 5, 1, 1, 1)
+
+        # Slice Label
+        self.sliceLabel = QtWidgets.QLabel(self.viewGridWidget)
+        self.sliceLabel.setObjectName("sliceLabel")
+        self.viewGrid.addWidget(self.sliceLabel, 10, 1, 1, 1)
+
+        #View Label
+        self.viewLabel = QtWidgets.QLabel(self.viewGridWidget)
+        self.viewLabel.setFont(font)
+        self.viewLabel.setObjectName("viewLabel")
+        self.viewGrid.addWidget(self.viewLabel, 0, 1, 1, 1)
+
+        #SpinBox
+        self.sliceSpinBox = QtWidgets.QSpinBox(self.viewGridWidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.spinBox.sizePolicy().hasHeightForWidth())
-        self.spinBox.setSizePolicy(sizePolicy)
-        self.spinBox.setObjectName("spinBox")
-        self.gridLayout_5.addWidget(self.spinBox, 11, 1, 1, 1)
-        self.checkBox_5 = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox_5.setObjectName("checkBox_5")
-        self.gridLayout_5.addWidget(self.checkBox_5, 7, 1, 1, 1)
-        self.checkBox_4 = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox_4.setObjectName("checkBox_4")
-        self.gridLayout_5.addWidget(self.checkBox_4, 6, 1, 1, 1)
-        self.checkBox_3 = QtWidgets.QCheckBox(self.gridLayoutWidget_4)
-        self.checkBox_3.setObjectName("checkBox_3")
-        self.gridLayout_5.addWidget(self.checkBox_3, 3, 1, 1, 1)
-        self.gridLayoutWidget_5 = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget_5.setGeometry(QtCore.QRect(10, 630, 241, 71))
-        self.gridLayoutWidget_5.setObjectName("gridLayoutWidget_5")
-        self.gridLayout_7 = QtWidgets.QGridLayout(self.gridLayoutWidget_5)
-        self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
-        self.gridLayout_7.setObjectName("gridLayout_7")
-        self.pushButton_8 = QtWidgets.QPushButton(self.gridLayoutWidget_5)
-        self.pushButton_8.setEnabled(True)
-        self.pushButton_8.setObjectName("pushButton_8")
-        self.gridLayout_7.addWidget(self.pushButton_8, 2, 1, 1, 1)
-        self.label_5 = QtWidgets.QLabel(self.gridLayoutWidget_5)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_5.setFont(font)
-        self.label_5.setObjectName("label_5")
-        self.gridLayout_7.addWidget(self.label_5, 1, 1, 1, 1)
-        self.gridLayoutWidget.raise_()
-        self.gridLayoutWidget_2.raise_()
-        self.gridLayoutWidget_3.raise_()
-        self.label_2.raise_()
-        self.gridLayoutWidget_4.raise_()
-        self.gridLayoutWidget_5.raise_()
+        sizePolicy.setHeightForWidth(self.sliceSpinBox.sizePolicy().hasHeightForWidth())
+        self.sliceSpinBox.setSizePolicy(sizePolicy)
+        self.sliceSpinBox.setObjectName("sliceSpinBox")
+        self.viewGrid.addWidget(self.sliceSpinBox, 11, 1, 1, 1)
+
+
+
+        ################  Save Grid  ################
+
+        self.saveGridWidget = QtWidgets.QWidget(self.centralwidget)
+        self.saveGridWidget.setGeometry(QtCore.QRect(10, 630, 241, 71))
+        self.saveGridWidget.setObjectName("saveGridWidget")
+        self.saveGrid = QtWidgets.QGridLayout(self.saveGridWidget)
+        self.saveGrid.setContentsMargins(0, 0, 0, 0)
+        self.saveGrid.setObjectName("saveGrid")
+
+        #Save Button
+        self.saveButton = QtWidgets.QPushButton(self.saveGridWidget)
+        self.saveButton.setEnabled(True)
+        self.saveButton.setObjectName("saveButton")
+        self.saveGrid.addWidget(self.saveButton, 2, 1, 1, 1)
+        #Save Label
+        self.saveLabel = QtWidgets.QLabel(self.saveGridWidget)
+        self.saveLabel.setFont(font)
+        self.saveLabel.setObjectName("saveLabel")
+        self.saveGrid.addWidget(self.saveLabel, 1, 1, 1, 1)
+
+
+        #Frame
+        self.frame = QtWidgets.QFrame(self.centralwidget)
+        self.frame.setGeometry(QtCore.QRect(259, 9, 831, 691))
+        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.frame.setObjectName("frame")
         MainWindow.setCentralWidget(self.centralwidget)
+
+        #Menu
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1096, 25))
         self.menubar.setObjectName("menubar")
@@ -163,36 +205,27 @@ class Ui_MainWindow(QMainWindow):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+    #Add text to all objects
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "3DSpineVizualization"))
-        self.pushButton_3.setText(_translate("MainWindow", "Load X-Ray"))
-        self.pushButton.setText(_translate("MainWindow", "Load MRI"))
-        self.pushButton_2.setText(_translate("MainWindow", "Load Surface Topology"))
-        self.label.setText(_translate("MainWindow", "Load"))
-        self.pushButton_4.setText(_translate("MainWindow", "Register"))
-        self.label_2.setText(_translate("MainWindow", "Registration"))
-        self.checkBox.setText(_translate("MainWindow", "X-Ray"))
-        self.checkBox_7.setText(_translate("MainWindow", "MRI vertebrae"))
-        self.checkBox_6.setText(_translate("MainWindow", "Vertebral Landmarks"))
-        self.label_6.setText(_translate("MainWindow", "View registered slice"))
-        self.checkBox_2.setText(_translate("MainWindow", "Surface"))
-        self.label_3.setText(_translate("MainWindow", "View"))
-        self.checkBox_5.setText(_translate("MainWindow", "Saggital MRIs"))
-        self.checkBox_4.setText(_translate("MainWindow", "MRI"))
-        self.checkBox_3.setText(_translate("MainWindow", "External Landmarks"))
-        self.pushButton_8.setText(_translate("MainWindow", "Save Registered Data"))
-        self.label_5.setText(_translate("MainWindow", "Save"))
+        self.loadXRayButton.setText(_translate("MainWindow", "Load X-Ray"))
+        self.loadMRIButton.setText(_translate("MainWindow", "Load MRI"))
+        self.loadSTButton.setText(_translate("MainWindow", "Load Surface Topology"))
+        self.loadLabel.setText(_translate("MainWindow", "Load"))
+        self.registerButton.setText(_translate("MainWindow", "Register"))
+        self.regitsrationLabel.setText(_translate("MainWindow", "Registration"))
+        self.xRayCheckBox.setText(_translate("MainWindow", "X-Ray"))
+        self.mriVertebraeCheckBox.setText(_translate("MainWindow", "MRI vertebrae"))
+        self.vertebralLMCheckBox.setText(_translate("MainWindow", "Vertebral Landmarks"))
+        self.sliceLabel.setText(_translate("MainWindow", "View registered slice"))
+        self.stCheckBox.setText(_translate("MainWindow", "Surface"))
+        self.viewLabel.setText(_translate("MainWindow", "View"))
+        self.sMRICheckBox.setText(_translate("MainWindow", "Saggital MRIs"))
+        self.mriCheckBox.setText(_translate("MainWindow", "MRI"))
+        self.externalLMCheckBox.setText(_translate("MainWindow", "External Landmarks"))
+        self.saveButton.setText(_translate("MainWindow", "Save"))
+        self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
-
-    def showDialog(self):
-        fname = QFileDialog.getExistingDirectory(self, 'Open Directory', '/home/luantran/')
-        print(fname)
-        # if fname[0]:
-        #     f = open(fname[0], 'r')
-        #
-        #     with f:
-        #         data = f.read()
-        #         print(data)
 

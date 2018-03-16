@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QDialog, QApplication
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from src.interface import MainWindow
-from src.registration import registrations
+from src.registration import registration
 
 class AppWindow(QDialog):
     def __init__(self):

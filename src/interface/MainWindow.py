@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
 
-class Ui_MainWindow(QMainWindow, registration):
+class Ui_MainWindow(QMainWindow, registration.Registration):
 
     def setupUi(self, MainWindow):
         #Define Bold Font

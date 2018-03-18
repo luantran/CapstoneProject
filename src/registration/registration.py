@@ -12,3 +12,9 @@ class Registration(object):
 
     def setSurface(self, surface):
         self.surface = surface
+
+    def processXray(self):
+        print("Doing xray stuff")
+
+    def processSurface(self):
+        print("Doing surface topography stuff")

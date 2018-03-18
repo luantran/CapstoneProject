@@ -84,6 +84,8 @@ class Ui_MainWindow(QMainWindow):
         self.registerButton.setEnabled(True)
         self.registerButton.setObjectName("registerButton")
         self.registrationGrid.addWidget(self.registerButton, 2, 1, 1, 1)
+        self.registerButton.clicked.connect(self.register)
+
 
         #Registration Label
         self.regitsrationLabel = QtWidgets.QLabel(self.registrationGridWidget)
@@ -248,13 +250,17 @@ class Ui_MainWindow(QMainWindow):
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
-        self.registrationObject.setXRay(filename)
+        self.registrationObject.setXRay(filename[0])
         print(self.registrationObject.xray)
         # print("Xray: " + filename[0])
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
-        self.registrationObject.setSurface(filename)
+        self.registrationObject.setSurface(filename[0])
         print(self.registrationObject.surface)
         # print("SF: " + filename[0])
+
+    def register(self):
+        self.registrationObject.processXray()
+        self.registrationObject.processSurface()
 

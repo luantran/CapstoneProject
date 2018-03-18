@@ -4,3 +4,11 @@ class Registration(object):
         self.xray = ''
         self.surface = ''
 
+    def setMRIDirectory(self, mriDirectory):
+        self.mri_directory = mriDirectory
+
+    def setXRay(self, xray):
+        self.xray = xray
+
+    def setSurface(self, surface):
+        self.surface = surface

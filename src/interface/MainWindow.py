@@ -11,9 +11,12 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
 
-class Ui_MainWindow(QMainWindow, registration.Registration):
+class Ui_MainWindow(QMainWindow):
 
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, registrationObject):
+        self.registrationObject = registrationObject
+
+
         #Define Bold Font
         font = QtGui.QFont()
         font.setPointSize(14)
@@ -239,13 +242,19 @@ class Ui_MainWindow(QMainWindow, registration.Registration):
 
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
-        print("MRI: " + dirName)
+        self.registrationObject.setMRIDirectory(dirName)
+        print(self.registrationObject.mri_directory)
+        # print("MRI: " + dirName)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
-        print("Xray: " + filename[0])
+        self.registrationObject.setXRay(filename)
+        print(self.registrationObject.xray)
+        # print("Xray: " + filename[0])
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
-        print("SF: " + filename[0])
+        self.registrationObject.setSurface(filename)
+        print(self.registrationObject.surface)
+        # print("SF: " + filename[0])
 

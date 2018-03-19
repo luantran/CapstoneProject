@@ -10,13 +10,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
+from src.registration import wrlReader
 
 class Ui_MainWindow(QMainWindow):
 
-    def setupUi(self, MainWindow, registrationObject):
-        self.registrationObject = registrationObject
-
-
+    def setupUi(self, MainWindow):
         #Define Bold Font
         font = QtGui.QFont()
         font.setPointSize(14)
@@ -198,6 +196,7 @@ class Ui_MainWindow(QMainWindow):
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         #Menu
@@ -241,6 +240,9 @@ class Ui_MainWindow(QMainWindow):
         self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
+
+    def setRegistrationObject(self, registrationObj):
+        self.registrationObject = registrationObj
 
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")

@@ -253,6 +253,7 @@ class Ui_MainWindow(QMainWindow):
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
         self.registrationObject.setXRay(filename[0])
+        self.registrationObject.processXray()
         print(self.registrationObject.xray)
         # print("Xray: " + filename[0])
 
@@ -263,6 +264,7 @@ class Ui_MainWindow(QMainWindow):
         # print("SF: " + filename[0])
 
     def register(self):
-        self.registrationObject.processXray()
+        # self.registrationObject.processXray()
+        # self.registrationObject.removeXray()
         self.registrationObject.processSurface()
 

@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from src.interface import MainWindow
 from src.registration import registration
 from src.registration import wrlReader
+from src.registration import szeReader
+
 class AppWindow(QDialog):
     def __init__(self):
         super().__init__()
@@ -12,6 +14,7 @@ class AppWindow(QDialog):
         self.ui = MainWindow.Ui_MainWindow()
         self.ui.setupUi(self.window)
         self.registrationObj = registration.Registration(self.ui.frame)
+        # szeReader.szeReader(self.ui.frame)
         self.ui.setRegistrationObject(self.registrationObj)
         # Set up VTK render in UI
         # Render wrl files

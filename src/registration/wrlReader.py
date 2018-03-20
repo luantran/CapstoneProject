@@ -10,10 +10,11 @@ class WRLReader(QtWidgets.QFrame):
         self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
         self.vl.addWidget(self.vtkWidget)
 
-        # self.setWRLFile(filename)
-        # self.initializeRenderer()
-        # self.importVRMLData()
-        # self.renderInFrame()
+        #initialize variables
+        self.wrlFile = None
+        self.ren = None
+        self.renWin = None
+        self.iren = None
 
     def setWRLFile(self, filename):
         self.wrlFile = filename

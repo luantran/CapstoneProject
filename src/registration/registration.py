@@ -1,4 +1,5 @@
 from src.registration import wrlReader
+from src.registration import szeReader
 
 class Registration(object):
     def __init__(self, frame):
@@ -6,6 +7,9 @@ class Registration(object):
         self.xray = ''
         self.surface = ''
         self.frame = frame
+
+        self.wrlReader = None
+        self.szeReader = None
 
     def setMRIDirectory(self, mriDirectory):
         self.mri_directory = mriDirectory
@@ -17,6 +21,8 @@ class Registration(object):
 
     def setSurface(self, surface):
         self.surface = surface
+        self.szeReader = szeReader.szeReader(self.frame)
+        self.szeReader.setSZEFile(self.surface)
 
     def removeXray(self):
         self.wrlReader.hide()
@@ -28,5 +34,7 @@ class Registration(object):
         print("Doing xray stuff")
 
     def processSurface(self):
+        self.szeReader.getSZEData()
+        self.szeReader.renderInFrame()
         print("Doing surface topography stuff")
 

@@ -248,23 +248,18 @@ class Ui_MainWindow(QMainWindow):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
         self.registrationObject.setMRIDirectory(dirName)
         print(self.registrationObject.mri_directory)
-        # print("MRI: " + dirName)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
         self.registrationObject.setXRay(filename[0])
         self.registrationObject.processXray()
         print(self.registrationObject.xray)
-        # print("Xray: " + filename[0])
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
         self.registrationObject.setSurface(filename[0])
+        self.registrationObject.processSurface()
         print(self.registrationObject.surface)
-        # print("SF: " + filename[0])
 
     def register(self):
-        # self.registrationObject.processXray()
-        # self.registrationObject.removeXray()
-        self.registrationObject.processSurface()
-
+        print("Registering...")

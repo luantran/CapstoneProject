@@ -1,39 +1,35 @@
-# % function sze = ReadSZE(varargin)
-# % Read the selected .sze file
-# %
-# %   Input:
-# %       - if none, open a window to select a .sze file
-# %       - if one argument: name of a .sze file located in the current directory
-# %       - if two arguments: pathname and filename
-# %
-# %   Output:
-# %       sze.Name: filename
-# %       sze.Coord: nx3 matrix, Coordinates x,y,z
-# %       sze.Connect: mx3 matrix, connectivity
-# %       sze.RGB: nx3 matrix, RGB texture information
-# %
-# % Created by Valerie Pazos
-# % Modified by Philippe Debanné
-# %
-# % Laboratoire d'Imagerie et de Vision 4D (LIV4D)
-# % Département de Génie Informatique et Génie Logiciel
-# % École Polytechnique de Montréal
-# %
+#   Input:
+#       - if none, open a window to select a .sze file
+#       - if one argument: name of a .sze file located in the current directory
+#       - if two arguments: pathname and filename
+#
+#   Output:
+#       sze.Name: filename
+#       sze.Coord: nx3 matrix, Coordinates x,y,z
+#       sze.Connect: mx3 matrix, connectivity
+#       sze.RGB: nx3 matrix, RGB texture information
+#
+# Created by Muhammad Abdullah Sumbal
+#
+# To run this file, add the following two lines in app.py
+# from misc.szeReader import SurfaceTopographyViewer
+# SurfaceTopographyViewer(self.ui.frame)
+
 import re
 import numpy as np
 import vtk
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
+from PyQt5 import QtWidgets, Qt
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from vtk.util import numpy_support
+
 
 class SurfaceTopographyViewer(QtWidgets.QFrame):
 
     def mkVtkIdList(self, it):
-        '''
+        """
             Helper function
         :param it: polygon list
         :return: vtkIdList
-        '''
+        """
         vil = vtk.vtkIdList()
         for i in it:
             vil.InsertNextId(int(i))
@@ -61,7 +57,6 @@ class SurfaceTopographyViewer(QtWidgets.QFrame):
         meshtex = np.array([int(i) for i in re.search('BEGIN MESH_TEX{1}[\d\s]*END MESH_TEX{1}', text).group(0).split()[2:-2]])
         meshtex = meshtex.reshape(nbpolygon, 4)
         meshtex = meshtex[:, 1:4] + 1
-
 
         # Read the table of texture coordinates
         nbuv = int(re.search('\d+', re.search('NbTexture=\d*', text).group(0)).group(0))
@@ -105,7 +100,7 @@ class SurfaceTopographyViewer(QtWidgets.QFrame):
 
         # Convert texture coordinates (normalized in [0,1] to)
         # coordinates in the texture image
-        u = np.round_((uv[:, 0]) *(sizeTex[0]-1))+1
+        u = np.round_((uv[:, 0]) * (sizeTex[0]-1))+1
         v = np.round_((1 - uv[:, 1]) * (sizeTex[1]-1))+1
 
         # For each polygon (triangle) of the surface, extract the values ​​of the

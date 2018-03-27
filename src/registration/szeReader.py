@@ -24,7 +24,7 @@ import numpy as np
 import vtk
 from src.registration import reader
 
-class szeReader(reader.Reader):
+class SZEReader(reader.Reader):
 
     ########## Overriding abstract methods ##########
 

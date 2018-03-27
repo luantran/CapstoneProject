@@ -273,6 +273,7 @@ class Ui_MainWindow(QMainWindow):
     def register(self):
         self.controller.executeReader("XRay")
         self.controller.executeReader("Surface")
+        # self.controller.executeReader("MRI")
         self.controller.register()
 
 

@@ -1,5 +1,6 @@
 from src.registration import wrlReader
 from src.registration import szeReader
+from src.registration import mriReader
 from src.registration import registration
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from PyQt5 import QtWidgets
@@ -12,13 +13,14 @@ class Controller(object):
         self.view.setController(self)
 
         self.wrlReader = wrlReader.WRLReader()
-        self.szeReader = szeReader.szeReader()
+        self.szeReader = szeReader.SZEReader()
+        self.mriReader = mriReader.MRIReader()
         self.registration = registration.Registration()
         self.xray_actor = None
         self.surface_actor = None
 
     def setMRIDirectory(self, mriDirectory):
-        self.mri_directory = mriDirectory
+        self.mriReader.setFilePath(mriDirectory)
 
     def setXRay(self, xray):
         self.wrlReader.setFilePath(xray)
@@ -34,8 +36,11 @@ class Controller(object):
             self.xray_actor = self.wrlReader.getVTKActor()
         elif type is "Surface":
             print("Getting Surface data...")
-
             self.surface_actor = self.szeReader.getVTKActor()
+        elif type is "MRI":
+            print("Getting MRI data...")
+            self.mriReader.getPolyData()
+
 
     def register(self):
         print("Registering...")

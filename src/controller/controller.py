@@ -1,5 +1,6 @@
 from src.registration import wrlReader
 from src.registration import szeReader
+from src.registration import registration
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from PyQt5 import QtWidgets
 import vtk
@@ -12,6 +13,7 @@ class Controller(object):
 
         self.wrlReader = wrlReader.WRLReader()
         self.szeReader = szeReader.szeReader()
+        self.registration = registration.Registration()
         self.xray_actor = None
         self.surface_actor = None
 
@@ -50,7 +52,6 @@ class Controller(object):
         sizePolicy.setHeightForWidth(self.vtkWidget.sizePolicy().hasHeightForWidth())
         self.vtkWidget.setSizePolicy(sizePolicy)
         self.vtkWidget.setObjectName("vtkWidget")
-        self.view.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
 
         # Render
         ren = vtk.vtkRenderer()
@@ -62,9 +63,12 @@ class Controller(object):
         # Interactor
         iren = self.vtkWidget.GetRenderWindow().GetInteractor()
 
-        # Add actor
+        # Add actors
         ren.AddActor(xRayActor)
         ren.AddActor(surfaceActor)
+
+        # Add to layout
+        self.view.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
 
         iren.Initialize()
         iren.Start()

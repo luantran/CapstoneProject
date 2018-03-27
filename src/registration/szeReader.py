@@ -26,11 +26,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtk.util import numpy_support
 
-class szeReader(QtWidgets.QFrame):
-
-
-    def __init__(self, parent):
-        super(szeReader,self).__init__(parent)
+class szeReader():
 
     def mkVtkIdList(self, it):
         '''
@@ -158,45 +154,21 @@ class szeReader(QtWidgets.QFrame):
         for vtk_connect in vtk_connects:
             self.polys.InsertNextCell(self.mkVtkIdList(vtk_connect))
 
-    def renderInFrame(self):
+    def readSZEData(self):
+        self.getNBPolygon()
+        self.getConnectivityMatrix()
+        self.getMeshTextureMatrix()
+        self.getUVMatrix()
+        self.getCoordinatesMatrix()
+        self.getRGBMatrixData()
+        self.convertTextureCoords()
+        self.extractRGB()
         self.addingVTKCoords()
         self.addingVTKPolygonCells()
 
         # poly data
-        self.polydata = vtk.vtkPolyData()
-        self.polydata.SetPoints(self.points)
-        self.polydata.SetPolys(self.polys)
-
-        # mapper
-        self.mapper = vtk.vtkPolyDataMapper()
-        self.mapper.SetInputData(self.polydata)
-
-        # actor
-        self.actor = vtk.vtkActor()
-        self.actor.SetMapper(self.mapper)
-
-        # adding the render to frame
-        self.frame = Qt.QFrame()
-        self.vl = Qt.QVBoxLayout()
-        self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
-        self.vl.addWidget(self.vtkWidget)
-
-        # Render
-        self.ren = vtk.vtkRenderer()
-        # Render Window
-        self.renWin = self.vtkWidget.GetRenderWindow()
-        # Add Render to Render Window
-        self.renWin.AddRenderer(self.ren)
-        # Interactor
-        self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
-        # Add actor
-        self.ren.AddActor(self.actor)
-
-        # setting the window size
-        self.renWin.SetSize(600, 600)
-        # Add layout to the frame
-        self.setLayout(self.vl)
-        self.show()
-        self.iren.Initialize()
-        self.iren.Start()
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(self.points)
+        polydata.SetPolys(self.polys)
+        return polydata
 

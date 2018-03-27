@@ -22,15 +22,42 @@
 import re
 import numpy as np
 import vtk
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from vtk.util import numpy_support
+from src.registration import reader
 
-class szeReader(QtWidgets.QFrame):
+class SZEReader(reader.Reader):
 
+    ########## Overriding abstract methods ##########
 
-    def __init__(self, parent):
-        super(szeReader,self).__init__(parent)
+    def setFilePath(self, filepath):
+        super().setFilePath(filepath)
+        self.extractLinesFromFile()
+
+    def getPolyData(self):
+        self.getNBPolygon()
+        self.getConnectivityMatrix()
+        self.getMeshTextureMatrix()
+        self.getUVMatrix()
+        self.getCoordinatesMatrix()
+        self.getRGBMatrixData()
+        self.convertTextureCoords()
+        self.extractRGB()
+        self.addingVTKCoords()
+        self.addingVTKPolygonCells()
+
+        # poly data
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(self.points)
+        polydata.SetPolys(self.polys)
+        return polydata
+
+    def getVTKActor(self):
+        self.actor = vtk.vtkActor()
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(self.getPolyData())
+        self.actor.SetMapper(mapper)
+        return self.actor
+
+    ########## Helper Methods ##########
 
     def mkVtkIdList(self, it):
         '''
@@ -43,12 +70,11 @@ class szeReader(QtWidgets.QFrame):
             vil.InsertNextId(int(i))
         return vil
 
-    def setSZEFile(self, filename):
-        self.filename = filename
-        file = open(filename)
+    def extractLinesFromFile(self):
+        file = open(self.filepath)
         self.text = file.read()
         file.close()
-        file = open(filename)
+        file = open(self.filepath)
         self.lines = file.readlines()
 
     # Get the number of polygons (triangles)
@@ -90,7 +116,7 @@ class szeReader(QtWidgets.QFrame):
             # Find the BEGIN IMAGE string in found in file
             # Retain the component of RGB and Ignore the alpha component
             if 'BEGIN IMAGE ' in line:
-                print("BEGIN IMAGE")
+                # print("BEGIN IMAGE")
                 self.sizeTex = [int(i) for i in self.lines[line_num + 1].split()]
                 # Convert the hex values of triplets directly (R, G, B)
                 RGB_shape = (0, 3)
@@ -128,21 +154,11 @@ class szeReader(QtWidgets.QFrame):
             # print((u[meshtex[j, 0] - 1] + (v[meshtex[j, 0] - 1]-1) * sizeTex[0]))
             # print(RGB[int(u[meshtex[j, 2] - 1] + (v[meshtex[j, 2] - 1]-1) * sizeTex[0]) - 1, :] / 255.0)
             if self.connect[j, 2] >= 72971:
-                print(j, self.connect[j, 2])
+                # print(j, self.connect[j, 2])
                 continue
             self.sze_RGB[self.connect[j, 0], :] = self.RGB[int(self.u[self.meshtex[j, 0] - 1] + (self.v[self.meshtex[j, 0] - 1]-1) * self.sizeTex[0]) - 1, :] / 255.0
             self.sze_RGB[self.connect[j, 1], :] = self.RGB[int(self.u[self.meshtex[j, 1] - 1] + (self.v[self.meshtex[j, 1] - 1]-1) * self.sizeTex[0]) - 1, :] / 255.0
             self.sze_RGB[self.connect[j, 2], :] = self.RGB[int(self.u[self.meshtex[j, 2] - 1] + (self.v[self.meshtex[j, 2] - 1]-1) * self.sizeTex[0]) - 1, :] / 255.0
-
-    def getSZEData(self):
-        self.getNBPolygon()
-        self.getConnectivityMatrix()
-        self.getMeshTextureMatrix()
-        self.getUVMatrix()
-        self.getCoordinatesMatrix()
-        self.getRGBMatrixData()
-        self.convertTextureCoords()
-        self.extractRGB()
 
     def addingVTKCoords(self):
         # adding coordinates
@@ -158,45 +174,4 @@ class szeReader(QtWidgets.QFrame):
         for vtk_connect in vtk_connects:
             self.polys.InsertNextCell(self.mkVtkIdList(vtk_connect))
 
-    def renderInFrame(self):
-        self.addingVTKCoords()
-        self.addingVTKPolygonCells()
-
-        # poly data
-        self.polydata = vtk.vtkPolyData()
-        self.polydata.SetPoints(self.points)
-        self.polydata.SetPolys(self.polys)
-
-        # mapper
-        self.mapper = vtk.vtkPolyDataMapper()
-        self.mapper.SetInputData(self.polydata)
-
-        # actor
-        self.actor = vtk.vtkActor()
-        self.actor.SetMapper(self.mapper)
-
-        # adding the render to frame
-        self.frame = Qt.QFrame()
-        self.vl = Qt.QVBoxLayout()
-        self.vtkWidget = QVTKRenderWindowInteractor(self.frame)
-        self.vl.addWidget(self.vtkWidget)
-
-        # Render
-        self.ren = vtk.vtkRenderer()
-        # Render Window
-        self.renWin = self.vtkWidget.GetRenderWindow()
-        # Add Render to Render Window
-        self.renWin.AddRenderer(self.ren)
-        # Interactor
-        self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
-        # Add actor
-        self.ren.AddActor(self.actor)
-
-        # setting the window size
-        self.renWin.SetSize(600, 600)
-        # Add layout to the frame
-        self.setLayout(self.vl)
-        self.show()
-        self.iren.Initialize()
-        self.iren.Start()
 

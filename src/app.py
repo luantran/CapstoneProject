@@ -6,6 +6,7 @@ from src.interface import MainWindow
 from src.registration import registration
 from src.registration import wrlReader
 from src.registration import szeReader
+from src.controller import controller
 
 class AppWindow(QDialog):
     def __init__(self):
@@ -13,17 +14,9 @@ class AppWindow(QDialog):
         self.window = QMainWindow()
         self.ui = MainWindow.Ui_MainWindow()
         self.ui.setupUi(self.window)
-        self.registrationObj = registration.Registration(self.ui.frame)
-        # szeReader.szeReader(self.ui.frame)
-        self.ui.setRegistrationObject(self.registrationObj)
-        # Set up VTK render in UI
-        # Render wrl files
-        # wrlReader.WRLTest(self.ui.frame)
+        self.controller = controller.Controller(self.ui)
         self.window.show()
 
 app = QApplication(sys.argv)
-# window = QMainWindow()
-# ui = MainWindow.Ui_MainWindow()
-# ui.setupUi(window)
 w = AppWindow()
 sys.exit(app.exec_())

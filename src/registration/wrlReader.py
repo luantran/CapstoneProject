@@ -1,28 +1,29 @@
 import vtk
+from src.registration import reader
 
-class WRLReader():
+class WRLReader(reader.Reader):
 
+    ########## Overriding abstract methods ##########
 
-    def setWRLFile(self, filename):
-        self.wrlFile = filename
+    def setFilePath(self, filepath):
+        super().setFilePath(filepath)
 
-
-    def importVRMLData(self):
+    def getPolyData(self):
         # VRML importer
         importer = vtk.vtkVRMLImporter()
         # WRL file to upload
-        importer.SetFileName(self.wrlFile)
+        importer.SetFileName(self.filepath)
         # Read data
         importer.Read()
 
-        polydata = vtk.vtkPolyData()
+        self.polydata = vtk.vtkPolyData()
         append = vtk.vtkAppendPolyData()
         renActors = importer.GetRenderer().GetActors()
         renActors.InitTraversal()
         actor = renActors.GetNextActor()
 
         i = 0
-        while(actor != None):
+        while (actor != None):
             actor.GetProperty().SetAmbientColor(i, 1 - i, 0.0)
             actor.GetProperty().SetAmbient(1)
             append.AddInputData(actor.GetMapper().GetInput())
@@ -30,6 +31,13 @@ class WRLReader():
             i += 0.05
 
         append.Update()
-        polydata.DeepCopy(append.GetOutput())
+        self.polydata.DeepCopy(append.GetOutput())
 
-        return polydata
+        return self.polydata
+
+    def getVTKActor(self):
+        self.actor = vtk.vtkActor()
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputData(self.getPolyData())
+        self.actor.SetMapper(mapper)
+        return self.actor

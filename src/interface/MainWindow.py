@@ -261,7 +261,6 @@ class Ui_MainWindow(QMainWindow):
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
         self.controller.setMRIDirectory(dirName)
-        # print(self.registrationObject.mri_directory)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
@@ -272,8 +271,8 @@ class Ui_MainWindow(QMainWindow):
         self.controller.setSurface(filename[0])
 
     def register(self):
-        self.controller.processXray()
-        self.controller.processSurface()
+        self.controller.executeReader("XRay")
+        self.controller.executeReader("Surface")
         self.controller.register()
 
 

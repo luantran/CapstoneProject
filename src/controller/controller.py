@@ -12,41 +12,28 @@ class Controller(object):
 
         self.wrlReader = wrlReader.WRLReader()
         self.szeReader = szeReader.szeReader()
+        self.xray_actor = None
+        self.surface_actor = None
 
     def setMRIDirectory(self, mriDirectory):
         self.mri_directory = mriDirectory
 
     def setXRay(self, xray):
-        self.wrlReader.setWRLFile(xray)
-        print("Setting X-Ray path: "+self.wrlReader.wrlFile)
+        self.wrlReader.setFilePath(xray)
+        print("Setting X-Ray path: "+self.wrlReader.filepath)
 
     def setSurface(self, surface):
-        self.szeReader.setSZEFile(surface)
-        print("Setting X-Ray path: "+self.szeReader.filename)
+        self.szeReader.setFilePath(surface)
+        print("Setting Surface path: "+self.szeReader.filepath)
 
+    def executeReader(self, type):
+        if type is "XRay":
+            print("Getting X-Ray data...")
+            self.xray_actor = self.wrlReader.getVTKActor()
+        elif type is "Surface":
+            print("Getting Surface data...")
 
-    def processXray(self):
-        print("Gettting X-Ray data...")
-        xRayPolyData = self.wrlReader.importVRMLData()
-        #mapper
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(xRayPolyData)
-        # actor
-        self.xray_actor = vtk.vtkActor()
-        self.xray_actor.SetMapper(mapper)
-        return self.xray_actor
-
-
-    def processSurface(self):
-        print("Gettting Surface Topography data...")
-        szePolyData = self.szeReader.readSZEData()
-        # mapper
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(szePolyData)
-        # actor
-        self.surface_actor = vtk.vtkActor()
-        self.surface_actor.SetMapper(mapper)
-        return self.surface_actor
+            self.surface_actor = self.szeReader.getVTKActor()
 
     def register(self):
         print("Registering...")

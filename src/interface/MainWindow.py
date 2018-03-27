@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
 from src.registration import wrlReader
+from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
+
 
 class Ui_MainWindow(QMainWindow):
 
@@ -190,12 +192,24 @@ class Ui_MainWindow(QMainWindow):
         self.saveGrid.addWidget(self.saveLabel, 1, 1, 1, 1)
 
 
-        #Frame
-        self.frame = QtWidgets.QFrame(self.centralwidget)
-        self.frame.setGeometry(QtCore.QRect(259, 9, 831, 691))
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setObjectName("frame")
+        # #Frame
+        # self.frame = QtWidgets.QFrame(self.centralwidget)
+        # self.frame.setGeometry(QtCore.QRect(260, 10, 831, 691))
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        # self.frame.setSizePolicy(sizePolicy)
+        # self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        # self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        # self.frame.setObjectName("frame")
+
+        self.vtkGridWidget = QtWidgets.QWidget(self.centralwidget)
+        self.vtkGridWidget.setGeometry(QtCore.QRect(270, 10, 811, 691))
+        self.vtkGridWidget.setObjectName("vtkGridWidget")
+        self.vtkGrid = QtWidgets.QGridLayout(self.vtkGridWidget)
+        self.vtkGrid.setContentsMargins(0, 0, 0, 0)
+        self.vtkGrid.setObjectName("vtkGrid")
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -241,25 +255,25 @@ class Ui_MainWindow(QMainWindow):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
 
-    def setRegistrationObject(self, registrationObj):
-        self.registrationObject = registrationObj
+    def setController(self, controller):
+        self.controller = controller
 
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
-        self.registrationObject.setMRIDirectory(dirName)
-        print(self.registrationObject.mri_directory)
+        self.controller.setMRIDirectory(dirName)
+        # print(self.registrationObject.mri_directory)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
-        self.registrationObject.setXRay(filename[0])
-        self.registrationObject.processXray()
-        print(self.registrationObject.xray)
+        self.controller.setXRay(filename[0])
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
-        self.registrationObject.setSurface(filename[0])
-        self.registrationObject.processSurface()
-        print(self.registrationObject.surface)
+        self.controller.setSurface(filename[0])
 
     def register(self):
-        print("Registering...")
+        self.controller.processXray()
+        self.controller.processSurface()
+        self.controller.register()
+
+

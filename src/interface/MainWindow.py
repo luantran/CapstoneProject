@@ -10,8 +10,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
+from src.registration import wrlReader
+from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 
-class Ui_MainWindow(QMainWindow, registration.Registration):
+
+class Ui_MainWindow(QMainWindow):
 
     def setupUi(self, MainWindow):
         #Define Bold Font
@@ -81,6 +84,8 @@ class Ui_MainWindow(QMainWindow, registration.Registration):
         self.registerButton.setEnabled(True)
         self.registerButton.setObjectName("registerButton")
         self.registrationGrid.addWidget(self.registerButton, 2, 1, 1, 1)
+        self.registerButton.clicked.connect(self.register)
+
 
         #Registration Label
         self.regitsrationLabel = QtWidgets.QLabel(self.registrationGridWidget)
@@ -187,12 +192,25 @@ class Ui_MainWindow(QMainWindow, registration.Registration):
         self.saveGrid.addWidget(self.saveLabel, 1, 1, 1, 1)
 
 
-        #Frame
-        self.frame = QtWidgets.QFrame(self.centralwidget)
-        self.frame.setGeometry(QtCore.QRect(259, 9, 831, 691))
-        self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame.setObjectName("frame")
+        # #Frame
+        # self.frame = QtWidgets.QFrame(self.centralwidget)
+        # self.frame.setGeometry(QtCore.QRect(260, 10, 831, 691))
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        # self.frame.setSizePolicy(sizePolicy)
+        # self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        # self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
+        # self.frame.setObjectName("frame")
+
+        self.vtkGridWidget = QtWidgets.QWidget(self.centralwidget)
+        self.vtkGridWidget.setGeometry(QtCore.QRect(270, 10, 811, 691))
+        self.vtkGridWidget.setObjectName("vtkGridWidget")
+        self.vtkGrid = QtWidgets.QGridLayout(self.vtkGridWidget)
+        self.vtkGrid.setContentsMargins(0, 0, 0, 0)
+        self.vtkGrid.setObjectName("vtkGrid")
+
         MainWindow.setCentralWidget(self.centralwidget)
 
         #Menu
@@ -237,15 +255,25 @@ class Ui_MainWindow(QMainWindow, registration.Registration):
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
 
+    def setController(self, controller):
+        self.controller = controller
+
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
-        print("MRI: " + dirName)
+        self.controller.setMRIDirectory(dirName)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
-        print("Xray: " + filename[0])
+        self.controller.setXRay(filename[0])
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
-        print("SF: " + filename[0])
+        self.controller.setSurface(filename[0])
+
+    def register(self):
+        self.controller.executeReader("XRay")
+        self.controller.executeReader("Surface")
+        # self.controller.executeReader("MRI")
+        self.controller.register()
+
 

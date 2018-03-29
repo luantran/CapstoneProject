@@ -1,3 +1,4 @@
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/the-luantran/CapstoneProject.png?columns=all)](https://waffle.io/the-luantran/CapstoneProject?utm_source=badge)
 # CapstoneProject
 
 Google Drive Folder:

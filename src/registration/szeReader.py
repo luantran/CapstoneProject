@@ -33,14 +33,16 @@ class SZEReader(reader.Reader):
         self.extractLinesFromFile()
 
     def getPolyData(self):
+
+        # Some of the function are comment becasue they are not used
         self.getNBPolygon()
         self.getConnectivityMatrix()
-        self.getMeshTextureMatrix()
-        self.getUVMatrix()
+        #self.getMeshTextureMatrix()
+        #self.getUVMatrix()
         self.getCoordinatesMatrix()
-        self.getRGBMatrixData()
-        self.convertTextureCoords()
-        self.extractRGB()
+        #self.getRGBMatrixData()
+        #self.convertTextureCoords()
+        #self.extractRGB()
         self.addingVTKCoords()
         self.addingVTKPolygonCells()
 
@@ -85,7 +87,7 @@ class SZEReader(reader.Reader):
     def getConnectivityMatrix(self):
         self.connect = np.array([int(i) for i in re.search('SizePolygon={1}[\d\s]*END{1}', self.text).group(0).split()[1:-1]])
         self.connect = self.connect.reshape(self.nbpolygon, 4)
-        self.connect = self.connect[:, 1:4] + 1
+        self.connect = self.connect[:, 1:4]
 
     # Read the indexing table to the texture coordinates
     def getMeshTextureMatrix(self):

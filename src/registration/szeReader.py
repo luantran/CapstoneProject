@@ -37,12 +37,7 @@ class SZEReader(reader.Reader):
         # Some of the function are comment becasue they are not used
         self.getNBPolygon()
         self.getConnectivityMatrix()
-        #self.getMeshTextureMatrix()
-        #self.getUVMatrix()
         self.getCoordinatesMatrix()
-        #self.getRGBMatrixData()
-        #self.convertTextureCoords()
-        #self.extractRGB()
         self.addingVTKCoords()
         self.addingVTKPolygonCells()
 

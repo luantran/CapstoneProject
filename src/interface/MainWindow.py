@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
 from src.registration import wrlReader
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-
+import vtk
 
 class Ui_MainWindow(QMainWindow):
 
@@ -191,25 +191,39 @@ class Ui_MainWindow(QMainWindow):
         self.saveLabel.setObjectName("saveLabel")
         self.saveGrid.addWidget(self.saveLabel, 1, 1, 1, 1)
 
-
-        # #Frame
-        # self.frame = QtWidgets.QFrame(self.centralwidget)
-        # self.frame.setGeometry(QtCore.QRect(260, 10, 831, 691))
-        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        # self.frame.setSizePolicy(sizePolicy)
-        # self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        # self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        # self.frame.setObjectName("frame")
-
+        #vtk grid
         self.vtkGridWidget = QtWidgets.QWidget(self.centralwidget)
         self.vtkGridWidget.setGeometry(QtCore.QRect(270, 10, 811, 691))
         self.vtkGridWidget.setObjectName("vtkGridWidget")
         self.vtkGrid = QtWidgets.QGridLayout(self.vtkGridWidget)
         self.vtkGrid.setContentsMargins(0, 0, 0, 0)
         self.vtkGrid.setObjectName("vtkGrid")
+
+        #Create VTK window widget
+        self.vtkWidget = QVTKRenderWindowInteractor(self.vtkGridWidget)
+        # set size policy
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.vtkWidget.sizePolicy().hasHeightForWidth())
+        self.vtkWidget.setSizePolicy(sizePolicy)
+        self.vtkWidget.setObjectName("vtkWidget")
+
+        # Create Renderer
+        self.ren = vtk.vtkRenderer()
+
+        # Render Window
+        self.renWin = self.vtkWidget.GetRenderWindow()
+        # Add Renderer to Render Window
+        self.renWin.AddRenderer(self.ren)
+        # Interactor
+        self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
+
+        self.iren.Initialize()
+        self.iren.Start()
+        #add vtk widget to vtk grid
+        self.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
+
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -265,14 +279,17 @@ class Ui_MainWindow(QMainWindow):
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
         self.controller.setXRay(filename[0])
+        self.controller.executeReader("XRay")
+
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
         self.controller.setSurface(filename[0])
+        self.controller.executeReader("Surface")
 
     def register(self):
-        self.controller.executeReader("XRay")
-        self.controller.executeReader("Surface")
+        # self.controller.executeReader("XRay")
+        # self.controller.executeReader("Surface")
         # self.controller.executeReader("MRI")
         self.controller.register()
 

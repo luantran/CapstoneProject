@@ -3,3 +3,6 @@
 
 This repository contains the source code for the The-Luan Tran's and Abdullah Sumbal's Capstone Project: **Multimodal Image Fusion for the Reconstruction of a Human Torso**
 
+
+
+By The-Luan Tran, Abdullah Sumbal

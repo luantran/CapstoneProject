@@ -54,41 +54,4 @@ class Controller(object):
         print("Registering...")
         self.render(self.xray_actor, self.surface_actor)
 
-    def render(self, xRayActor, surfaceActor):
-        print("Rendering...")
-        # self.vtkWidget = QVTKRenderWindowInteractor(self.view.vtkGridWidget)
-        #
-        # #set size policy
-        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        # sizePolicy.setHorizontalStretch(0)
-        # sizePolicy.setVerticalStretch(0)
-        # sizePolicy.setHeightForWidth(self.vtkWidget.sizePolicy().hasHeightForWidth())
-        # self.vtkWidget.setSizePolicy(sizePolicy)
-        # self.vtkWidget.setObjectName("vtkWidget")
-
-        # Render
-        # ren = vtk.vtkRenderer()
-        # # Render Window
-        # renWin = self.vtkWidget.GetRenderWindow()
-        #
-        # # Add Render to Render Window
-        # renWin.AddRenderer(ren)
-        # # Interactor
-        # iren = self.vtkWidget.GetRenderWindow().GetInteractor()
-        #
-        # # Add actors
-        # ren.AddActor(xRayActor)
-        # ren.AddActor(surfaceActor)
-
-        self.view.ren.AddActor(xRayActor)
-        self.view.ren.AddActor(surfaceActor)
-        # self.view.iren.Initialize()
-        # self.view.iren.Start()
-        #
-        # # Add to layout
-        # self.view.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
-        #
-        self.view.iren.Initialize()
-        self.view.iren.Start()
-        print("Done")
 

@@ -73,19 +73,24 @@ class Ui_MainWindow(QMainWindow):
         ################  Registration Grid  ################
 
         self.registrationGridWidget = QtWidgets.QWidget(self.centralwidget)
-        self.registrationGridWidget.setGeometry(QtCore.QRect(10, 160, 241, 71))
+        self.registrationGridWidget.setGeometry(QtCore.QRect(10, 150, 241, 90))
         self.registrationGridWidget.setObjectName("registrationGridWidget")
         self.registrationGrid = QtWidgets.QGridLayout(self.registrationGridWidget)
         self.registrationGrid.setContentsMargins(0, 0, 0, 0)
         self.registrationGrid.setObjectName("registrationGrid")
 
-        #Register Button
-        self.registerButton = QtWidgets.QPushButton(self.registrationGridWidget)
-        self.registerButton.setEnabled(True)
-        self.registerButton.setObjectName("registerButton")
-        self.registrationGrid.addWidget(self.registerButton, 2, 1, 1, 1)
-        self.registerButton.clicked.connect(self.register)
+        #Rigid Registration Button
+        self.rigidRegistrationButton = QtWidgets.QPushButton(self.registrationGridWidget)
+        self.rigidRegistrationButton.setEnabled(True)
+        self.rigidRegistrationButton.setObjectName("rigidRegistrationButton")
+        self.registrationGrid.addWidget(self.rigidRegistrationButton, 2, 1, 1, 1)
+        self.rigidRegistrationButton.clicked.connect(self.register)
 
+        #Articulated Registration Button
+        self.articulatedRegistrationButton = QtWidgets.QPushButton(self.registrationGridWidget)
+        self.articulatedRegistrationButton.setEnabled(True)
+        self.articulatedRegistrationButton.setObjectName("articulatedRegistrationButton")
+        self.registrationGrid.addWidget(self.articulatedRegistrationButton, 3, 1, 1, 1)
 
         #Registration Label
         self.regitsrationLabel = QtWidgets.QLabel(self.registrationGridWidget)
@@ -253,7 +258,9 @@ class Ui_MainWindow(QMainWindow):
         self.loadMRIButton.setText(_translate("MainWindow", "Load MRI"))
         self.loadSTButton.setText(_translate("MainWindow", "Load Surface Topology"))
         self.loadLabel.setText(_translate("MainWindow", "Load"))
-        self.registerButton.setText(_translate("MainWindow", "Register"))
+        self.rigidRegistrationButton.setText(_translate("MainWindow", "Rigid Registration"))
+        self.articulatedRegistrationButton.setText(_translate("MainWindow", "Articulated Registration"))
+
         self.regitsrationLabel.setText(_translate("MainWindow", "Registration"))
         self.xRayCheckBox.setText(_translate("MainWindow", "X-Ray"))
         self.mriVertebraeCheckBox.setText(_translate("MainWindow", "MRI vertebrae"))

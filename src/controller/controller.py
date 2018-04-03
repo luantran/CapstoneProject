@@ -34,9 +34,17 @@ class Controller(object):
         if type is "XRay":
             print("Getting X-Ray data...")
             self.xray_actor = self.wrlReader.getVTKActor()
+            self.view.ren.AddActor(self.xray_actor)
+            self.view.ren.ResetCamera()
+            self.view.vtkWidget.Render()
+
         elif type is "Surface":
             print("Getting Surface data...")
             self.surface_actor = self.szeReader.getVTKActor()
+            self.view.ren.AddActor(self.surface_actor)
+            self.view.ren.ResetCamera()
+            self.view.vtkWidget.Render()
+
         elif type is "MRI":
             print("Getting MRI data...")
             self.mriReader.getPolyData()
@@ -48,34 +56,39 @@ class Controller(object):
 
     def render(self, xRayActor, surfaceActor):
         print("Rendering...")
-        self.vtkWidget = QVTKRenderWindowInteractor(self.view.vtkGridWidget)
-
-        #set size policy
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.vtkWidget.sizePolicy().hasHeightForWidth())
-        self.vtkWidget.setSizePolicy(sizePolicy)
-        self.vtkWidget.setObjectName("vtkWidget")
+        # self.vtkWidget = QVTKRenderWindowInteractor(self.view.vtkGridWidget)
+        #
+        # #set size policy
+        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        # sizePolicy.setHorizontalStretch(0)
+        # sizePolicy.setVerticalStretch(0)
+        # sizePolicy.setHeightForWidth(self.vtkWidget.sizePolicy().hasHeightForWidth())
+        # self.vtkWidget.setSizePolicy(sizePolicy)
+        # self.vtkWidget.setObjectName("vtkWidget")
 
         # Render
-        ren = vtk.vtkRenderer()
-        # Render Window
-        renWin = self.vtkWidget.GetRenderWindow()
+        # ren = vtk.vtkRenderer()
+        # # Render Window
+        # renWin = self.vtkWidget.GetRenderWindow()
+        #
+        # # Add Render to Render Window
+        # renWin.AddRenderer(ren)
+        # # Interactor
+        # iren = self.vtkWidget.GetRenderWindow().GetInteractor()
+        #
+        # # Add actors
+        # ren.AddActor(xRayActor)
+        # ren.AddActor(surfaceActor)
 
-        # Add Render to Render Window
-        renWin.AddRenderer(ren)
-        # Interactor
-        iren = self.vtkWidget.GetRenderWindow().GetInteractor()
-
-        # Add actors
-        ren.AddActor(xRayActor)
-        ren.AddActor(surfaceActor)
-
-        # Add to layout
-        self.view.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
-
-        iren.Initialize()
-        iren.Start()
+        self.view.ren.AddActor(xRayActor)
+        self.view.ren.AddActor(surfaceActor)
+        # self.view.iren.Initialize()
+        # self.view.iren.Start()
+        #
+        # # Add to layout
+        # self.view.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
+        #
+        self.view.iren.Initialize()
+        self.view.iren.Start()
         print("Done")
 

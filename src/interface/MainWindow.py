@@ -256,7 +256,7 @@ class Ui_MainWindow(QMainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "3DSpineVizualization"))
         self.loadXRayButton.setText(_translate("MainWindow", "Load X-Ray"))
         self.loadMRIButton.setText(_translate("MainWindow", "Load MRI"))
-        self.loadSTButton.setText(_translate("MainWindow", "Load Surface Topology"))
+        self.loadSTButton.setText(_translate("MainWindow", "Load Surface Topography"))
         self.loadLabel.setText(_translate("MainWindow", "Load"))
         self.rigidRegistrationButton.setText(_translate("MainWindow", "Rigid Registration"))
         self.articulatedRegistrationButton.setText(_translate("MainWindow", "Articulated Registration"))

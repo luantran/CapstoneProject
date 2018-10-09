@@ -11,6 +11,8 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 from src.registration import registration
 from src.registration import wrlReader
+from os import walk
+from os import listdir
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 
@@ -154,6 +156,10 @@ class Ui_MainWindow(QMainWindow):
         self.loadLayout.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
         self.loadLayout.setObjectName("loadLayout")
 
+        loadFont = QtGui.QFont()
+        loadFont.setPointSize(10)
+        loadFont.setItalic(True)
+
         #Load Label
         self.loadLabel = QtWidgets.QLabel(self.centralwidget)
         self.loadLabel.setFont(self.font)
@@ -167,6 +173,15 @@ class Ui_MainWindow(QMainWindow):
         self.loadLayout.addWidget(self.loadMRIButton)
         self.loadMRIButton.clicked.connect(self.selectMRIDirectory)
 
+        #MRI Text
+        self.mriLoadText = QtWidgets.QLabel(self.centralwidget)
+        self.mriLoadText.setFont(loadFont)
+        # self.mriLoadText = QtWidgets.QLineEdit(self.centralwidget)
+        # self.mriLoadText.setEnabled(False)
+        self.mriLoadText.setObjectName("mriLoadText")
+        self.mriLoadText.setText("No MRI directory selected...")
+        self.loadLayout.addWidget(self.mriLoadText)
+
         #Load XRay Button
         self.loadXRayButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadXRayButton.setEnabled(True)
@@ -174,12 +189,30 @@ class Ui_MainWindow(QMainWindow):
         self.loadLayout.addWidget(self.loadXRayButton)
         self.loadXRayButton.clicked.connect(self.selectXRayFile)
 
+        #XRay Text
+        self.xrayLoadText = QtWidgets.QLabel(self.centralwidget)
+        self.xrayLoadText.setFont(loadFont)
+        # self.xrayLoadText = QtWidgets.QLineEdit(self.centralwidget)
+        # self.xrayLoadText.setEnabled(False)
+        self.xrayLoadText.setObjectName("xrayLoadText")
+        self.xrayLoadText.setText("No X-ray file selected...")
+        self.loadLayout.addWidget(self.xrayLoadText)
+
         #Load Surface Topography Button
         self.loadSTButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadSTButton.setEnabled(True)
         self.loadSTButton.setObjectName("loadSTButton")
         self.loadLayout.addWidget(self.loadSTButton)
         self.loadSTButton.clicked.connect(self.selectSurfaceTopography)
+
+        #ST Text
+        self.stLoadText = QtWidgets.QLabel(self.centralwidget)
+        self.stLoadText.setFont(loadFont)
+        # self.stLoadText = QtWidgets.QLineEdit(self.centralwidget)
+        # self.stLoadText.setEnabled(False)
+        self.stLoadText.setObjectName("stLoadText")
+        self.stLoadText.setText("No ST file selected...")
+        self.loadLayout.addWidget(self.stLoadText)
 
         self.panelVerticalLayout.addLayout(self.loadLayout)
 
@@ -196,14 +229,14 @@ class Ui_MainWindow(QMainWindow):
 
         #Rigid Registration Button
         self.rigidRegistrationButton = QtWidgets.QPushButton(self.centralwidget)
-        self.rigidRegistrationButton.setEnabled(True)
+        self.rigidRegistrationButton.setEnabled(False)
         self.rigidRegistrationButton.setObjectName("rigidRegistrationButton")
         self.registrationLayout.addWidget(self.rigidRegistrationButton)
         self.rigidRegistrationButton.clicked.connect(self.register)
 
         #Articulated Registration Button
         self.articulatedRegistrationButton = QtWidgets.QPushButton(self.centralwidget)
-        self.articulatedRegistrationButton.setEnabled(True)
+        self.articulatedRegistrationButton.setEnabled(False)
         self.articulatedRegistrationButton.setObjectName("articulatedRegistrationButton")
         self.registrationLayout.addWidget(self.articulatedRegistrationButton)
 
@@ -290,7 +323,7 @@ class Ui_MainWindow(QMainWindow):
 
         # Save Button
         self.saveButton = QtWidgets.QPushButton(self.centralwidget)
-        self.saveButton.setEnabled(True)
+        self.saveButton.setEnabled(False)
         self.saveButton.setObjectName("saveButton")
         self.saveLayout.addWidget(self.saveButton)
 
@@ -307,6 +340,7 @@ class Ui_MainWindow(QMainWindow):
         self.menuHelp.setObjectName("menuHelp")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.showMessage("Copyright Rola Harmouche, Luan Tran, Adbullah Sumbal")
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -317,18 +351,52 @@ class Ui_MainWindow(QMainWindow):
 
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
-        self.controller.setMRIDirectory(dirName)
+
+        if dirName:
+            errorStatus = False
+            for root, dirs, files in walk(dirName):
+                if not dirs:
+                    print("TODO: Warning")
+                for file in files:
+                    if file.rsplit('.', 1)[1] != "dcm":
+                        errorStatus = True
+                break
+
+            if errorStatus:
+                msgBox = QtWidgets.QMessageBox()
+                msgBox.setText("Error: The selected directory contains non-MRI files")
+                msgBox.exec()
+            else:
+                self.mriLoadText.setText(dirName)
+                self.controller.setMRIDirectory(dirName)
+        else:
+            self.mriLoadText.setText("No MRI directory selected...")
 
     def selectXRayFile(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "")
-        self.controller.setXRay(filename[0])
-        self.controller.executeReader("XRay")
+        filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
+        if filename[0]:
+            self.xrayLoadText.setText(filename[0])
+            self.controller.setXRay(filename[0])
+            self.controller.executeReader("XRay")
+        else:
+            self.xrayLoadText.setText("No X-ray file selected...")
 
     def selectSurfaceTopography(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "")
-        self.controller.setSurface(filename[0])
-        self.controller.executeReader("Surface")
+        filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")
+        if filename[0]:
+            self.stLoadText.setText(filename[0])
+            self.controller.setSurface(filename[0])
+            self.controller.executeReader("Surface")
+        else:
+            self.stLoadText.setText("No ST file selected...")
 
+    def checkRigidRegistration(self):
+        if self.controller.setWRL and self.controller.setSurface:
+            self.rigidRegistrationButton.setEnabled(True)
+
+    def checkArticulatedRegistration(self):
+        if self.controller.setWRL and self.controller.setSurface and self.controller.setMRI:
+            self.articulatedRegistrationButton.setEnabled(True)
     def register(self):
         # self.controller.executeReader("XRay")
         # self.controller.executeReader("Surface")

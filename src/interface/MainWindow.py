@@ -9,6 +9,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
+
+from src.interface import HelpWindow
 from src.registration import registration
 from src.registration import wrlReader
 from os import walk
@@ -149,6 +151,8 @@ class Ui_MainWindow(QMainWindow):
         self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
+        self.actionDocumentation.setText(_translate("MainWindow", "Documentation", None))
+        self.actionLicense.setText(_translate("MainWindow", "License", None))
 
 
     def createLoadLayout(self):
@@ -339,10 +343,21 @@ class Ui_MainWindow(QMainWindow):
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.showMessage("Copyright Rola Harmouche, Luan Tran, Adbullah Sumbal")
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
+        self.actionDocumentation = QtWidgets.QAction(MainWindow)
+        self.actionDocumentation.setObjectName("actionDocumentation")
+        self.actionLicense = QtWidgets.QAction(MainWindow)
+        self.actionLicense.setObjectName("actionLicense")
+
+        self.menuHelp.addAction(self.actionDocumentation)
+        self.actionDocumentation.triggered.connect(self.openDocumentationWindow)
+        self.menuHelp.addAction(self.actionDocumentation)
+        self.menuHelp.addAction(self.actionLicense)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
@@ -397,6 +412,16 @@ class Ui_MainWindow(QMainWindow):
     def checkArticulatedRegistration(self):
         if self.controller.setWRL and self.controller.setSurface and self.controller.setMRI:
             self.articulatedRegistrationButton.setEnabled(True)
+
+    def openDocumentationWindow(self):
+        print("Hello")
+        # window = QMainWindow()
+        # ui = HelpWindow.Ui_HelpWindow()
+        # ui.setupUi(window)
+        dialog = QtWidgets.QDialog()
+        ui = HelpWindow.Ui_Dialog()
+        ui.setupUi(dialog)
+        dialog.exec()
     def register(self):
         # self.controller.executeReader("XRay")
         # self.controller.executeReader("Surface")

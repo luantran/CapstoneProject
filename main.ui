@@ -339,10 +339,22 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionDocumentation"/>
+    <addaction name="actionLicense"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
   </widget>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="actionLicense">
+   <property name="text">
+    <string>License</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

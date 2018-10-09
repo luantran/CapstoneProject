@@ -173,6 +173,12 @@ class Ui_MainWindow(object):
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         MainWindow.setMenuBar(self.menubar)
+        self.actionDocumentation = QtGui.QAction(MainWindow)
+        self.actionDocumentation.setObjectName(_fromUtf8("actionDocumentation"))
+        self.actionLicense = QtGui.QAction(MainWindow)
+        self.actionLicense.setObjectName(_fromUtf8("actionLicense"))
+        self.menuHelp.addAction(self.actionDocumentation)
+        self.menuHelp.addAction(self.actionLicense)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
@@ -202,4 +208,6 @@ class Ui_MainWindow(object):
         self.saveButton.setText(_translate("MainWindow", "Save", None))
         self.menuFile.setTitle(_translate("MainWindow", "File", None))
         self.menuHelp.setTitle(_translate("MainWindow", "Help", None))
+        self.actionDocumentation.setText(_translate("MainWindow", "Documentation", None))
+        self.actionLicense.setText(_translate("MainWindow", "License", None))
 

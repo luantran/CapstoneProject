@@ -54,6 +54,7 @@ class Controller(object):
             print("Getting MRI data...")
             self.mri_actor = self.mriReader.getVTKActor()
             self.view.ren.AddActor(self.mri_actor)
+            self.mriReader.setInteractor(self.view.vtkWidget, self.view.iren)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
 

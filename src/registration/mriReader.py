@@ -14,54 +14,103 @@ class MRIReader(reader.Reader):
         super().setFilePath(filepath)
 
     def getPolyData(self):
-        self.polydata = vtk.vtkPolyData()
-        PathDicom = "/home/luantran/Pictures/mri/"
+        return
+
+    def getVTKActor(self):
         reader = vtk.vtkDICOMImageReader()
         reader.SetDirectoryName(self.filepath)
         reader.Update()
 
-        # Load dimensions using `GetDataExtent`
-        _extent = reader.GetDataExtent()
-        ConstPixelDims = [_extent[1] - _extent[0] + 1, _extent[3] - _extent[2] + 1, _extent[5] - _extent[4] + 1]
+        # Calculate the center of the volume
+        xMin, xMax, yMin, yMax, zMin, zMax = reader.GetDataExtent()
+        xSpacing, ySpacing, zSpacing = reader.GetOutput().GetSpacing()
+        x0, y0, z0 = reader.GetOutput().GetOrigin()
+        center = [x0 + xSpacing * 0.5 * (xMin + xMax),
+                  y0 + ySpacing * 0.5 * (yMin + yMax),
+                  z0 + zSpacing * 0.5 * (zMin + zMax)]
 
-        # Load spacing values
-        ConstPixelSpacing = reader.GetPixelSpacing()
+        # Matrices for axial, coronal, sagittal, oblique view orientations
+        axial = vtk.vtkMatrix4x4()
+        axial.DeepCopy((1, 0, 0, center[0],
+                        0, 1, 0, center[1],
+                        0, 0, 1, center[2],
+                        0, 0, 0, 1))
 
-        x = numpy.arange(0.0, (ConstPixelDims[0] + 1) * ConstPixelSpacing[0], ConstPixelSpacing[0])
-        y = numpy.arange(0.0, (ConstPixelDims[1] + 1) * ConstPixelSpacing[1], ConstPixelSpacing[1])
-        z = numpy.arange(0.0, (ConstPixelDims[2] + 1) * ConstPixelSpacing[2], ConstPixelSpacing[2])
+        coronal = vtk.vtkMatrix4x4()
+        coronal.DeepCopy((1, 0, 0, center[0],
+                          0, 0, 1, center[1],
+                          0, -1, 0, center[2],
+                          0, 0, 0, 1))
 
-        # Get the 'vtkImageData' object from the reader
-        imageData = reader.GetOutput()
-        # Get the 'vtkPointData' object from the 'vtkImageData' object
-        pointData = imageData.GetPointData()
-        # Ensure that only one array exists within the 'vtkPointData' object
-        assert (pointData.GetNumberOfArrays() == 1)
-        # Get the `vtkArray` (or whatever derived type) which is needed for the `numpy_support.vtk_to_numpy` function
-        arrayData = pointData.GetArray(0)
+        sagittal = vtk.vtkMatrix4x4()
+        sagittal.DeepCopy((0, 0, -1, center[0],
+                           1, 0, 0, center[1],
+                           0, -1, 0, center[2],
+                           0, 0, 0, 1))
 
-        # Convert the `vtkArray` to a NumPy array
-        ArrayDicom = numpy_support.vtk_to_numpy(arrayData)
-        # Reshape the NumPy array to 3D using 'ConstPixelDims' as a 'shape'
-        ArrayDicom = ArrayDicom.reshape(ConstPixelDims, order='F')
-        pyplot.subplot(111)
-        pyplot.axes().set_aspect('equal', 'datalim')
-        pyplot.set_cmap(pyplot.gray())
-        pyplot.pcolormesh(x, y, numpy.flipud(numpy.rot90(ArrayDicom[:, :, 0])))
-        pyplot.show()
+        # Extract a slice in the desired orientation
+        self.reslice = vtk.vtkImageReslice()
+        self.reslice.SetInputConnection(reader.GetOutputPort())
+        self.reslice.SetOutputDimensionality(2)
+        self.reslice.SetResliceAxes(axial)  # sagittal)
+        self.reslice.SetInterpolationModeToCubic()
 
-        pyplot.subplot(211)
+        # Create a greyscale lookup table
+        table = vtk.vtkLookupTable()
+        table.SetRange(0, 2000)  # image intensity range
+        table.SetValueRange(0.0, 1.0)  # from black to white
+        table.SetSaturationRange(0.0, 0.0)  # no color saturation
+        table.SetRampToLinear()
+        table.Build()
 
-        pyplot.axes().set_aspect('equal', 'datalim')
-        pyplot.set_cmap(pyplot.gray())
+        # Map the image through the lookup table
+        color = vtk.vtkImageMapToColors()
+        color.SetLookupTable(table)
+        color.SetInputConnection(self.reslice.GetOutputPort())
 
-        pyplot.pcolormesh(x, y, numpy.flipud(numpy.rot90(ArrayDicom[:, :, 1])))
-        pyplot.show()
-        return self.polydata
+        # Display the image
+        actor = vtk.vtkImageActor()
+        actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
-    def getVTKActor(self):
-        self.actor = vtk.vtkActor()
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(self.getPolyData())
-        self.actor.SetMapper(mapper)
-        return self.actor
+        return actor
+
+    def setInteractor(self, win, iren):
+        # Set up the interaction
+        interactorStyle = vtk.vtkInteractorStyleImage()
+
+        iren.SetInteractorStyle(interactorStyle)
+        win.Render()
+
+        # Create callbacks for slicing the image
+        actions = {}
+        actions["Slicing"] = 0
+
+        def ButtonCallback(obj, event):
+            if event == "LeftButtonPressEvent":
+                actions["Slicing"] = 1
+            else:
+                actions["Slicing"] = 0
+
+        def MouseMoveCallback(obj, event):
+            (lastX, lastY) = iren.GetLastEventPosition()
+            (mouseX, mouseY) = iren.GetEventPosition()
+            if actions["Slicing"] == 1:
+                deltaY = mouseY - lastY
+                self.reslice.Update()
+                sliceSpacing = self.reslice.GetOutput().GetSpacing()[2]
+                matrix = self.reslice.GetResliceAxes()
+                # move the center point that we are slicing through
+                center = matrix.MultiplyPoint((0, 0, sliceSpacing * deltaY, 1))
+                matrix.SetElement(0, 3, center[0])
+                matrix.SetElement(1, 3, center[1])
+                matrix.SetElement(2, 3, center[2])
+                win.Render()
+            else:
+                interactorStyle.OnMouseMove()
+
+        interactorStyle.AddObserver("MouseMoveEvent", MouseMoveCallback)
+        interactorStyle.AddObserver("LeftButtonPressEvent", ButtonCallback)
+        interactorStyle.AddObserver("LeftButtonReleaseEvent", ButtonCallback)
+
+        # Start interaction
+        iren.Start()

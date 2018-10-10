@@ -302,6 +302,7 @@ class Ui_MainWindow(QMainWindow):
         self.spacerItem2 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.viewLayout.addItem(self.spacerItem2)
 
+
         # Slice Label
         self.sliceLabel = QtWidgets.QLabel(self.centralwidget)
         self.sliceLabel.setObjectName("sliceLabel")
@@ -310,6 +311,8 @@ class Ui_MainWindow(QMainWindow):
         # SpinBox
         self.sliceSpinBox = QtWidgets.QSpinBox(self.centralwidget)
         self.sliceSpinBox.setObjectName("sliceSpinBox")
+        self.sliceSpinBox.setEnabled(False)
+        self.sliceSpinBox.valueChanged.connect(self.changeSlice)
         self.viewLayout.addWidget(self.sliceSpinBox)
 
         self.panelVerticalLayout.addLayout(self.viewLayout)
@@ -372,10 +375,10 @@ class Ui_MainWindow(QMainWindow):
         if dirName:
             errorStatus = False
             for root, dirs, files in walk(dirName):
-                if not dirs:
-                    print("TODO: Warning")
+                if dirs:
+                    errorStatus = True
                 for file in files:
-                    if file.rsplit('.', 1)[1] != "dcm":
+                    if file.rsplit('.', 1)[1] != "dcm" or file.rsplit('.', 1)[1] != "ima":
                         errorStatus = True
                 break
 
@@ -386,6 +389,10 @@ class Ui_MainWindow(QMainWindow):
             else:
                 self.mriLoadText.setText(dirName)
                 self.controller.setMRIDirectory(dirName)
+                self.sliceSpinBox.setEnabled(True)
+                self.sliceSpinBox.setProperty("value", 0)
+                self.currentSliceValue = self.sliceSpinBox.value()
+
         else:
             self.mriLoadText.setText("No MRI directory selected...")
 
@@ -417,17 +424,46 @@ class Ui_MainWindow(QMainWindow):
 
     def openDocumentationWindow(self):
         print("Hello")
-        # window = QMainWindow()
-        # ui = HelpWindow.Ui_HelpWindow()
-        # ui.setupUi(window)
         dialog = QtWidgets.QDialog()
         ui = HelpWindow.Ui_Dialog()
         ui.setupUi(dialog)
         dialog.exec()
+
+
+    def changeSlice(self):
+
+        if self.sliceSpinBox.value() > self.currentSliceValue:
+            delta = self.sliceSpinBox.value() - self.currentSliceValue
+            self.currentSliceValue = self.sliceSpinBox.value()
+            self.upSlice(delta)
+        else:
+            delta = self.currentSliceValue - self.sliceSpinBox.value()
+            self.currentSliceValue = self.sliceSpinBox.value()
+            self.downSlice(delta)
+
+    def upSlice(self, delta):
+        self.controller.mriReader.reslice.Update()
+        sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
+        matrix = self.controller.mriReader.reslice.GetResliceAxes()
+        # move the center point that we are slicing through
+        center = matrix.MultiplyPoint((0, 0, delta*sliceSpacing, 1))
+        matrix.SetElement(0, 3, center[0])
+        matrix.SetElement(1, 3, center[1])
+        matrix.SetElement(2, 3, center[2])
+        self.vtkWidget.Render()
+
+    def downSlice(self, delta):
+        self.controller.mriReader.reslice.Update()
+        sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
+        matrix = self.controller.mriReader.reslice.GetResliceAxes()
+        # move the center point that we are slicing through
+        center = matrix.MultiplyPoint((0, 0, -delta*sliceSpacing, 1))
+        matrix.SetElement(0, 3, center[0])
+        matrix.SetElement(1, 3, center[1])
+        matrix.SetElement(2, 3, center[2])
+        self.vtkWidget.Render()
+
     def register(self):
-        # self.controller.executeReader("XRay")
-        # self.controller.executeReader("Surface")
-        # self.controller.executeReader("MRI")
         self.controller.register()
 
 

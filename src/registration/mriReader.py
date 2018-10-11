@@ -55,10 +55,10 @@ class MRIReader(reader.Reader):
         # Extract a slice in the desired orientation
         self.reslice = vtk.vtkImageReslice()
         self.reslice.SetInputConnection(reader.GetOutputPort())
-        self.reslice.SetOutputDimensionality(3)
+        self.reslice.SetOutputDimensionality(2)
         self.reslice.SetResliceAxes(axial)
         self.reslice.SetInterpolationModeToCubic()
-        self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
+        # self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
         # self.reslice.SetOutputOrigin(0,0,0)
         # self.reslice.SetScalarShift(10)
 
@@ -74,12 +74,6 @@ class MRIReader(reader.Reader):
         color = vtk.vtkImageMapToColors()
         color.SetLookupTable(table)
         color.SetInputConnection(self.reslice.GetOutputPort())
-
-
-        self.imageViewer = vtk.vtkImageViewer2()
-        self.imageViewer.SetInputConnection(reader.GetOutputPort())
-        actor = self.imageViewer.GetImageActor()
-
 
         # Display the image
         actor = vtk.vtkImageActor()

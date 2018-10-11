@@ -16,7 +16,7 @@ class Controller(object):
         self.szeReader = szeReader.SZEReader()
         self.mriReader = mriReader.MRIReader()
         self.setWRL = False
-        self.setSurface = False
+        self.setST = False
         self.setMRI = False
         self.registration = registration.Registration()
         self.xray_actor = None
@@ -33,7 +33,7 @@ class Controller(object):
 
     def setSurface(self, surface):
         self.szeReader.setFilePath(surface)
-        self.setSurface = True
+        self.setST = True
 
     def executeReader(self, type):
         if type is "XRay":

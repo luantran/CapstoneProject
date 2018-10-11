@@ -377,10 +377,11 @@ class Ui_MainWindow(QMainWindow):
             for root, dirs, files in walk(dirName):
                 if dirs:
                     errorStatus = True
-                for file in files:
-                    if file.rsplit('.', 1)[1] != "dcm" or file.rsplit('.', 1)[1] != "ima":
-                        errorStatus = True
-                break
+                for type in "dcm", "ima":
+                    for file in files:
+                        if file.rsplit('.', 1)[1] != type:
+                            errorStatus = True
+                    break
 
             if errorStatus:
                 msgBox = QtWidgets.QMessageBox()
@@ -415,15 +416,15 @@ class Ui_MainWindow(QMainWindow):
             self.stLoadText.setText("No ST file selected...")
 
     def checkRigidRegistration(self):
-        if self.controller.setWRL and self.controller.setSurface:
+        if self.controller.setWRL and self.controller.setST:
             self.rigidRegistrationButton.setEnabled(True)
 
     def checkArticulatedRegistration(self):
-        if self.controller.setWRL and self.controller.setSurface and self.controller.setMRI:
+        if self.controller.setWRL and self.controller.setST and self.controller.setMRI:
             self.articulatedRegistrationButton.setEnabled(True)
 
     def openDocumentationWindow(self):
-        print("Hello")
+        print("Hello")Luan worked on impro
         dialog = QtWidgets.QDialog()
         ui = HelpWindow.Ui_Dialog()
         ui.setupUi(dialog)

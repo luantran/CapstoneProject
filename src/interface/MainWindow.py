@@ -424,7 +424,7 @@ class Ui_MainWindow(QMainWindow):
             self.articulatedRegistrationButton.setEnabled(True)
 
     def openDocumentationWindow(self):
-        print("Hello")Luan worked on impro
+        print("Hello")
         dialog = QtWidgets.QDialog()
         ui = HelpWindow.Ui_Dialog()
         ui.setupUi(dialog)

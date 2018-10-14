@@ -262,21 +262,25 @@ class Ui_MainWindow(QMainWindow):
         # X-Ray Checkbox
         self.xRayCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.xRayCheckBox.setObjectName("xRayCheckBox")
+        self.xRayCheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.xRayCheckBox)
 
         # Surface Tography Checkbox
         self.stCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.stCheckBox.setObjectName("stCheckBox")
+        self.stCheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.stCheckBox)
 
         # External Landmarks Checkbox
         self.externalLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.externalLMCheckBox.setObjectName("externalLMCheckBox")
+        self.externalLMCheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.externalLMCheckBox)
 
         # Vertebral Landmarks Checkbox
         self.vertebralLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.vertebralLMCheckBox.setObjectName("vertebralLMCheckBox")
+        self.vertebralLMCheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.vertebralLMCheckBox)
 
         # First Spacer
@@ -286,16 +290,19 @@ class Ui_MainWindow(QMainWindow):
         # MRI Checkbox
         self.mriCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.mriCheckBox.setObjectName("mriCheckBox")
+        self.mriCheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.mriCheckBox)
 
         # Saggital MRI Checkbox
         self.sMRICheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.sMRICheckBox.setObjectName("sMRICheckBox")
+        self.sMRICheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.sMRICheckBox)
 
         # MRI Vertebrae Checkbox
         self.mriVertebraeCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.mriVertebraeCheckBox.setObjectName("mriVertebraeCheckBox")
+        self.mriVertebraeCheckBox.setEnabled(False)
         self.viewLayout.addWidget(self.mriVertebraeCheckBox)
 
         # Second Spacer

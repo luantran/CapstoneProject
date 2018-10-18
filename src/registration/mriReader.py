@@ -33,7 +33,7 @@ class MRIReader(reader.Reader):
                   z0 + zSpacing * 0.5 * (zMin + zMax)]
 
         # Matrices for axial, coronal, sagittal, oblique view orientations
-        center= [0,0,0]
+        # center= [0,0,0]
         axial = vtk.vtkMatrix4x4()
         axial.DeepCopy((1, 0, 0, center[0],
                         0, 1, 0, center[1],

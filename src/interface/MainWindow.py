@@ -10,7 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 
-from src.interface import HelpWindow
+from src.interface import HelpWindow, LicenseWindow
 from src.registration import registration
 from src.registration import wrlReader
 from os import walk
@@ -60,17 +60,6 @@ class Ui_MainWindow(QMainWindow):
         ################  Save Grid  ################
         self.createSaveLayout()
 
-        #widget setup
-        # self.widget = QtWidgets.QWidget(self.centralwidget)
-        # sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        # sizePolicy.setHorizontalStretch(1)
-        # sizePolicy.setVerticalStretch(1)
-        # sizePolicy.setHeightForWidth(self.widget.sizePolicy().hasHeightForWidth())
-        # self.widget.setSizePolicy(sizePolicy)
-        # self.widget.setMinimumSize(QtCore.QSize(700, 700))
-        # self.widget.setObjectName("widget")
-        # self.gridLayout.addWidget(self.widget, 0, 1, 1, 1)
-
         #vtk grid
         self.vtkGridWidget = QtWidgets.QWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
@@ -93,7 +82,6 @@ class Ui_MainWindow(QMainWindow):
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(1)
         sizePolicy.setVerticalStretch(1)
-        # sizePolicy.setHeightForWidth(self.vtkWidget.sizePolicy().hasHeightForWidth())
         self.vtkWidget.setSizePolicy(sizePolicy)
         self.vtkWidget.setObjectName("vtkWidget")
 
@@ -366,8 +354,8 @@ class Ui_MainWindow(QMainWindow):
 
         self.menuHelp.addAction(self.actionDocumentation)
         self.actionDocumentation.triggered.connect(self.openDocumentationWindow)
-        self.menuHelp.addAction(self.actionDocumentation)
         self.menuHelp.addAction(self.actionLicense)
+        self.actionLicense.triggered.connect(self.openLicenseWindow)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
@@ -431,12 +419,16 @@ class Ui_MainWindow(QMainWindow):
             self.articulatedRegistrationButton.setEnabled(True)
 
     def openDocumentationWindow(self):
-        print("Hello")
         dialog = QtWidgets.QDialog()
         ui = HelpWindow.Ui_Dialog()
         ui.setupUi(dialog)
         dialog.exec()
 
+    def openLicenseWindow(self):
+        dialog = QtWidgets.QDialog()
+        ui = LicenseWindow.Ui_Dialog()
+        ui.setupUi(dialog)
+        dialog.exec()
 
     def changeSlice(self):
 

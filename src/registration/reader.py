@@ -17,3 +17,7 @@ class Reader(ABC):
     @abstractmethod
     def getVTKActor(self):
         pass
+
+    @abstractmethod
+    def getLandmarks(self):
+        pass

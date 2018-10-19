@@ -1,10 +1,6 @@
-import vtk
 from src.registration import reader
 import vtk
-from vtk.util import numpy_support
-import os
-import numpy
-from matplotlib import pyplot, cm
+import json
 
 class MRIReader(reader.Reader):
 
@@ -80,3 +76,25 @@ class MRIReader(reader.Reader):
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
         return actor
+
+    def getLandmarks(self):
+        filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
+        landmarks = []
+        with open(filepath, 'r') as f:
+            lines = f.read()
+            data_objects = lines.split("\n\n")
+            data_objects = data_objects[1:]
+            for object in data_objects:
+                landmark = {}
+                raw_data = object.split("\n")[0].split("Point:")[1]
+                actual_data = raw_data.strip().split("create")
+
+                landmark['name'] = actual_data[0].strip().replace('"', '')
+                coordinates = actual_data[1].strip().split()
+                landmark['x'] = coordinates[0]
+                landmark['y'] = coordinates[1]
+                landmark['z'] = coordinates[2]
+                landmarks.append(landmark)
+        with open('result_mri.json', 'w') as fp:
+            json.dump(landmarks, fp)
+        return landmarks

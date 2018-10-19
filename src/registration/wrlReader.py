@@ -1,3 +1,5 @@
+import json
+
 import vtk
 from src.registration import reader
 
@@ -41,3 +43,62 @@ class WRLReader(reader.Reader):
         mapper.SetInputData(self.getPolyData())
         self.actor.SetMapper(mapper)
         return self.actor
+
+    def getLandmarks(self):
+        filepath = '/home/luantran/EncryptedCapstoneData/2353729.o3'
+        vertebrae = []
+        capteurs = []
+        with open(filepath, 'r') as f:
+            landmark = {}
+            landmarks = f.read().split('# ---- ---- ---- ---- ---- ---- DATA 3D  ---- ---- ---- ---- ---- ----')[
+                1].rstrip()
+            actual_landmarks = landmarks.split("Objet:")[1:]
+            for landmark in actual_landmarks:
+                type, data = self._createLandmark(landmark)
+                if type == "capteurs":
+                    capteurs = data
+                else:
+                    vertebrae.append(data)
+            with open('result_xray.json', 'w') as fp:
+                json.dump(vertebrae, fp)
+            with open('result_xray_ext.json', 'w') as fp:
+                json.dump(capteurs, fp)
+        return vertebrae, capteurs
+
+    #### Helper Methods ####
+
+    def _createLandmark(self, data):
+        datalines = data.rstrip().split('\n')
+        name = datalines.pop(0).strip()
+        datalines = datalines[1:]
+        if name == "Capteurs":
+            return "capteurs", self._getXrayExternalLandmarks(datalines)
+        else:
+            vertebra = {}
+            vertebra['name'] = name
+            vertebra['points'] = []
+            for el in datalines:
+                coordinates = el.split()
+                point = {}
+                point['name'] = coordinates[0].strip()
+                point['x'] = coordinates[1].strip()
+                point['y'] = coordinates[2].strip()
+                point['z'] = coordinates[3].strip()
+                if len(coordinates) > 4:
+                    point['t'] = coordinates[3].strip()
+                vertebra['points'].append(point)
+            return "vertebra", vertebra
+
+    def _getXrayExternalLandmarks(self, datalines):
+        list_external_landmarks = []
+        for el in datalines:
+            landmark = {}
+            key_value = el.split("\t")
+            landmark['name'] = key_value[0].strip()
+            coordinates = key_value[1].split()
+            landmark['x'] = coordinates[0].strip()
+            landmark['y'] = coordinates[1].strip()
+            landmark['z'] = coordinates[2].strip()
+            landmark['t'] = coordinates[3].strip()
+            list_external_landmarks.append(landmark)
+        return list_external_landmarks

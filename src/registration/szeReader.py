@@ -23,6 +23,7 @@ import re
 import numpy as np
 import vtk
 from src.registration import reader
+import json
 
 class SZEReader(reader.Reader):
 
@@ -30,16 +31,16 @@ class SZEReader(reader.Reader):
 
     def setFilePath(self, filepath):
         super().setFilePath(filepath)
-        self.extractLinesFromFile()
+        self._extractLinesFromFile()
 
     def getPolyData(self):
 
         # Some of the function are comment becasue they are not used
-        self.getNBPolygon()
-        self.getConnectivityMatrix()
-        self.getCoordinatesMatrix()
-        self.addingVTKCoords()
-        self.addingVTKPolygonCells()
+        self._getNBPolygon()
+        self._getConnectivityMatrix()
+        self._getCoordinatesMatrix()
+        self._addingVTKCoords()
+        self._addingVTKPolygonCells()
 
         # poly data
         polydata = vtk.vtkPolyData()
@@ -54,9 +55,36 @@ class SZEReader(reader.Reader):
         self.actor.SetMapper(mapper)
         return self.actor
 
+    def getLandmarks(self):
+        filepath = '/home/luantran/EncryptedCapstoneData/2353729_debout.ext'
+        st_capteurs = []
+        with open(filepath, 'r') as f:
+            data = f.read()
+            datalines = data.rstrip().split("Objet:")[1]
+            datalines = datalines.split("\n")
+            datalines = datalines[2:]
+            st_capteurs = self._getSTExternalLandmarks(datalines)
+        with open('result_st.json', 'w') as fp:
+            json.dump(st_capteurs, fp)
+        return st_capteurs
+
     ########## Helper Methods ##########
 
-    def mkVtkIdList(self, it):
+    def _getSTExternalLandmarks(self,datalines):
+        list_external_landmarks = []
+        for el in datalines:
+            landmark = {}
+            coordinates = el.split()
+            landmark['name'] = coordinates[0].strip()
+            landmark['x'] = coordinates[1].strip()
+            landmark['y'] = coordinates[2].strip()
+            landmark['z'] = coordinates[3].strip()
+            if len(coordinates) > 4:
+                landmark['t'] = coordinates[4].strip()
+            list_external_landmarks.append(landmark)
+        return list_external_landmarks
+
+    def _mkVtkIdList(self, it):
         '''
             Helper function
         :param it: polygon list
@@ -67,7 +95,7 @@ class SZEReader(reader.Reader):
             vil.InsertNextId(int(i))
         return vil
 
-    def extractLinesFromFile(self):
+    def _extractLinesFromFile(self):
         file = open(self.filepath)
         self.text = file.read()
         file.close()
@@ -75,36 +103,36 @@ class SZEReader(reader.Reader):
         self.lines = file.readlines()
 
     # Get the number of polygons (triangles)
-    def getNBPolygon(self):
+    def _getNBPolygon(self):
         self.nbpolygon = nbpolygon = int(re.search('\d+', re.search('NbPolygon=\d*', self.text).group(0)).group(0))
 
     # Read index table to 3D coordinates
-    def getConnectivityMatrix(self):
+    def _getConnectivityMatrix(self):
         self.connect = np.array([int(i) for i in re.search('SizePolygon={1}[\d\s]*END{1}', self.text).group(0).split()[1:-1]])
         self.connect = self.connect.reshape(self.nbpolygon, 4)
         self.connect = self.connect[:, 1:4]
 
     # Read the indexing table to the texture coordinates
-    def getMeshTextureMatrix(self):
+    def _getMeshTextureMatrix(self):
         self.meshtex = np.array([int(i) for i in re.search('BEGIN MESH_TEX{1}[\d\s]*END MESH_TEX{1}', self.text).group(0).split()[2:-2]])
         self.meshtex = self.meshtex.reshape(self.nbpolygon, 4)
         self.meshtex = self.meshtex[:, 1:4] + 1
 
     # Read the table of texture coordinates
-    def getUVMatrix(self):
+    def _getUVMatrix(self):
         nbuv = int(re.search('\d+', re.search('NbTexture=\d*', self.text).group(0)).group(0))
         self.uv = np.array([float(i) for i in re.search('NbTexture=[\.\d\s]*END', self.text).group(0).split()[1:-1]])
         self.uv = self.uv.reshape(nbuv, 2)
 
     # Read the 3D Coordinates Table
-    def getCoordinatesMatrix(self):
+    def _getCoordinatesMatrix(self):
         tmp = re.search('XPos.*\s[+-\.\d\s]*END', self.text).group(0)
         first_line_break = tmp.find('\n')
         self.coord = np.array([float(i) for i in re.search('XPos.*\s[+-\.\d\s]*END', self.text).group(0)[first_line_break:].split()[:-1]])
         self.nbvertices = int(self.coord.size / 3)
         self.coord = self.coord.reshape(self.nbvertices, 3)
 
-    def getRGBMatrixData(self):
+    def _getRGBMatrixData(self):
         self.RGB = None
         self.sizeTex = []
         # Main Loop
@@ -140,7 +168,7 @@ class SZEReader(reader.Reader):
         self.u = np.round_((self.uv[:, 0]) * (self.sizeTex[0] - 1)) + 1
         self.v = np.round_((1 - self.uv[:, 1]) * (self.sizeTex[1] - 1)) + 1
 
-    def extractRGB(self):
+    def _extractRGB(self):
         # For each polygon (triangle) of the surface, extract the values ​​of the
         #  triplets (R, G, B) associated with vertices and normalize them in [0,1].
         #  We only keep a triplet (R, G, B) per 3D vertex.
@@ -157,18 +185,18 @@ class SZEReader(reader.Reader):
             self.sze_RGB[self.connect[j, 1], :] = self.RGB[int(self.u[self.meshtex[j, 1] - 1] + (self.v[self.meshtex[j, 1] - 1]-1) * self.sizeTex[0]) - 1, :] / 255.0
             self.sze_RGB[self.connect[j, 2], :] = self.RGB[int(self.u[self.meshtex[j, 2] - 1] + (self.v[self.meshtex[j, 2] - 1]-1) * self.sizeTex[0]) - 1, :] / 255.0
 
-    def addingVTKCoords(self):
+    def _addingVTKCoords(self):
         # adding coordinates
         vtk_coords = list(self.coord)
         self.points = vtk.vtkPoints()
         for vtk_coord in vtk_coords:
             self.points.InsertNextPoint(vtk_coord)
 
-    def addingVTKPolygonCells(self):
+    def _addingVTKPolygonCells(self):
         # Adding polygon cells
         self.polys = vtk.vtkCellArray()
         vtk_connects = list(self.connect)
         for vtk_connect in vtk_connects:
-            self.polys.InsertNextCell(self.mkVtkIdList(vtk_connect))
+            self.polys.InsertNextCell(self._mkVtkIdList(vtk_connect))
 
 

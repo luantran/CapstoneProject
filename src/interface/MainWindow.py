@@ -11,10 +11,7 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
 
 from src.interface import HelpWindow, LicenseWindow
-from src.registration import registration
-from src.registration import wrlReader
 from os import walk
-from os import listdir
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 

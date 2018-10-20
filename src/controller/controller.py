@@ -1,9 +1,5 @@
-from src.registration import wrlReader
-from src.registration import szeReader
-from src.registration import mriReader
+from src.readers import szeReader, wrlReader, mriReader
 from src.registration import registration
-from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
-from PyQt5 import QtWidgets
 import vtk
 
 
@@ -39,6 +35,9 @@ class Controller(object):
         if type is "XRay":
             print("Getting X-Ray data...")
             self.xray_actor = self.wrlReader.getVTKActor()
+            vertebrae, capteurs = self.wrlReader.getLandmarks()
+            for landmark in capteurs:
+                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "green"))
             self.view.ren.AddActor(self.xray_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
@@ -46,6 +45,10 @@ class Controller(object):
         elif type is "Surface":
             print("Getting Surface data...")
             self.surface_actor = self.szeReader.getVTKActor()
+            ST_landmarks=self.szeReader.getLandmarks()
+            # self.view.ren.AddActor(self.create_spheres_landmarks(self.ST_landmarks))
+            for landmark in ST_landmarks:
+                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "red"))
             self.view.ren.AddActor(self.surface_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
@@ -63,5 +66,23 @@ class Controller(object):
     def register(self):
         print("Registering...")
         self.render(self.xray_actor, self.surface_actor)
+
+    def create_spheres_landmarks(self, landmark, color):
+        sphere_source = vtk.vtkSphereSource()
+        sphere_source.SetThetaResolution(64)
+        sphere_source.SetPhiResolution(64)
+        sphere_source.SetCenter(landmark['x'], landmark['y'], landmark['z'])
+        sphere_source.SetRadius(10.0)
+        sphere_mapper = vtk.vtkPolyDataMapper()
+        sphere_mapper.SetInputConnection(sphere_source.GetOutputPort())
+        actor = vtk.vtkActor()
+        actor.SetMapper(sphere_mapper)
+        if color == "red":
+            actor.GetProperty().SetColor(1.0, 0.0, 0.0)
+        elif color == "green":
+            actor.GetProperty().SetColor(0.0, 1.0, 0.0)
+        elif color == "blue":
+            actor.GetProperty().SetColor(0.0, 0.0, 1.0)
+        return actor
 
 

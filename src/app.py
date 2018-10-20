@@ -1,11 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QDialog, QApplication
+from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 from src.interface import MainWindow
-from src.registration import registration
-from src.registration import wrlReader
-from src.registration import szeReader
 from src.controller import controller
 
 class AppWindow(QDialog):

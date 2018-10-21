@@ -98,7 +98,7 @@ class Ui_MainWindow(QMainWindow):
         self.vtkGrid.addWidget(self.vtkWidget, 0, 0, 1, 1)
 
         horizontalSpacer = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        verticalSpacer = QtWidgets.QSpacerItem(250, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+        verticalSpacer = QtWidgets.QSpacerItem(350, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
         self.panelVerticalLayout.addItem(verticalSpacer)
         self.panelVerticalLayout.addItem(horizontalSpacer)
         self.gridLayout.addLayout(self.panelVerticalLayout, 0, 0, 1, 1)
@@ -155,12 +155,24 @@ class Ui_MainWindow(QMainWindow):
         self.loadLabel.setObjectName("loadLabel")
         self.loadLayout.addWidget(self.loadLabel)
 
+        self.MRIloader = QtWidgets.QHBoxLayout()
+        self.MRIloader.setObjectName("MRIloader")
+
         #Load MRI Button
         self.loadMRIButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadMRIButton.setEnabled(True)
         self.loadMRIButton.setObjectName("loadMRIButton")
-        self.loadLayout.addWidget(self.loadMRIButton)
+        self.MRIloader.addWidget(self.loadMRIButton)
         self.loadMRIButton.clicked.connect(self.selectMRIDirectory)
+
+        # Load MRI Button
+        self.loadMRILandmarks = QtWidgets.QPushButton(self.centralwidget)
+        self.loadMRILandmarks.setEnabled(True)
+        self.loadMRILandmarks.setObjectName("loadMRILandmarks")
+        self.MRIloader.addWidget(self.loadMRILandmarks)
+        self.loadMRILandmarks.clicked.connect(self.selectMRILandmarks)
+
+        self.loadLayout.addLayout(self.MRIloader)
 
         #MRI Text
         self.mriLoadText = QtWidgets.QLabel(self.centralwidget)
@@ -388,6 +400,9 @@ class Ui_MainWindow(QMainWindow):
 
         else:
             self.mriLoadText.setText("No MRI directory selected...")
+
+    def selectMRILandmarks(self):
+        return None
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")

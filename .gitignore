@@ -4,3 +4,4 @@
 .idea/
 __pycache__/
 /misc/MyHead
+*.json

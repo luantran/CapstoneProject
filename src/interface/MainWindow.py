@@ -116,8 +116,11 @@ class Ui_MainWindow(QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "3DSpineVizualization"))
         self.loadXRayButton.setText(_translate("MainWindow", "Load X-Ray"))
+        self.loadXRaylandmarksButton.setText(_translate("MainWindow", "Load X-Ray LandMarks"))
         self.loadMRIButton.setText(_translate("MainWindow", "Load MRI"))
-        self.loadSTButton.setText(_translate("MainWindow", "Load Surface Topography"))
+        self.loadMRILandmarksButton.setText(_translate("MainWindow", "Load MRI LandMarks"))
+        self.loadSTButton.setText(_translate("MainWindow", "Load \n Surface Topography"))
+        self.loadSTLandmarksButton.setText(_translate("MainWindow", "Load Surface Topography\n LandMarks"))
         self.loadLabel.setText(_translate("MainWindow", "Load"))
         self.rigidRegistrationButton.setText(_translate("MainWindow", "Rigid Registration"))
         self.articulatedRegistrationButton.setText(_translate("MainWindow", "Articulated Registration"))
@@ -165,12 +168,12 @@ class Ui_MainWindow(QMainWindow):
         self.MRIloader.addWidget(self.loadMRIButton)
         self.loadMRIButton.clicked.connect(self.selectMRIDirectory)
 
-        # Load MRI Button
-        self.loadMRILandmarks = QtWidgets.QPushButton(self.centralwidget)
-        self.loadMRILandmarks.setEnabled(True)
-        self.loadMRILandmarks.setObjectName("loadMRILandmarks")
-        self.MRIloader.addWidget(self.loadMRILandmarks)
-        self.loadMRILandmarks.clicked.connect(self.selectMRILandmarks)
+        # Load MRI Landmark Button
+        self.loadMRILandmarksButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loadMRILandmarksButton.setEnabled(True)
+        self.loadMRILandmarksButton.setObjectName("loadMRILandmarksButton")
+        self.MRIloader.addWidget(self.loadMRILandmarksButton)
+        self.loadMRILandmarksButton.clicked.connect(self.selectMRILandmarks)
 
         self.loadLayout.addLayout(self.MRIloader)
 
@@ -183,12 +186,24 @@ class Ui_MainWindow(QMainWindow):
         self.mriLoadText.setText("No MRI directory selected...")
         self.loadLayout.addWidget(self.mriLoadText)
 
+        self.XRayloader = QtWidgets.QHBoxLayout()
+        self.XRayloader.setObjectName("XRayloader")
+
         #Load XRay Button
         self.loadXRayButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadXRayButton.setEnabled(True)
         self.loadXRayButton.setObjectName("loadXRayButton")
-        self.loadLayout.addWidget(self.loadXRayButton)
+        self.XRayloader.addWidget(self.loadXRayButton)
         self.loadXRayButton.clicked.connect(self.selectXRayFile)
+
+        #Load XRay landmarks Button
+        self.loadXRaylandmarksButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loadXRaylandmarksButton.setEnabled(True)
+        self.loadXRaylandmarksButton.setObjectName("loadXRayButton")
+        self.XRayloader.addWidget(self.loadXRaylandmarksButton)
+        self.loadXRaylandmarksButton.clicked.connect(self.selectXRayLandmarks)
+
+        self.loadLayout.addLayout(self.XRayloader)
 
         #XRay Text
         self.xrayLoadText = QtWidgets.QLabel(self.centralwidget)
@@ -199,12 +214,24 @@ class Ui_MainWindow(QMainWindow):
         self.xrayLoadText.setText("No X-ray file selected...")
         self.loadLayout.addWidget(self.xrayLoadText)
 
+        self.STloader = QtWidgets.QHBoxLayout()
+        self.STloader.setObjectName("STloader")
+
         #Load Surface Topography Button
         self.loadSTButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadSTButton.setEnabled(True)
         self.loadSTButton.setObjectName("loadSTButton")
-        self.loadLayout.addWidget(self.loadSTButton)
+        self.STloader.addWidget(self.loadSTButton)
         self.loadSTButton.clicked.connect(self.selectSurfaceTopography)
+
+        #Load Surface Topography Landmarks Button
+        self.loadSTLandmarksButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loadSTLandmarksButton.setEnabled(True)
+        self.loadSTLandmarksButton.setObjectName("loadSTButton")
+        self.STloader.addWidget(self.loadSTLandmarksButton)
+        self.loadSTLandmarksButton.clicked.connect(self.selectSurfaceTopographyLandmark)
+
+        self.loadLayout.addLayout(self.STloader)
 
         #ST Text
         self.stLoadText = QtWidgets.QLabel(self.centralwidget)
@@ -402,7 +429,14 @@ class Ui_MainWindow(QMainWindow):
             self.mriLoadText.setText("No MRI directory selected...")
 
     def selectMRILandmarks(self):
-        return None
+        filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
+        if filename[0]:
+            self.controller.loadLandmarks("MRI", filename[0])
+
+    def selectXRayLandmarks(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
+        if filename[0]:
+            self.controller.loadLandmarks("XRay", filename[0])
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
@@ -412,6 +446,11 @@ class Ui_MainWindow(QMainWindow):
             self.controller.executeReader("XRay")
         else:
             self.xrayLoadText.setText("No X-ray file selected...")
+
+    def selectSurfaceTopographyLandmark(self):
+        filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
+        if filename[0]:
+            self.controller.loadLandmarks("Surface", filename[0])
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")

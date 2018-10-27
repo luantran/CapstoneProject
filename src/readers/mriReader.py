@@ -77,8 +77,8 @@ class MRIReader(reader.Reader):
 
         return actor
 
-    def getLandmarks(self):
-        filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
+    def getLandmarks(self , filepath):
+        #filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
         landmarks = []
         with open(filepath, 'r') as f:
             lines = f.read()
@@ -91,9 +91,9 @@ class MRIReader(reader.Reader):
 
                 landmark['name'] = actual_data[0].strip().replace('"', '')
                 coordinates = actual_data[1].strip().split()
-                landmark['x'] = coordinates[0]
-                landmark['y'] = coordinates[1]
-                landmark['z'] = coordinates[2]
+                landmark['x'] = float(coordinates[0].strip())
+                landmark['y'] = float(coordinates[1].strip())
+                landmark['z'] = float(coordinates[2].strip())
                 landmarks.append(landmark)
         with open('result_mri.json', 'w') as fp:
             json.dump(landmarks, fp)

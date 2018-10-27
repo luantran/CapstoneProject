@@ -23,6 +23,9 @@ class Controller(object):
         self.mriReader.setFilePath(mriDirectory)
         self.setMRI = True
 
+    def setMRILandmarks(self, filename):
+        self.mriReader.getLandmarks(filename)
+
     def setXRay(self, xray):
         self.wrlReader.setFilePath(xray)
         self.setWRL = True
@@ -31,13 +34,35 @@ class Controller(object):
         self.szeReader.setFilePath(surface)
         self.setST = True
 
+    def loadLandmarks(self, type, filename):
+        if type is "XRay":
+            print("Loading MRI landmarks")
+            vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
+            for landmark in capteurs:
+                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "green"))
+            self.view.ren.ResetCamera()
+            self.view.vtkWidget.Render()
+
+        elif type is "Surface":
+            print("Loading Surface landmarks...")
+            ST_landmarks = self.szeReader.getLandmarks(filename)
+            for landmark in ST_landmarks:
+                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "red"))
+            self.view.ren.ResetCamera()
+            self.view.vtkWidget.Render()
+
+        elif type is "MRI":
+            print("loading MRI landmarks...")
+            MRI_landmarks = self.mriReader.getLandmarks(filename)
+            for landmark in MRI_landmarks:
+                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "blue"))
+            self.view.ren.ResetCamera()
+            self.view.vtkWidget.Render()
+
     def executeReader(self, type):
         if type is "XRay":
             print("Getting X-Ray data...")
             self.xray_actor = self.wrlReader.getVTKActor()
-            vertebrae, capteurs = self.wrlReader.getLandmarks()
-            for landmark in capteurs:
-                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "green"))
             self.view.ren.AddActor(self.xray_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
@@ -45,10 +70,6 @@ class Controller(object):
         elif type is "Surface":
             print("Getting Surface data...")
             self.surface_actor = self.szeReader.getVTKActor()
-            ST_landmarks=self.szeReader.getLandmarks()
-            # self.view.ren.AddActor(self.create_spheres_landmarks(self.ST_landmarks))
-            for landmark in ST_landmarks:
-                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "red"))
             self.view.ren.AddActor(self.surface_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()

@@ -43,11 +43,11 @@ class WRLReader(reader.Reader):
         self.actor.SetMapper(mapper)
         return self.actor
 
-    def getLandmarks(self):
-        filepath = '/home/luantran/EncryptedCapstoneData/2353729.o3'
+    def getLandmarks(self, filename):
+        #filepath = '/home/luantran/EncryptedCapstoneData/2353729.o3'
         vertebrae = []
         capteurs = []
-        with open(filepath, 'r') as f:
+        with open(filename, 'r') as f:
             landmark = {}
             landmarks = f.read().split('# ---- ---- ---- ---- ---- ---- DATA 3D  ---- ---- ---- ---- ---- ----')[
                 1].rstrip()

@@ -55,10 +55,10 @@ class SZEReader(reader.Reader):
         self.actor.SetMapper(mapper)
         return self.actor
 
-    def getLandmarks(self):
-        filepath = '/home/luantran/EncryptedCapstoneData/2353729_debout.ext'
+    def getLandmarks(self, filename):
+        #filepath = '/home/luantran/EncryptedCapstoneData/2353729_debout.ext'
         st_capteurs = []
-        with open(filepath, 'r') as f:
+        with open(filename, 'r') as f:
             data = f.read()
             datalines = data.rstrip().split("Objet:")[1]
             datalines = datalines.split("\n")

@@ -73,6 +73,7 @@ class MRIReader(reader.Reader):
 
         # Display the image
         actor = vtk.vtkImageActor()
+        actor.GetProperty().SetOpacity(0.5)
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
         return actor

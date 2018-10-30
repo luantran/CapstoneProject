@@ -50,6 +50,9 @@ class SZEReader(reader.Reader):
 
     def getVTKActor(self):
         self.actor = vtk.vtkActor()
+        # Rotate actor (adopted from Rola's code)
+        self.actor.RotateZ(-90)
+        self.actor.RotateX(90)
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(self.getPolyData())
         self.actor.SetMapper(mapper)

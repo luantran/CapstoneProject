@@ -70,9 +70,6 @@ class Controller(object):
         elif type is "Surface":
             print("Getting Surface data...")
             self.surface_actor = self.szeReader.getVTKActor()
-            # Rotate actor (adopted from Rola's code)
-            self.surface_actor.RotateZ(-90)
-            self.surface_actor.RotateX(90)
             self.view.ren.AddActor(self.surface_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()

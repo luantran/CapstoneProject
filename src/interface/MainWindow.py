@@ -287,9 +287,10 @@ class Ui_MainWindow(QMainWindow):
         self.xRayCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.xRayCheckBox.setObjectName("xRayCheckBox")
         self.xRayCheckBox.setEnabled(False)
+        self.xRayCheckBox.stateChanged.connect(self.checkXRay)
         self.viewLayout.addWidget(self.xRayCheckBox)
 
-        # Surface Tography Checkbox
+        # Surface Topography Checkbox
         self.stCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.stCheckBox.setObjectName("stCheckBox")
         self.stCheckBox.setEnabled(False)
@@ -444,7 +445,11 @@ class Ui_MainWindow(QMainWindow):
             self.xrayLoadText.setText(filename[0])
             self.controller.setXRay(filename[0])
             self.controller.executeReader("XRay")
+            self.xRayCheckBox.setEnabled(True)
+            self.xRayCheckBox.setChecked(True)
         else:
+            self.xRayCheckBox.setEnabled(False)
+            self.xRayCheckBox.setChecked(False)
             self.xrayLoadText.setText("No X-ray file selected...")
 
     def selectSurfaceTopographyLandmark(self):
@@ -460,6 +465,9 @@ class Ui_MainWindow(QMainWindow):
             self.controller.executeReader("Surface")
         else:
             self.stLoadText.setText("No ST file selected...")
+
+    def checkXRay(self):
+        self.controller.checkboxUpdate('XRay')
 
     def checkRigidRegistration(self):
         if self.controller.setWRL and self.controller.setST:

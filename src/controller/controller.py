@@ -84,6 +84,16 @@ class Controller(object):
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
 
+
+    def checkboxUpdate(self, type):
+        if type is "XRay":
+            if self.view.xRayCheckBox.isChecked():
+                self.xray_actor.VisibilityOn()
+            else:
+                self.xray_actor.VisibilityOff()
+            self.view.vtkWidget.Render()
+
+
     def register(self):
         print("Registering...")
         self.render(self.xray_actor, self.surface_actor)

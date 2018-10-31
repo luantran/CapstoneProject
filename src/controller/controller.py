@@ -18,6 +18,7 @@ class Controller(object):
         self.xray_actor = None
         self.surface_actor = None
         self.mri_actor = None
+        self.actors = {}
 
     def setMRIDirectory(self, mriDirectory):
         self.mriReader.setFilePath(mriDirectory)
@@ -66,6 +67,7 @@ class Controller(object):
             self.view.ren.AddActor(self.xray_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = self.xray_actor
 
         elif type is "Surface":
             print("Getting Surface data...")
@@ -73,6 +75,7 @@ class Controller(object):
             self.view.ren.AddActor(self.surface_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = self.surface_actor
 
         elif type is "MRI":
             print("Getting MRI data...")
@@ -83,16 +86,15 @@ class Controller(object):
             self.view.sliceSpinBox.setPrefix("Slice ")
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = self.mri_actor
 
-
-    def checkboxUpdate(self, type):
-        if type is "XRay":
-            if self.view.xRayCheckBox.isChecked():
-                self.xray_actor.VisibilityOn()
+    def checkboxUpdate(self, type, isChecked):
+        if type in self.actors:
+            if isChecked:
+                self.actors[type].VisibilityOn()
             else:
-                self.xray_actor.VisibilityOff()
-            self.view.vtkWidget.Render()
-
+                self.actors[type].VisibilityOff()
+        self.view.vtkWidget.Render()
 
     def register(self):
         print("Registering...")

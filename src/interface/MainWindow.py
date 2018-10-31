@@ -294,6 +294,7 @@ class Ui_MainWindow(QMainWindow):
         self.stCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.stCheckBox.setObjectName("stCheckBox")
         self.stCheckBox.setEnabled(False)
+        self.stCheckBox.stateChanged.connect(self.checkST)
         self.viewLayout.addWidget(self.stCheckBox)
 
         # External Landmarks Checkbox
@@ -316,7 +317,9 @@ class Ui_MainWindow(QMainWindow):
         self.mriCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.mriCheckBox.setObjectName("mriCheckBox")
         self.mriCheckBox.setEnabled(False)
+        self.mriCheckBox.stateChanged.connect(self.checkMRI)
         self.viewLayout.addWidget(self.mriCheckBox)
+
 
         # Saggital MRI Checkbox
         self.sMRICheckBox = QtWidgets.QCheckBox(self.centralwidget)
@@ -425,8 +428,12 @@ class Ui_MainWindow(QMainWindow):
                 self.sliceSpinBox.setEnabled(True)
                 self.sliceSpinBox.setProperty("value", 0)
                 self.currentSliceValue = self.sliceSpinBox.value()
+                self.mriCheckBox.setEnabled(True)
+                self.mriCheckBox.setChecked(True)
 
         else:
+            self.mriCheckBox.setEnabled(False)
+            self.mriCheckBox.setChecked(False)
             self.mriLoadText.setText("No MRI directory selected...")
 
     def selectMRILandmarks(self):
@@ -463,11 +470,21 @@ class Ui_MainWindow(QMainWindow):
             self.stLoadText.setText(filename[0])
             self.controller.setSurface(filename[0])
             self.controller.executeReader("Surface")
+            self.stCheckBox.setEnabled(True)
+            self.stCheckBox.setChecked(True)
         else:
+            self.stCheckBox.setEnabled(False)
+            self.stCheckBox.setChecked(False)
             self.stLoadText.setText("No ST file selected...")
 
     def checkXRay(self):
-        self.controller.checkboxUpdate('XRay')
+        self.controller.checkboxUpdate('XRay', self.xRayCheckBox.isChecked())
+
+    def checkST(self):
+        self.controller.checkboxUpdate('Surface', self.stCheckBox.isChecked())
+
+    def checkMRI(self):
+        self.controller.checkboxUpdate('MRI', self.mriCheckBox.isChecked())
 
     def checkRigidRegistration(self):
         if self.controller.setWRL and self.controller.setST:

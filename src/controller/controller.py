@@ -36,29 +36,38 @@ class Controller(object):
         self.setST = True
 
     def loadLandmarks(self, type, filename):
-        if type is "XRay":
+        if type is "XRayLM":
             print("Loading MRI landmarks")
             vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
+            lm_actors = []
             for landmark in capteurs:
-                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "green"))
+                lm_actors.append(self.create_spheres_landmarks(landmark, "green"))
+                self.view.ren.AddActor(lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = lm_actors
 
-        elif type is "Surface":
+        elif type is "SurfaceLM":
             print("Loading Surface landmarks...")
             ST_landmarks = self.szeReader.getLandmarks(filename)
+            lm_actors = []
             for landmark in ST_landmarks:
-                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "red"))
+                lm_actors.append(self.create_spheres_landmarks(landmark, "red"))
+                self.view.ren.AddActor(lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = lm_actors
 
-        elif type is "MRI":
+        elif type is "MRI_LM":
             print("loading MRI landmarks...")
             MRI_landmarks = self.mriReader.getLandmarks(filename)
+            lm_actors = []
             for landmark in MRI_landmarks:
-                self.view.ren.AddActor(self.create_spheres_landmarks(landmark, "blue"))
+                lm_actors.append(self.create_spheres_landmarks(landmark, "blue"))
+                self.view.ren.AddActor(lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = lm_actors
 
     def executeReader(self, type):
         if type is "XRay":
@@ -89,11 +98,20 @@ class Controller(object):
             self.actors[type] = self.mri_actor
 
     def checkboxUpdate(self, type, isChecked):
-        if type in self.actors:
+        # Checkbox update for modalities
+        if type in self.actors and type[-2:] != 'LM':
             if isChecked:
                 self.actors[type].VisibilityOn()
             else:
                 self.actors[type].VisibilityOff()
+        # Checkbox update for landmarks. Type which ends with LM are landmarks
+        elif type in self.actors and type[-2:] == 'LM':
+            if isChecked:
+                for actor in self.actors[type]:
+                    actor.VisibilityOn()
+            else:
+                for actor in self.actors[type]:
+                    actor.VisibilityOff()
         self.view.vtkWidget.Render()
 
     def register(self):

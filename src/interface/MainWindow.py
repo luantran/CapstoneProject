@@ -128,13 +128,13 @@ class Ui_MainWindow(QMainWindow):
         self.regitsrationLabel.setText(_translate("MainWindow", "Registration"))
         self.xRayCheckBox.setText(_translate("MainWindow", "X-Ray"))
         self.mriVertebraeCheckBox.setText(_translate("MainWindow", "MRI vertebrae"))
-        self.vertebralLMCheckBox.setText(_translate("MainWindow", "Vertebral Landmarks"))
+        self.mriLMCheckBox.setText(_translate("MainWindow", "MRI Landmarks"))
         self.sliceLabel.setText(_translate("MainWindow", "View registered slice"))
         self.stCheckBox.setText(_translate("MainWindow", "Surface"))
         self.viewLabel.setText(_translate("MainWindow", "View"))
-        self.sMRICheckBox.setText(_translate("MainWindow", "Saggital MRIs"))
+        self.xRayLMCheckBox.setText(_translate("MainWindow", "XRay Landmarks"))
         self.mriCheckBox.setText(_translate("MainWindow", "MRI"))
-        self.externalLMCheckBox.setText(_translate("MainWindow", "External Landmarks"))
+        self.surfaceLMCheckBox.setText(_translate("MainWindow", "Surface Landmarks"))
         self.saveButton.setText(_translate("MainWindow", "Save"))
         self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
@@ -283,6 +283,13 @@ class Ui_MainWindow(QMainWindow):
 
         # Checkboxes
 
+        # MRI Checkbox
+        self.mriCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.mriCheckBox.setObjectName("mriCheckBox")
+        self.mriCheckBox.setEnabled(False)
+        self.mriCheckBox.stateChanged.connect(self.checkMRI)
+        self.viewLayout.addWidget(self.mriCheckBox)
+
         # X-Ray Checkbox
         self.xRayCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.xRayCheckBox.setObjectName("xRayCheckBox")
@@ -297,35 +304,30 @@ class Ui_MainWindow(QMainWindow):
         self.stCheckBox.stateChanged.connect(self.checkST)
         self.viewLayout.addWidget(self.stCheckBox)
 
-        # External Landmarks Checkbox
-        self.externalLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.externalLMCheckBox.setObjectName("externalLMCheckBox")
-        self.externalLMCheckBox.setEnabled(False)
-        self.viewLayout.addWidget(self.externalLMCheckBox)
-
-        # Vertebral Landmarks Checkbox
-        self.vertebralLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.vertebralLMCheckBox.setObjectName("vertebralLMCheckBox")
-        self.vertebralLMCheckBox.setEnabled(False)
-        self.viewLayout.addWidget(self.vertebralLMCheckBox)
-
         # First Spacer
         self.spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.viewLayout.addItem(self.spacerItem1)
 
-        # MRI Checkbox
-        self.mriCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.mriCheckBox.setObjectName("mriCheckBox")
-        self.mriCheckBox.setEnabled(False)
-        self.mriCheckBox.stateChanged.connect(self.checkMRI)
-        self.viewLayout.addWidget(self.mriCheckBox)
+        # MRI Landmarks Checkbox
+        self.mriLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.mriLMCheckBox.setObjectName("mriLMCheckBox")
+        self.mriLMCheckBox.setEnabled(False)
+        self.mriLMCheckBox.stateChanged.connect(self.checkMRI_LM)
+        self.viewLayout.addWidget(self.mriLMCheckBox)
 
+        # XRay Landmarks Checkbox
+        self.xRayLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.xRayLMCheckBox.setObjectName("xRayLMCheckBox")
+        self.xRayLMCheckBox.setEnabled(False)
+        self.xRayLMCheckBox.stateChanged.connect(self.checkXRayLM)
+        self.viewLayout.addWidget(self.xRayLMCheckBox)
 
-        # Saggital MRI Checkbox
-        self.sMRICheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.sMRICheckBox.setObjectName("sMRICheckBox")
-        self.sMRICheckBox.setEnabled(False)
-        self.viewLayout.addWidget(self.sMRICheckBox)
+        # Surface Landmarks Checkbox
+        self.surfaceLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.surfaceLMCheckBox.setObjectName("surfaceLMCheckBox")
+        self.surfaceLMCheckBox.setEnabled(False)
+        self.surfaceLMCheckBox.stateChanged.connect(self.checkSurfaceLM)
+        self.viewLayout.addWidget(self.surfaceLMCheckBox)
 
         # MRI Vertebrae Checkbox
         self.mriVertebraeCheckBox = QtWidgets.QCheckBox(self.centralwidget)
@@ -336,7 +338,6 @@ class Ui_MainWindow(QMainWindow):
         # Second Spacer
         self.spacerItem2 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.viewLayout.addItem(self.spacerItem2)
-
 
         # Slice Label
         self.sliceLabel = QtWidgets.QLabel(self.centralwidget)
@@ -439,12 +440,22 @@ class Ui_MainWindow(QMainWindow):
     def selectMRILandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
         if filename[0]:
-            self.controller.loadLandmarks("MRI", filename[0])
+            self.controller.loadLandmarks("MRI_LM", filename[0])
+            self.mriLMCheckBox.setEnabled(True)
+            self.mriLMCheckBox.setChecked(True)
+        else:
+            self.mriLMCheckBox.setEnabled(False)
+            self.mriLMCheckBox.setChecked(False)
 
     def selectXRayLandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
         if filename[0]:
-            self.controller.loadLandmarks("XRay", filename[0])
+            self.controller.loadLandmarks("XRayLM", filename[0])
+            self.xRayLMCheckBox.setEnabled(True)
+            self.xRayLMCheckBox.setChecked(True)
+        else:
+            self.surfaceLMCheckBox.setEnabled(False)
+            self.surfaceLMCheckBox.setChecked(False)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
@@ -462,7 +473,13 @@ class Ui_MainWindow(QMainWindow):
     def selectSurfaceTopographyLandmark(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
         if filename[0]:
-            self.controller.loadLandmarks("Surface", filename[0])
+            self.controller.loadLandmarks("SurfaceLM", filename[0])
+            self.surfaceLMCheckBox.setEnabled(True)
+            self.surfaceLMCheckBox.setChecked(True)
+        else:
+            self.surfaceLMCheckBox.setEnabled(False)
+            self.surfaceLMCheckBox.setChecked(False)
+
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")
@@ -485,6 +502,15 @@ class Ui_MainWindow(QMainWindow):
 
     def checkMRI(self):
         self.controller.checkboxUpdate('MRI', self.mriCheckBox.isChecked())
+
+    def checkSurfaceLM(self):
+        self.controller.checkboxUpdate('SurfaceLM', self.surfaceLMCheckBox.isChecked())
+
+    def checkMRI_LM(self):
+        self.controller.checkboxUpdate('MRI_LM', self.mriLMCheckBox.isChecked())
+
+    def checkXRayLM(self):
+        self.controller.checkboxUpdate('XRayLM', self.xRayLMCheckBox.isChecked())
 
     def checkRigidRegistration(self):
         if self.controller.setWRL and self.controller.setST:

@@ -384,7 +384,7 @@ class Ui_MainWindow(QMainWindow):
         MainWindow.setMenuBar(self.menubar)
 
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.showMessage("Copyright Rola Harmouche, Luan Tran, Adbullah Sumbal")
+        self.statusbar.showMessage("Copyright Rola Harmouche, Luan Tran, Abdullah Sumbal")
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
@@ -533,7 +533,7 @@ class Ui_MainWindow(QMainWindow):
 
     def changeSlice(self):
         transform = vtk.vtkTransform()
-        sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
+        sliceSpacing = self.controller.mriReader.thickness
         transform.Translate(0, 0, self.currentSliceValue*sliceSpacing)
         self.controller.mriReader.reslice.SetResliceTransform(transform)
 
@@ -548,9 +548,7 @@ class Ui_MainWindow(QMainWindow):
 
     def upSlice(self, delta, currentSliceValue):
         self.controller.mriReader.reslice.Update()
-        sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
-        if sliceSpacing == 0:
-            sliceSpacing = self.controller.mriReader.thickness
+        sliceSpacing = self.controller.mriReader.thickness
         matrix = self.controller.mriReader.reslice.GetResliceAxes()
 
         # move the center point that we are slicing through

@@ -405,19 +405,16 @@ class Ui_MainWindow(QMainWindow):
 
     def selectMRIDirectory(self):
         dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
-        self.controller.setMRIDirectory(dirName)
-        self.controller.executeReader("MRI")
-
         if dirName:
             errorStatus = False
             for root, dirs, files in walk(dirName):
                 if dirs:
                     errorStatus = True
-                for type in "dcm", "ima":
-                    for file in files:
-                        if file.rsplit('.', 1)[1] != type:
-                            errorStatus = True
-                    break
+                for file in files:
+                    if file.rsplit('.', 1)[1].lower() != "dcm" and file.rsplit('.', 1)[1].lower() != "ima":
+                        print(file.rsplit('.', 1)[1].lower())
+                        errorStatus = True
+                        break
 
             if errorStatus:
                 msgBox = QtWidgets.QMessageBox()
@@ -436,6 +433,8 @@ class Ui_MainWindow(QMainWindow):
             self.mriCheckBox.setEnabled(False)
             self.mriCheckBox.setChecked(False)
             self.mriLoadText.setText("No MRI directory selected...")
+        self.controller.setMRIDirectory(dirName)
+        self.controller.executeReader("MRI")
 
     def selectMRILandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
@@ -533,36 +532,46 @@ class Ui_MainWindow(QMainWindow):
         dialog.exec()
 
     def changeSlice(self):
+        transform = vtk.vtkTransform()
+        sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
+        transform.Translate(0, 0, self.currentSliceValue*sliceSpacing)
+        self.controller.mriReader.reslice.SetResliceTransform(transform)
 
         if self.sliceSpinBox.value() > self.currentSliceValue:
             delta = self.sliceSpinBox.value() - self.currentSliceValue
             self.currentSliceValue = self.sliceSpinBox.value()
-            self.upSlice(delta)
+            self.upSlice(delta, self.currentSliceValue)
         else:
             delta = self.currentSliceValue - self.sliceSpinBox.value()
             self.currentSliceValue = self.sliceSpinBox.value()
-            self.downSlice(delta)
+            self.downSlice(delta, self.currentSliceValue)
 
-    def upSlice(self, delta):
+    def upSlice(self, delta, currentSliceValue):
         self.controller.mriReader.reslice.Update()
         sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
+        if sliceSpacing == 0:
+            sliceSpacing = self.controller.mriReader.thickness
         matrix = self.controller.mriReader.reslice.GetResliceAxes()
+
         # move the center point that we are slicing through
         center = matrix.MultiplyPoint((0, 0, delta*sliceSpacing, 1))
         matrix.SetElement(0, 3, center[0])
         matrix.SetElement(1, 3, center[1])
         matrix.SetElement(2, 3, center[2])
+
         self.vtkWidget.Render()
 
-    def downSlice(self, delta):
+    def downSlice(self, delta, currentSliceValue):
         self.controller.mriReader.reslice.Update()
         sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
         matrix = self.controller.mriReader.reslice.GetResliceAxes()
+
         # move the center point that we are slicing through
         center = matrix.MultiplyPoint((0, 0, -delta*sliceSpacing, 1))
         matrix.SetElement(0, 3, center[0])
         matrix.SetElement(1, 3, center[1])
         matrix.SetElement(2, 3, center[2])
+
         self.vtkWidget.Render()
 
     def register(self):

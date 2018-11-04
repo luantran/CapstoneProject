@@ -19,5 +19,5 @@ class Reader(ABC):
         pass
 
     @abstractmethod
-    def getLandmarks(self):
+    def getLandmarks(self, filepath):
         pass

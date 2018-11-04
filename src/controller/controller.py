@@ -91,7 +91,7 @@ class Controller(object):
             self.mri_actor = self.mriReader.getVTKActor()
             self.view.ren.AddActor(self.mri_actor)
             self.view.sliceSpinBox.setMaximum(self.mriReader.max_number_of_slices)
-            self.view.sliceSpinBox.setSuffix(" of 175")
+            self.view.sliceSpinBox.setSuffix(" of " + str(self.mriReader.max_number_of_slices))
             self.view.sliceSpinBox.setPrefix("Slice ")
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()

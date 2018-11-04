@@ -1,6 +1,7 @@
 from src.readers import reader
 import vtk
-import json
+import pydicom as dicom
+import os
 
 class MRIReader(reader.Reader):
 
@@ -23,40 +24,43 @@ class MRIReader(reader.Reader):
         self.max_number_of_slices = zMax
 
         xSpacing, ySpacing, zSpacing = reader.GetOutput().GetSpacing()
+        if zSpacing == 0:
+            self.thickness = self.get_spacing(self.filepath)
+        else:
+            self.thickness = zSpacing
         x0, y0, z0 = reader.GetOutput().GetOrigin()
         center = [x0 + xSpacing * 0.5 * (xMin + xMax),
                   y0 + ySpacing * 0.5 * (yMin + yMax),
                   z0 + zSpacing * 0.5 * (zMin + zMax)]
 
         # Matrices for axial, coronal, sagittal, oblique view orientations
-        # center= [0,0,0]
+        center= [0,0,0]
         axial = vtk.vtkMatrix4x4()
         axial.DeepCopy((1, 0, 0, center[0],
                         0, 1, 0, center[1],
                         0, 0, 1, center[2],
                         0, 0, 0, 1))
 
-        # coronal = vtk.vtkMatrix4x4()
-        # coronal.DeepCopy((1, 0, 0, center[0],
-        #                   0, 0, 1, center[1],
-        #                   0, -1, 0, center[2],
-        #                   0, 0, 0, 1))
-        #
-        # sagittal = vtk.vtkMatrix4x4()
-        # sagittal.DeepCopy((0, 0, -1, center[0],
-        #                    1, 0, 0, center[1],
-        #                    0, -1, 0, center[2],
-        #                    0, 0, 0, 1))
+        coronal = vtk.vtkMatrix4x4()
+        coronal.DeepCopy((1, 0, 0, center[0],
+                          0, 0, 1, center[1],
+                          0, -1, 0, center[2],
+                          0, 0, 0, 1))
+
+        sagittal = vtk.vtkMatrix4x4()
+        sagittal.DeepCopy((0, 0, -1, center[0],
+                           1, 0, 0, center[1],
+                           0, -1, 0, center[2],
+                           0, 0, 0, 1))
 
         # Extract a slice in the desired orientation
         self.reslice = vtk.vtkImageReslice()
         self.reslice.SetInputConnection(reader.GetOutputPort())
-        self.reslice.SetOutputDimensionality(2)
+        self.reslice.SetOutputDimensionality(3)
         self.reslice.SetResliceAxes(axial)
         self.reslice.SetInterpolationModeToCubic()
-        # self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
-        # self.reslice.SetOutputOrigin(0,0,0)
-        # self.reslice.SetScalarShift(10)
+        self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
+        self.reslice.SetOutputSpacing(xSpacing, ySpacing, zSpacing)
 
         # Create a greyscale lookup table
         table = vtk.vtkLookupTable()
@@ -78,7 +82,7 @@ class MRIReader(reader.Reader):
 
         return actor
 
-    def getLandmarks(self , filepath):
+    def getLandmarks(self, filepath):
         #filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
         landmarks = []
         with open(filepath, 'r') as f:
@@ -96,6 +100,15 @@ class MRIReader(reader.Reader):
                 landmark['y'] = float(coordinates[1].strip())
                 landmark['z'] = float(coordinates[2].strip())
                 landmarks.append(landmark)
-        with open('result_mri.json', 'w') as fp:
-            json.dump(landmarks, fp)
         return landmarks
+
+    def get_spacing(self, filepath):
+        lstFilesDICOM = []
+        for dirName, subdirList, fileList in os.walk(filepath):
+            for filename in fileList:
+                if ".dcm" in filename.lower() or ".ima" in filename.lower():  # check whether the file's DICOM
+                    lstFilesDICOM.append(os.path.join(dirName, filename))
+        RefDs = dicom.read_file(lstFilesDICOM[0])
+        spacing = float(RefDs.SliceThickness)
+        print(spacing)
+        return spacing

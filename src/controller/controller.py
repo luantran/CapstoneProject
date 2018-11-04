@@ -1,5 +1,5 @@
 from src.readers import szeReader, wrlReader, mriReader
-from src.registration import registration
+from src.registration import rigidRegistration
 import vtk
 
 
@@ -14,10 +14,11 @@ class Controller(object):
         self.setWRL = False
         self.setST = False
         self.setMRI = False
-        self.registration = registration.Registration()
+        self.rigid = rigidRegistration.RigidRegistration()
         self.xray_actor = None
         self.surface_actor = None
         self.mri_actor = None
+        self.landmarkPoints = {}
         self.actors = {}
 
     def setMRIDirectory(self, mriDirectory):
@@ -40,6 +41,7 @@ class Controller(object):
             print("Loading MRI landmarks")
             vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
             lm_actors = []
+            self.landmarkPoints['XRay'] = capteurs
             for landmark in capteurs:
                 lm_actors.append(self.create_spheres_landmarks(landmark, "green"))
                 self.view.ren.AddActor(lm_actors[-1])
@@ -51,6 +53,7 @@ class Controller(object):
             print("Loading Surface landmarks...")
             ST_landmarks = self.szeReader.getLandmarks(filename)
             lm_actors = []
+            self.landmarkPoints['Surface'] = ST_landmarks
             for landmark in ST_landmarks:
                 lm_actors.append(self.create_spheres_landmarks(landmark, "red"))
                 self.view.ren.AddActor(lm_actors[-1])
@@ -114,9 +117,21 @@ class Controller(object):
                     actor.VisibilityOff()
         self.view.vtkWidget.Render()
 
-    def register(self):
-        print("Registering...")
-        self.render(self.xray_actor, self.surface_actor)
+    def performRigitRegistration(self):
+
+        # check if we have all the actors needed for the registration:
+        if ('SurfaceLM' in self.actors and 'Surface' in self.actors
+                and 'XRayLM' in self.actors):
+            # Trandfrom Surface onto XRay
+            # Get the Translation matrix
+            Transrigid = self.rigid.SurfaceXRayRegistration(self.landmarkPoints['Surface'], self.landmarkPoints['XRay'])
+            self.actors['Surface'].SetUserTransform(Transrigid)
+
+            # Transform Surface landmarks onto Xray landmarks
+            for actor in self.actors['SurfaceLM']:
+                actor.SetUserTransform(Transrigid)
+
+        self.view.vtkWidget.Render()
 
     def create_spheres_landmarks(self, landmark, color):
         sphere_source = vtk.vtkSphereSource()

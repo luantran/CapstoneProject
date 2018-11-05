@@ -38,16 +38,24 @@ class Controller(object):
 
     def loadLandmarks(self, type, filename):
         if type is "XRayLM":
-            print("Loading MRI landmarks")
+            print("Loading XRay landmarks")
             vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
-            lm_actors = []
+            ext_lm_actors = []
             self.landmarkPoints['XRay'] = capteurs
+
             for landmark in capteurs:
-                lm_actors.append(self.create_spheres_landmarks(landmark, "green"))
-                self.view.ren.AddActor(lm_actors[-1])
+                ext_lm_actors.append(self.create_spheres_landmarks(landmark, "green"))
+                self.view.ren.AddActor(ext_lm_actors[-1])
+            vertebrae_lm_actors = []
+            for vertebra in vertebrae:
+                for point in vertebra['points']:
+                    vertebrae_lm_actors.append(self.create_spheres_landmarks(point, "white"))
+                    self.view.ren.AddActor(vertebrae_lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
-            self.actors[type] = lm_actors
+
+            self.actors[type] = ext_lm_actors
+            self.actors["vertebrae_"+type] = vertebrae_lm_actors
 
         elif type is "SurfaceLM":
             print("Loading Surface landmarks...")
@@ -148,7 +156,11 @@ class Controller(object):
         elif color == "green":
             actor.GetProperty().SetColor(0.0, 1.0, 0.0)
         elif color == "blue":
+            sphere_source.SetRadius(5.0)
             actor.GetProperty().SetColor(0.0, 0.0, 1.0)
+        elif color == "white":
+            sphere_source.SetRadius(5.0)
+            actor.GetProperty().SetColor(1.0, 1.0, 1.0)
         return actor
 
 

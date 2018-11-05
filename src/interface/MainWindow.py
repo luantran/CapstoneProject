@@ -132,9 +132,10 @@ class Ui_MainWindow(QMainWindow):
         self.sliceLabel.setText(_translate("MainWindow", "View registered slice"))
         self.stCheckBox.setText(_translate("MainWindow", "Surface"))
         self.viewLabel.setText(_translate("MainWindow", "View"))
-        self.xRayLMCheckBox.setText(_translate("MainWindow", "XRay Landmarks"))
+        self.xRayExtLMCheckBox.setText(_translate("MainWindow", "External XRay Landmarks"))
+        self.xRayVertLMCheckBox.setText(_translate("MainWindow", "Vertebrae XRay Landmarks"))
         self.mriCheckBox.setText(_translate("MainWindow", "MRI"))
-        self.surfaceLMCheckBox.setText(_translate("MainWindow", "Surface Landmarks"))
+        self.surfaceExtLMCheckBox.setText(_translate("MainWindow", "External Surface Landmarks"))
         self.saveButton.setText(_translate("MainWindow", "Save"))
         self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
@@ -316,18 +317,25 @@ class Ui_MainWindow(QMainWindow):
         self.viewLayout.addWidget(self.mriLMCheckBox)
 
         # XRay Landmarks Checkbox
-        self.xRayLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.xRayLMCheckBox.setObjectName("xRayLMCheckBox")
-        self.xRayLMCheckBox.setEnabled(False)
-        self.xRayLMCheckBox.stateChanged.connect(self.checkXRayLM)
-        self.viewLayout.addWidget(self.xRayLMCheckBox)
+        self.xRayExtLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.xRayExtLMCheckBox.setObjectName("xRayExtLMCheckBox")
+        self.xRayExtLMCheckBox.setEnabled(False)
+        self.xRayExtLMCheckBox.stateChanged.connect(self.checkExternalXRayLM)
+        self.viewLayout.addWidget(self.xRayExtLMCheckBox)
+
+        # XRay Vertebrae Landmarks Checkbox
+        self.xRayVertLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.xRayVertLMCheckBox.setObjectName("xRayVertLMCheckBox")
+        self.xRayVertLMCheckBox.setEnabled(False)
+        self.xRayVertLMCheckBox.stateChanged.connect(self.checkVertebraeXRayLM)
+        self.viewLayout.addWidget(self.xRayVertLMCheckBox)
 
         # Surface Landmarks Checkbox
-        self.surfaceLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.surfaceLMCheckBox.setObjectName("surfaceLMCheckBox")
-        self.surfaceLMCheckBox.setEnabled(False)
-        self.surfaceLMCheckBox.stateChanged.connect(self.checkSurfaceLM)
-        self.viewLayout.addWidget(self.surfaceLMCheckBox)
+        self.surfaceExtLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.surfaceExtLMCheckBox.setObjectName("surfaceExtLMCheckBox")
+        self.surfaceExtLMCheckBox.setEnabled(False)
+        self.surfaceExtLMCheckBox.stateChanged.connect(self.checkExternalSurfaceLM)
+        self.viewLayout.addWidget(self.surfaceExtLMCheckBox)
 
         # MRI Vertebrae Checkbox
         self.mriVertebraeCheckBox = QtWidgets.QCheckBox(self.centralwidget)
@@ -450,11 +458,13 @@ class Ui_MainWindow(QMainWindow):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
         if filename[0]:
             self.controller.loadLandmarks("XRayLM", filename[0])
-            self.xRayLMCheckBox.setEnabled(True)
-            self.xRayLMCheckBox.setChecked(True)
+            self.xRayExtLMCheckBox.setEnabled(True)
+            self.xRayExtLMCheckBox.setChecked(True)
+            self.xRayVertLMCheckBox.setEnabled(True)
+            self.xRayVertLMCheckBox.setChecked(True)
         else:
-            self.surfaceLMCheckBox.setEnabled(False)
-            self.surfaceLMCheckBox.setChecked(False)
+            self.surfaceExtLMCheckBox.setEnabled(False)
+            self.surfaceExtLMCheckBox.setChecked(False)
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
@@ -473,11 +483,11 @@ class Ui_MainWindow(QMainWindow):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
         if filename[0]:
             self.controller.loadLandmarks("SurfaceLM", filename[0])
-            self.surfaceLMCheckBox.setEnabled(True)
-            self.surfaceLMCheckBox.setChecked(True)
+            self.surfaceExtLMCheckBox.setEnabled(True)
+            self.surfaceExtLMCheckBox.setChecked(True)
         else:
-            self.surfaceLMCheckBox.setEnabled(False)
-            self.surfaceLMCheckBox.setChecked(False)
+            self.surfaceExtLMCheckBox.setEnabled(False)
+            self.surfaceExtLMCheckBox.setChecked(False)
 
 
     def selectSurfaceTopography(self):
@@ -502,14 +512,18 @@ class Ui_MainWindow(QMainWindow):
     def checkMRI(self):
         self.controller.checkboxUpdate('MRI', self.mriCheckBox.isChecked())
 
-    def checkSurfaceLM(self):
-        self.controller.checkboxUpdate('SurfaceLM', self.surfaceLMCheckBox.isChecked())
+    def checkExternalSurfaceLM(self):
+        self.controller.checkboxUpdate('SurfaceLM', self.surfaceExtLMCheckBox.isChecked())
 
     def checkMRI_LM(self):
         self.controller.checkboxUpdate('MRI_LM', self.mriLMCheckBox.isChecked())
 
-    def checkXRayLM(self):
-        self.controller.checkboxUpdate('XRayLM', self.xRayLMCheckBox.isChecked())
+    def checkExternalXRayLM(self):
+        self.controller.checkboxUpdate('XRayLM', self.xRayExtLMCheckBox.isChecked())
+
+    def checkVertebraeXRayLM(self):
+        self.controller.checkboxUpdate('vertebrae_XRayLM', self.xRayVertLMCheckBox.isChecked())
+
 
     def checkRigidRegistration(self):
         if self.controller.setWRL and self.controller.setST:
@@ -540,13 +554,13 @@ class Ui_MainWindow(QMainWindow):
         if self.sliceSpinBox.value() > self.currentSliceValue:
             delta = self.sliceSpinBox.value() - self.currentSliceValue
             self.currentSliceValue = self.sliceSpinBox.value()
-            self.upSlice(delta, self.currentSliceValue)
+            self.upSlice(delta)
         else:
             delta = self.currentSliceValue - self.sliceSpinBox.value()
             self.currentSliceValue = self.sliceSpinBox.value()
-            self.downSlice(delta, self.currentSliceValue)
+            self.downSlice(delta)
 
-    def upSlice(self, delta, currentSliceValue):
+    def upSlice(self, delta):
         self.controller.mriReader.reslice.Update()
         sliceSpacing = self.controller.mriReader.thickness
         matrix = self.controller.mriReader.reslice.GetResliceAxes()
@@ -559,7 +573,7 @@ class Ui_MainWindow(QMainWindow):
 
         self.vtkWidget.Render()
 
-    def downSlice(self, delta, currentSliceValue):
+    def downSlice(self, delta):
         self.controller.mriReader.reslice.Update()
         sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
         matrix = self.controller.mriReader.reslice.GetResliceAxes()

@@ -31,7 +31,7 @@ class MRIReader(reader.Reader):
         x0, y0, z0 = reader.GetOutput().GetOrigin()
         center = [x0 + xSpacing * 0.5 * (xMin + xMax),
                   y0 + ySpacing * 0.5 * (yMin + yMax),
-                  z0]
+                  27]
 
         # Matrices for axial, coronal, sagittal, oblique view orientations
         axial = vtk.vtkMatrix4x4()
@@ -78,6 +78,7 @@ class MRIReader(reader.Reader):
         actor = vtk.vtkImageActor()
         actor.GetProperty().SetOpacity(0.5)
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
+
 
         return actor
 

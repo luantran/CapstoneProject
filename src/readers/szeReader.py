@@ -46,6 +46,7 @@ class SZEReader(reader.Reader):
         polydata = vtk.vtkPolyData()
         polydata.SetPoints(self.points)
         polydata.SetPolys(self.polys)
+
         return polydata
 
     def getVTKActor(self):
@@ -53,9 +54,16 @@ class SZEReader(reader.Reader):
         # Rotate actor (adopted from Rola's code)
         self.actor.RotateZ(-90)
         self.actor.RotateX(90)
+
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(self.getPolyData())
+
         self.actor.SetMapper(mapper)
+
+        self.actor.GetProperty().SetInterpolationToFlat()
+        self.actor.GetProperty().SetEdgeColor(1.0, 0.0, 0.0)
+        self.actor.GetProperty().SetOpacity(0.25)
+        self.actor.GetProperty().EdgeVisibilityOn()
         return self.actor
 
     def getLandmarks(self, filename):

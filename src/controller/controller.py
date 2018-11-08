@@ -11,30 +11,35 @@ class Controller(object):
         self.wrlReader = wrlReader.WRLReader()
         self.szeReader = szeReader.SZEReader()
         self.mriReader = mriReader.MRIReader()
-        self.setWRL = False
-        self.setST = False
-        self.setMRI = False
         self.rigid = rigidRegistration.RigidRegistration()
         self.xray_actor = None
         self.surface_actor = None
         self.mri_actor = None
         self.landmarkPoints = {}
         self.actors = {}
+        self.check = self.initializeChecks()
+
+    def initializeChecks(self):
+        dictionary = {}
+        dictionary['XRay'] = False
+        dictionary['XRay_LM'] = False
+        dictionary['MRI'] = False
+        dictionary['MRI_LM'] = False
+        dictionary['ST'] = False
+        dictionary['ST_LM'] = False
+        return dictionary
 
     def setMRIDirectory(self, mriDirectory):
         self.mriReader.setFilePath(mriDirectory)
-        self.setMRI = True
 
     def setMRILandmarks(self, filename):
         self.mriReader.getLandmarks(filename)
 
     def setXRay(self, xray):
         self.wrlReader.setFilePath(xray)
-        self.setWRL = True
 
     def setSurface(self, surface):
         self.szeReader.setFilePath(surface)
-        self.setST = True
 
     def loadLandmarks(self, type, filename):
         if type is "XRayLM":
@@ -162,5 +167,53 @@ class Controller(object):
         elif color == "violet":
             actor.GetProperty().SetColor(0.58, 0.0, 0.82)
         return actor
+
+    def changeSlice(self, spinBoxValue):
+        transform = vtk.vtkTransform()
+        sliceSpacing = self.mriReader.thickness
+        transform.Translate(0, 0, self.view.currentSliceValue*sliceSpacing)
+        self.mriReader.reslice.SetResliceTransform(transform)
+
+        if spinBoxValue > self.view.currentSliceValue:
+            delta = spinBoxValue - self.view.currentSliceValue
+            self.view.currentSliceValue = spinBoxValue
+            self.upSlice(delta)
+        else:
+            delta = self.view.currentSliceValue - spinBoxValue
+            self.view.currentSliceValue = spinBoxValue
+            self.downSlice(delta)
+
+    def upSlice(self, delta):
+        self.mriReader.reslice.Update()
+        sliceSpacing = self.mriReader.thickness
+        matrix = self.mriReader.reslice.GetResliceAxes()
+
+        # move the center point that we are slicing through
+        center = matrix.MultiplyPoint((0, 0, delta * sliceSpacing, 1))
+        matrix.SetElement(0, 3, center[0])
+        matrix.SetElement(1, 3, center[1])
+        matrix.SetElement(2, 3, center[2])
+
+        self.view.vtkWidget.Render()
+
+    def downSlice(self, delta):
+        self.mriReader.reslice.Update()
+        sliceSpacing = self.mriReader.reslice.GetOutput().GetSpacing()[2]
+        matrix = self.mriReader.reslice.GetResliceAxes()
+
+        # move the center point that we are slicing through
+        center = matrix.MultiplyPoint((0, 0, -delta * sliceSpacing, 1))
+        matrix.SetElement(0, 3, center[0])
+        matrix.SetElement(1, 3, center[1])
+        matrix.SetElement(2, 3, center[2])
+
+        self.view.vtkWidget.Render()
+
+    def checkRequirementsForRigidRegistration(self):
+        for key, value in self.check.items():
+            if value == False:
+                return False
+        return True
+
 
 

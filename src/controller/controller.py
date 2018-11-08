@@ -42,6 +42,8 @@ class Controller(object):
         self.szeReader.setFilePath(surface)
 
     def loadLandmarks(self, type, filename):
+        if type in self.actors.keys():
+            self.removeActors(self.actors[type], True)
         if type is "XRayLM":
             print("Loading XRay landmarks")
             vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
@@ -86,6 +88,8 @@ class Controller(object):
             self.actors[type] = lm_actors
 
     def executeReader(self, type):
+        if type in self.actors.keys():
+            self.removeActors(self.actors[type])
         if type is "XRay":
             print("Getting X-Ray data...")
             self.xray_actor = self.wrlReader.getVTKActor()
@@ -214,6 +218,13 @@ class Controller(object):
             if value == False:
                 return False
         return True
+
+    def removeActors(self, actors, multiple=False):
+        if multiple:
+            for actor in actors:
+                self.view.ren.RemoveActor(actor)
+        else:
+            self.view.ren.RemoveActor(actors)
 
 
 

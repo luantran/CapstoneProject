@@ -48,16 +48,16 @@ class Controller(object):
             print("Loading XRay landmarks")
             vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
             ext_lm_actors = []
-            self.landmarkPoints['XRay'] = capteurs
+            self.landmarkPoints['XRay_Ext'] = capteurs
+            self.landmarkPoints['XRay_Vert'] = vertebrae
 
             for landmark in capteurs:
                 ext_lm_actors.append(self.create_spheres_landmarks(landmark, "green", 10.0))
                 self.view.ren.AddActor(ext_lm_actors[-1])
             vertebrae_lm_actors = []
-            for vertebra in vertebrae:
-                for point in vertebra['points']:
-                    vertebrae_lm_actors.append(self.create_spheres_landmarks(point, "white", 5.0))
-                    self.view.ren.AddActor(vertebrae_lm_actors[-1])
+            for point in vertebrae:
+                vertebrae_lm_actors.append(self.create_spheres_landmarks(point, "white", 5.0))
+                self.view.ren.AddActor(vertebrae_lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
 
@@ -80,6 +80,7 @@ class Controller(object):
             print("loading MRI landmarks...")
             MRI_landmarks = self.mriReader.getLandmarks(filename)
             lm_actors = []
+            self.landmarkPoints['MRI'] = MRI_landmarks
             for landmark in MRI_landmarks:
                 lm_actors.append(self.create_spheres_landmarks(landmark, "blue", 5.0))
                 self.view.ren.AddActor(lm_actors[-1])
@@ -135,17 +136,27 @@ class Controller(object):
         self.view.vtkWidget.Render()
 
     def performRigitRegistration(self):
-
         # check if we have all the actors needed for the registration:
-        if ('SurfaceLM' in self.actors and 'Surface' in self.actors
-                and 'XRayLM' in self.actors):
+        if ('MRI_LM' in self.actors and 'MRI' in self.actors and
+                'SurfaceLM' in self.actors and 'Surface' in self.actors
+                and 'XRayLM' in self.actors and 'XRay' in self.actors):
+
             # Trandfrom Surface onto XRay
             # Get the Translation matrix
-            Transrigid = self.rigid.SurfaceXRayRegistration(self.landmarkPoints['Surface'], self.landmarkPoints['XRay'])
+            Transrigid = self.rigid.SurfaceXRayRegistration(self.landmarkPoints['Surface'], self.landmarkPoints['XRay_Ext'])
             self.actors['Surface'].SetUserTransform(Transrigid)
 
             # Transform Surface landmarks onto Xray landmarks
             for actor in self.actors['SurfaceLM']:
+                actor.SetUserTransform(Transrigid)
+
+            # Trandfrom Surface onto XRay
+            # Get the Translation matrix
+            Transrigid = self.rigid.MRIXRayRegistration(self.landmarkPoints['MRI'], self.landmarkPoints['XRay_Vert'])
+            self.actors['MRI'].SetUserTransform(Transrigid)
+
+            # Transform Surface landmarks onto Xray landmarks
+            for actor in self.actors['MRI_LM']:
                 actor.SetUserTransform(Transrigid)
 
         self.view.vtkWidget.Render()

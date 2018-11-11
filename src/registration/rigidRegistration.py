@@ -5,9 +5,11 @@ class RigidRegistration(registration.Registration):
     def __init__(self):
         pass
 
-    def register(self, reference, source):
-
-        pass
+    # TODO: refactor or use
+    # def register(self, surfaceLMData, xrayLMData, mriLMData, actors):
+    #     ST_XRay_Transrigid = self.SurfaceXRayRegistration(surfaceLMData, xrayLMData)
+    #     MRI_XRay_Transrigid = self.MRIXRayRegistration(mriLMData, xrayLMData)
+    #     return ST_XRay_Transrigid, MRI_XRay_Transrigid
 
     def SurfaceXRayRegistration(self, surfaceLMData, xrayLMData):
 
@@ -48,6 +50,46 @@ class RigidRegistration(registration.Registration):
         Transrigid.SetModeToRigidBody()
         Transrigid.Update()
 
+        return Transrigid
+
+    def MRIXRayRegistration(self, mriLMData, xrayLMData):
+        # Sort Data by name
+        mriLMData.sort(key=operator.itemgetter('name'))
+        xrayLMData.sort(key=operator.itemgetter('name'))
+
+
+        # matching points extraction
+        landmarkXrayPositions = set()
+        landmarkMRIPositions = set()
+
+
+        for data in xrayLMData:
+            landmarkXrayPositions.add(data['name'])
+
+        for data in mriLMData:
+            landmarkMRIPositions.add(data['name'])
+
+        matchingPosition = landmarkMRIPositions.intersection(landmarkXrayPositions)
+
+        # Points to vtkPoints
+        xrayLMPoints = vtk.vtkPoints()
+        surfaceLMPoints = vtk.vtkPoints()
+        for data in mriLMData:
+            if data['name'] in matchingPosition:
+                surfaceLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
+
+        for data in xrayLMData:
+            if data['name'] in matchingPosition:
+                xrayLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
+
+
+        # 1st register the topo to the xray using tps and external landmarks
+        # find the rigid registration using correspondances
+        Transrigid = vtk.vtkLandmarkTransform()
+        Transrigid.SetSourceLandmarks(surfaceLMPoints)
+        Transrigid.SetTargetLandmarks(xrayLMPoints)
+        Transrigid.SetModeToRigidBody()
+        Transrigid.Update()
         return Transrigid
 
 

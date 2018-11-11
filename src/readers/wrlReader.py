@@ -1,3 +1,4 @@
+import json
 import vtk
 from src.readers import reader
 
@@ -58,6 +59,7 @@ class WRLReader(reader.Reader):
                     capteurs = data
                 else:
                     vertebrae.append(data)
+        vertebrae = self.process(vertebrae)
         return vertebrae, capteurs
 
     #### Helper Methods ####
@@ -97,3 +99,14 @@ class WRLReader(reader.Reader):
             landmark['t'] = float(coordinates[3].strip())
             list_external_landmarks.append(landmark)
         return list_external_landmarks
+
+    def process(self, vertebrae):
+        processed_landmarks = []
+        for vertebra in vertebrae:
+            if "Vertebre" in vertebra['name']:
+                id = vertebra['name'][-2:]
+                for point in vertebra['points']:
+                    # point['name'] = vertebra['name']+"-"+point['name']
+                    point['name'] = id+"-"+point['name']
+                    processed_landmarks.append(point)
+        return processed_landmarks

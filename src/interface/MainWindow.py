@@ -143,7 +143,6 @@ class Ui_MainWindow(QMainWindow):
         self.actionDocumentation.setText(_translate("MainWindow", "Documentation", None))
         self.actionLicense.setText(_translate("MainWindow", "License", None))
 
-
     def createLoadLayout(self):
         self.loadLayout = QtWidgets.QVBoxLayout()
         self.loadLayout.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
@@ -181,8 +180,6 @@ class Ui_MainWindow(QMainWindow):
         #MRI Text
         self.mriLoadText = QtWidgets.QLabel(self.centralwidget)
         self.mriLoadText.setFont(loadFont)
-        # self.mriLoadText = QtWidgets.QLineEdit(self.centralwidget)
-        # self.mriLoadText.setEnabled(False)
         self.mriLoadText.setObjectName("mriLoadText")
         self.mriLoadText.setText("No MRI directory selected...")
         self.loadLayout.addWidget(self.mriLoadText)
@@ -258,7 +255,7 @@ class Ui_MainWindow(QMainWindow):
 
         #Rigid Registration Button
         self.rigidRegistrationButton = QtWidgets.QPushButton(self.centralwidget)
-        self.rigidRegistrationButton.setEnabled(True)
+        self.rigidRegistrationButton.setEnabled(False)
         self.rigidRegistrationButton.setObjectName("rigidRegistrationButton")
         self.registrationLayout.addWidget(self.rigidRegistrationButton)
         self.rigidRegistrationButton.clicked.connect(self.selectRigitRegister)
@@ -436,13 +433,15 @@ class Ui_MainWindow(QMainWindow):
                 self.currentSliceValue = self.sliceSpinBox.value()
                 self.mriCheckBox.setEnabled(True)
                 self.mriCheckBox.setChecked(True)
-
+                self.controller.check['MRI'] = True
+                self.controller.setMRIDirectory(dirName)
+                self.controller.executeReader("MRI")
         else:
             self.mriCheckBox.setEnabled(False)
             self.mriCheckBox.setChecked(False)
+            self.controller.check['MRI'] = False
             self.mriLoadText.setText("No MRI directory selected...")
-        self.controller.setMRIDirectory(dirName)
-        self.controller.executeReader("MRI")
+        self.checkRigidRegistration()
 
     def selectMRILandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
@@ -450,9 +449,12 @@ class Ui_MainWindow(QMainWindow):
             self.controller.loadLandmarks("MRI_LM", filename[0])
             self.mriLMCheckBox.setEnabled(True)
             self.mriLMCheckBox.setChecked(True)
+            self.controller.check['MRI_LM'] = True
         else:
             self.mriLMCheckBox.setEnabled(False)
             self.mriLMCheckBox.setChecked(False)
+            self.controller.check['MRI_LM'] = False
+        self.checkRigidRegistration()
 
     def selectXRayLandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
@@ -462,9 +464,15 @@ class Ui_MainWindow(QMainWindow):
             self.xRayExtLMCheckBox.setChecked(True)
             self.xRayVertLMCheckBox.setEnabled(True)
             self.xRayVertLMCheckBox.setChecked(True)
+            self.controller.check['XRay_LM'] = True
+
         else:
             self.surfaceExtLMCheckBox.setEnabled(False)
             self.surfaceExtLMCheckBox.setChecked(False)
+            self.xRayVertLMCheckBox.setEnabled(False)
+            self.xRayVertLMCheckBox.setChecked(False)
+            self.controller.check['XRay_LM'] = False
+        self.checkRigidRegistration()
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
@@ -474,10 +482,13 @@ class Ui_MainWindow(QMainWindow):
             self.controller.executeReader("XRay")
             self.xRayCheckBox.setEnabled(True)
             self.xRayCheckBox.setChecked(True)
+            self.controller.check['XRay'] = True
         else:
             self.xRayCheckBox.setEnabled(False)
             self.xRayCheckBox.setChecked(False)
+            self.controller.check['XRay'] = False
             self.xrayLoadText.setText("No X-ray file selected...")
+        self.checkRigidRegistration()
 
     def selectSurfaceTopographyLandmark(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
@@ -485,10 +496,12 @@ class Ui_MainWindow(QMainWindow):
             self.controller.loadLandmarks("SurfaceLM", filename[0])
             self.surfaceExtLMCheckBox.setEnabled(True)
             self.surfaceExtLMCheckBox.setChecked(True)
+            self.controller.check['ST_LM'] = True
         else:
             self.surfaceExtLMCheckBox.setEnabled(False)
             self.surfaceExtLMCheckBox.setChecked(False)
-
+            self.controller.check['ST_LM'] = False
+        self.checkRigidRegistration()
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")
@@ -498,10 +511,13 @@ class Ui_MainWindow(QMainWindow):
             self.controller.executeReader("Surface")
             self.stCheckBox.setEnabled(True)
             self.stCheckBox.setChecked(True)
+            self.controller.check['ST'] = True
         else:
             self.stCheckBox.setEnabled(False)
             self.stCheckBox.setChecked(False)
+            self.controller.check['ST'] = False
             self.stLoadText.setText("No ST file selected...")
+        self.checkRigidRegistration()
 
     def checkXRay(self):
         self.controller.checkboxUpdate('XRay', self.xRayCheckBox.isChecked())
@@ -526,7 +542,7 @@ class Ui_MainWindow(QMainWindow):
 
 
     def checkRigidRegistration(self):
-        if self.controller.setWRL and self.controller.setST:
+        if self.controller.checkRequirementsForRigidRegistration():
             self.rigidRegistrationButton.setEnabled(True)
 
     def checkArticulatedRegistration(self):
@@ -546,45 +562,8 @@ class Ui_MainWindow(QMainWindow):
         dialog.exec()
 
     def changeSlice(self):
-        transform = vtk.vtkTransform()
-        sliceSpacing = self.controller.mriReader.thickness
-        transform.Translate(0, 0, self.currentSliceValue*sliceSpacing)
-        self.controller.mriReader.reslice.SetResliceTransform(transform)
+        self.controller.changeSlice(self.sliceSpinBox.value())
 
-        if self.sliceSpinBox.value() > self.currentSliceValue:
-            delta = self.sliceSpinBox.value() - self.currentSliceValue
-            self.currentSliceValue = self.sliceSpinBox.value()
-            self.upSlice(delta)
-        else:
-            delta = self.currentSliceValue - self.sliceSpinBox.value()
-            self.currentSliceValue = self.sliceSpinBox.value()
-            self.downSlice(delta)
-
-    def upSlice(self, delta):
-        self.controller.mriReader.reslice.Update()
-        sliceSpacing = self.controller.mriReader.thickness
-        matrix = self.controller.mriReader.reslice.GetResliceAxes()
-
-        # move the center point that we are slicing through
-        center = matrix.MultiplyPoint((0, 0, delta*sliceSpacing, 1))
-        matrix.SetElement(0, 3, center[0])
-        matrix.SetElement(1, 3, center[1])
-        matrix.SetElement(2, 3, center[2])
-
-        self.vtkWidget.Render()
-
-    def downSlice(self, delta):
-        self.controller.mriReader.reslice.Update()
-        sliceSpacing = self.controller.mriReader.reslice.GetOutput().GetSpacing()[2]
-        matrix = self.controller.mriReader.reslice.GetResliceAxes()
-
-        # move the center point that we are slicing through
-        center = matrix.MultiplyPoint((0, 0, -delta*sliceSpacing, 1))
-        matrix.SetElement(0, 3, center[0])
-        matrix.SetElement(1, 3, center[1])
-        matrix.SetElement(2, 3, center[2])
-
-        self.vtkWidget.Render()
 
     def selectRigitRegister(self):
         self.controller.performRigitRegistration()

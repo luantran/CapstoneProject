@@ -31,7 +31,7 @@ class MRIReader(reader.Reader):
         x0, y0, z0 = reader.GetOutput().GetOrigin()
         center = [x0 + xSpacing * 0.5 * (xMin + xMax),
                   y0 + ySpacing * 0.5 * (yMin + yMax),
-                  27]
+                  z0 - zMax * zSpacing]
 
         # Matrices for axial, coronal, sagittal, oblique view orientations
         axial = vtk.vtkMatrix4x4()
@@ -58,8 +58,6 @@ class MRIReader(reader.Reader):
         self.reslice.SetOutputDimensionality(3)
         self.reslice.SetResliceAxes(axial)
         self.reslice.SetInterpolationModeToCubic()
-        # self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
-        # self.reslice.SetOutputSpacing(xSpacing, ySpacing, zSpacing)
 
         # Create a greyscale lookup table
         table = vtk.vtkLookupTable()
@@ -76,7 +74,7 @@ class MRIReader(reader.Reader):
 
         # Display the image
         actor = vtk.vtkImageActor()
-        actor.GetProperty().SetOpacity(0.5)
+        actor.GetProperty().SetOpacity(0.65)
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
 
@@ -110,5 +108,4 @@ class MRIReader(reader.Reader):
                     lstFilesDICOM.append(os.path.join(dirName, filename))
         RefDs = dicom.read_file(lstFilesDICOM[0])
         spacing = float(RefDs.SliceThickness)
-        print(spacing)
         return spacing

@@ -38,16 +38,24 @@ class Controller(object):
 
     def loadLandmarks(self, type, filename):
         if type is "XRayLM":
-            print("Loading MRI landmarks")
+            print("Loading XRay landmarks")
             vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
-            lm_actors = []
+            ext_lm_actors = []
             self.landmarkPoints['XRay'] = capteurs
+
             for landmark in capteurs:
-                lm_actors.append(self.create_spheres_landmarks(landmark, "green"))
-                self.view.ren.AddActor(lm_actors[-1])
+                ext_lm_actors.append(self.create_spheres_landmarks(landmark, "green", 10.0))
+                self.view.ren.AddActor(ext_lm_actors[-1])
+            vertebrae_lm_actors = []
+            for vertebra in vertebrae:
+                for point in vertebra['points']:
+                    vertebrae_lm_actors.append(self.create_spheres_landmarks(point, "white", 5.0))
+                    self.view.ren.AddActor(vertebrae_lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
-            self.actors[type] = lm_actors
+
+            self.actors[type] = ext_lm_actors
+            self.actors["vertebrae_"+type] = vertebrae_lm_actors
 
         elif type is "SurfaceLM":
             print("Loading Surface landmarks...")
@@ -55,7 +63,7 @@ class Controller(object):
             lm_actors = []
             self.landmarkPoints['Surface'] = ST_landmarks
             for landmark in ST_landmarks:
-                lm_actors.append(self.create_spheres_landmarks(landmark, "red"))
+                lm_actors.append(self.create_spheres_landmarks(landmark, "violet", 10.0))
                 self.view.ren.AddActor(lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
@@ -66,7 +74,7 @@ class Controller(object):
             MRI_landmarks = self.mriReader.getLandmarks(filename)
             lm_actors = []
             for landmark in MRI_landmarks:
-                lm_actors.append(self.create_spheres_landmarks(landmark, "blue"))
+                lm_actors.append(self.create_spheres_landmarks(landmark, "blue", 5.0))
                 self.view.ren.AddActor(lm_actors[-1])
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
@@ -133,12 +141,12 @@ class Controller(object):
 
         self.view.vtkWidget.Render()
 
-    def create_spheres_landmarks(self, landmark, color):
+    def create_spheres_landmarks(self, landmark, color, size):
         sphere_source = vtk.vtkSphereSource()
         sphere_source.SetThetaResolution(64)
         sphere_source.SetPhiResolution(64)
         sphere_source.SetCenter(landmark['x'], landmark['y'], landmark['z'])
-        sphere_source.SetRadius(10.0)
+        sphere_source.SetRadius(size)
         sphere_mapper = vtk.vtkPolyDataMapper()
         sphere_mapper.SetInputConnection(sphere_source.GetOutputPort())
         actor = vtk.vtkActor()
@@ -149,6 +157,10 @@ class Controller(object):
             actor.GetProperty().SetColor(0.0, 1.0, 0.0)
         elif color == "blue":
             actor.GetProperty().SetColor(0.0, 0.0, 1.0)
+        elif color == "white":
+            actor.GetProperty().SetColor(1.0, 1.0, 1.0)
+        elif color == "violet":
+            actor.GetProperty().SetColor(0.58, 0.0, 0.82)
         return actor
 
 

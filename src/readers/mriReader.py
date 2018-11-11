@@ -31,10 +31,9 @@ class MRIReader(reader.Reader):
         x0, y0, z0 = reader.GetOutput().GetOrigin()
         center = [x0 + xSpacing * 0.5 * (xMin + xMax),
                   y0 + ySpacing * 0.5 * (yMin + yMax),
-                  z0 + zSpacing * 0.5 * (zMin + zMax)]
+                  27]
 
         # Matrices for axial, coronal, sagittal, oblique view orientations
-        center= [0,0,0]
         axial = vtk.vtkMatrix4x4()
         axial.DeepCopy((1, 0, 0, center[0],
                         0, 1, 0, center[1],
@@ -59,8 +58,8 @@ class MRIReader(reader.Reader):
         self.reslice.SetOutputDimensionality(3)
         self.reslice.SetResliceAxes(axial)
         self.reslice.SetInterpolationModeToCubic()
-        self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
-        self.reslice.SetOutputSpacing(xSpacing, ySpacing, zSpacing)
+        # self.reslice.SetOutputExtent(xMin, xMax, yMin, yMax, zMin, zMax)
+        # self.reslice.SetOutputSpacing(xSpacing, ySpacing, zSpacing)
 
         # Create a greyscale lookup table
         table = vtk.vtkLookupTable()
@@ -79,6 +78,7 @@ class MRIReader(reader.Reader):
         actor = vtk.vtkImageActor()
         actor.GetProperty().SetOpacity(0.5)
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
+
 
         return actor
 

@@ -3,6 +3,7 @@ import vtk
 import pydicom as dicom
 import os
 
+
 class MRIReader(reader.Reader):
 
     ########## Overriding abstract methods ##########
@@ -32,11 +33,28 @@ class MRIReader(reader.Reader):
         center = [x0 + xSpacing * 0.5 * (xMin + xMax),
                   y0 + ySpacing * 0.5 * (yMin + yMax),
                   z0 - zMax * zSpacing]
+        if x0 == 0:
+            x0, y0 = self.get_origin(self.filepath)
+            """
+            x0 = -(x0 + xSpacing * 0.5 * (xMin + xMax)) #447
+            y0 = (y0 + ySpacing * 0.5 * (yMin + yMax)) #311 is ok
+            """
+        print(reader.GetOutput().GetOrigin())
+
+        center = [-x0,
+                  y0 + ySpacing * (yMin + yMax),
+                  z0 - (zMax) * zSpacing]
+
+        """x0 + xSpacing * 0.5 * (xMin + xMax),
+                  y0 + ySpacing * 0.5 * (yMin + yMax),"""
+        print(center)
+        # this should be the center: [255.85492420197, 206.88938069343115, -324.0]
+
 
         # Matrices for axial, coronal, sagittal, oblique view orientations
         axial = vtk.vtkMatrix4x4()
         axial.DeepCopy((1, 0, 0, center[0],
-                        0, 1, 0, center[1],
+                        0, -1, 0, center[1],
                         0, 0, 1, center[2],
                         0, 0, 0, 1))
 
@@ -51,6 +69,7 @@ class MRIReader(reader.Reader):
                            1, 0, 0, center[1],
                            0, -1, 0, center[2],
                            0, 0, 0, 1))
+
 
         # Extract a slice in the desired orientation
         self.reslice = vtk.vtkImageReslice()
@@ -77,11 +96,10 @@ class MRIReader(reader.Reader):
         actor.GetProperty().SetOpacity(0.65)
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
-
         return actor
 
     def getLandmarks(self, filepath):
-        #filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
+        # filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
         landmarks = []
         with open(filepath, 'r') as f:
             lines = f.read()
@@ -109,3 +127,13 @@ class MRIReader(reader.Reader):
         RefDs = dicom.read_file(lstFilesDICOM[0])
         spacing = float(RefDs.SliceThickness)
         return spacing
+
+    def get_origin(self, filepath):
+        lstFilesDICOM = []
+        for dirName, subdirList, fileList in os.walk(filepath):
+            for filename in fileList:
+                if ".dcm" in filename.lower() or ".ima" in filename.lower():  # check whether the file's DICOM
+                    lstFilesDICOM.append(os.path.join(dirName, filename))
+        RefDs = dicom.read_file(lstFilesDICOM[0])
+        origin = [float(RefDs[('0020', '0032')].value[0]), float(RefDs[('0020', '0032')].value[1])]
+        return origin

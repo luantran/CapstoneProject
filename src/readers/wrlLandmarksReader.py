@@ -1,8 +1,8 @@
 import vtk
-from src.readers import reader
+from src.readers import landmarksReader
 
 
-class WRLReaderLM(reader.Reader):
+class WRLReaderLM(landmarksReader.LandmarksReader):
 
     ########## Overriding abstract methods ##########
 
@@ -14,7 +14,7 @@ class WRLReaderLM(reader.Reader):
 
     def getPolyData(self):
         # Some of the function are comment becasue they are not used
-        vertebrae_points, capteurs_points = self.getVTKPoints(self.filepath)
+        vertebrae_points, capteurs_points = self.getVTKPoints()
         # poly data
         vertebrae_polydata = vtk.vtkPolyData()
         vertebrae_polydata.SetPoints(vertebrae_points)
@@ -24,28 +24,21 @@ class WRLReaderLM(reader.Reader):
         return vertebrae_polydata, capteurs_polydata
 
     def getVTKActor(self):
-        self.actors = []
-        for polydata in self.getPolyData():
-            sphere_source = vtk.vtkSphereSource()
-            glyph3D = vtk.vtkGlyph3D()
-            glyph3D.SetSourceConnection(sphere_source.GetOutputPort())
-            glyph3D.SetInputData(polydata)
-            glyph3D.Update()
-            sphere_source.SetThetaResolution(64)
-            sphere_source.SetPhiResolution(64)
-            sphere_source.SetRadius(10)
+        self.actor = []
+        polydatas = self.getPolyData()
+        vert_actor = super().getVTKActor(5, "white", polydatas[0])
+        capt_actor = super().getVTKActor(10, "violet", polydatas[1])
+        self.actor.append(vert_actor)
+        self.actor.append(capt_actor)
+        return self.actor
 
-            mapper = vtk.vtkPolyDataMapper()
-            mapper.SetInputConnection(glyph3D.GetOutputPort())
-            mapper.Update()
+    def getVTKPoints(self):
+        landmarks = self.getLandmarks(self.filepath)
+        self.vertebrae_points = super().getVTKPoints(landmarks[0])
+        self.capteurs_points = super().getVTKPoints(landmarks[1])
+        return self.vertebrae_points, self.capteurs_points
 
-            actor = vtk.vtkActor()
-            actor.SetMapper(mapper)
-            actor.GetProperty().SetColor(0.0, 1.0, 0.0)
-            self.actors.append(actor)
-        return self.actors
-
-    def getVTKPoints(self, filename):
+    def getLandmarks(self, filename):
         vertebrae = []
         capteurs = []
         with open(filename, 'r') as f:
@@ -59,16 +52,8 @@ class WRLReaderLM(reader.Reader):
                 else:
                     vertebrae.append(data)
         vertebrae = self.process(vertebrae)
-
-        self.vertebrae_points = vtk.vtkPoints()
-        for point in vertebrae:
-            self.vertebrae_points.InsertNextPoint(point['x'], point['y'], point['z'])
-
-        self.capteurs_points = vtk.vtkPoints()
-        for point in capteurs:
-            self.capteurs_points.InsertNextPoint(point['x'], point['y'], point['z'])
-
-        return self.vertebrae_points, self.capteurs_points
+        self.landmarks = [vertebrae, capteurs]
+        return self.landmarks
 
     #### Helper Methods ####
 

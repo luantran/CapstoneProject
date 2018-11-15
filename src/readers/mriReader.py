@@ -14,6 +14,9 @@ class MRIReader(reader.Reader):
     def getPolyData(self):
         return
 
+    def getLandmarks(self, filename):
+        pass
+
     def getVTKActor(self):
         reader = vtk.vtkDICOMImageReader()
         reader.SetDirectoryName(self.filepath)
@@ -39,7 +42,6 @@ class MRIReader(reader.Reader):
             x0 = -(x0 + xSpacing * 0.5 * (xMin + xMax)) #447
             y0 = (y0 + ySpacing * 0.5 * (yMin + yMax)) #311 is ok
             """
-        print(reader.GetOutput().GetOrigin())
 
         center = [-x0,
                   y0 + ySpacing * (yMin + yMax),
@@ -47,7 +49,6 @@ class MRIReader(reader.Reader):
 
         """x0 + xSpacing * 0.5 * (xMin + xMax),
                   y0 + ySpacing * 0.5 * (yMin + yMax),"""
-        print(center)
         # this should be the center: [255.85492420197, 206.88938069343115, -324.0]
 
 
@@ -97,26 +98,6 @@ class MRIReader(reader.Reader):
         actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
         return actor
-
-    def getLandmarks(self, filepath):
-        # filepath = '/home/luantran/EncryptedCapstoneData/2353729points_all.scp'
-        landmarks = []
-        with open(filepath, 'r') as f:
-            lines = f.read()
-            data_objects = lines.split("\n\n")
-            data_objects = data_objects[1:]
-            for object in data_objects:
-                landmark = {}
-                raw_data = object.split("\n")[0].split("Point:")[1]
-                actual_data = raw_data.strip().split("create")
-
-                landmark['name'] = actual_data[0].strip().replace('"', '')
-                coordinates = actual_data[1].strip().split()
-                landmark['x'] = float(coordinates[0].strip())
-                landmark['y'] = float(coordinates[1].strip())
-                landmark['z'] = float(coordinates[2].strip())
-                landmarks.append(landmark)
-        return landmarks
 
     def get_spacing(self, filepath):
         lstFilesDICOM = []

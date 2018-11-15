@@ -1,5 +1,8 @@
-from src.readers import szeReader, wrlReader, mriReader
+from src.readers import szeReader, wrlReader, mriReader, szeLandmarksReader, mriLandmarksReader, wrlLandmarksReader
 from src.registration import rigidRegistration
+from src.registration import articulatedRegistration
+import operator
+
 import vtk
 
 
@@ -11,7 +14,16 @@ class Controller(object):
         self.wrlReader = wrlReader.WRLReader()
         self.szeReader = szeReader.SZEReader()
         self.mriReader = mriReader.MRIReader()
+        self.wrlLMReader = wrlLandmarksReader.WRLReaderLM()
+        self.szeLMReader = szeLandmarksReader.SZEReaderLM()
+        self.mriLMReader = mriLandmarksReader.MRIReaderLM()
+        self.readers = {}
+        self.readers['XRay'] = wrlReader
+        self.readers['MRI'] = mriReader
+        self.readers['Surface'] = szeReader
+
         self.rigid = rigidRegistration.RigidRegistration()
+        self.articulated = articulatedRegistration.ArticulatedRegistration()
         self.xray_actor = None
         self.surface_actor = None
         self.mri_actor = None
@@ -44,49 +56,75 @@ class Controller(object):
     def loadLandmarks(self, type, filename):
         if type in self.actors.keys():
             self.removeActors(self.actors[type], True)
-        if type is "XRayLM":
+        if type is "XRay_LM":
             print("Loading XRay landmarks")
-            vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
-            ext_lm_actors = []
-            self.landmarkPoints['XRay_Ext'] = capteurs
-            self.landmarkPoints['XRay_Vert'] = vertebrae
+            # vertebrae, capteurs = self.wrlReader.getLandmarks(filename)
+            # ext_lm_actors = []
+            # self.landmarkPoints['XRay_Ext'] = capteurs
+            # self.landmarkPoints['XRay_Vert'] = vertebrae
+            #
+            # for landmark in capteurs:
+            #     ext_lm_actors.append(self.create_spheres_landmarks(landmark, "green", 10.0))
+            #     self.view.ren.AddActor(ext_lm_actors[-1])
+            # vertebrae_lm_actors = []
+            # for point in vertebrae:
+            #     vertebrae_lm_actors.append(self.create_spheres_landmarks(point, "white", 5.0))
+            #     self.view.ren.AddActor(vertebrae_lm_actors[-1])
+            # self.view.ren.ResetCamera()
+            # self.view.vtkWidget.Render()
+            #
+            # self.actors[type] = ext_lm_actors
+            # self.actors["vertebrae_"+type] = vertebrae_lm_actors
 
-            for landmark in capteurs:
-                ext_lm_actors.append(self.create_spheres_landmarks(landmark, "green", 10.0))
-                self.view.ren.AddActor(ext_lm_actors[-1])
-            vertebrae_lm_actors = []
-            for point in vertebrae:
-                vertebrae_lm_actors.append(self.create_spheres_landmarks(point, "white", 5.0))
-                self.view.ren.AddActor(vertebrae_lm_actors[-1])
+            self.wrlLMReader.setFilePath(filename)
+            vert_actor, capt_actor = self.wrlLMReader.getVTKActor()
+            self.view.ren.AddActor(capt_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
+            self.actors[type] = capt_actor
 
-            self.actors[type] = ext_lm_actors
-            self.actors["vertebrae_"+type] = vertebrae_lm_actors
+            self.view.ren.AddActor(vert_actor)
+            self.view.ren.ResetCamera()
+            self.view.vtkWidget.Render()
+            self.actors["vertebrae_"+type] = vert_actor
 
-        elif type is "SurfaceLM":
+        elif type is "Surface_LM":
             print("Loading Surface landmarks...")
-            ST_landmarks = self.szeReader.getLandmarks(filename)
-            lm_actors = []
-            self.landmarkPoints['Surface'] = ST_landmarks
-            for landmark in ST_landmarks:
-                lm_actors.append(self.create_spheres_landmarks(landmark, "violet", 10.0))
-                self.view.ren.AddActor(lm_actors[-1])
+            self.szeLMReader.setFilePath(filename)
+            surface_lm_actor = self.szeLMReader.getVTKActor()
+            print(surface_lm_actor)
+            self.view.ren.AddActor(surface_lm_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
-            self.actors[type] = lm_actors
+            self.actors[type] = surface_lm_actor
+
+            # ST_landmarks = self.szeReader.getLandmarks(filename)
+            # lm_actors = []
+            # self.landmarkPoints['Surface'] = ST_landmarks
+            # for landmark in ST_landmarks:
+            #     lm_actors.append(self.create_spheres_landmarks(landmark, "violet", 10.0))
+            #     self.view.ren.AddActor(lm_actors[-1])
+            # self.view.ren.ResetCamera()
+            # self.view.vtkWidget.Render()
+            # self.actors[type] = lm_actors
 
         elif type is "MRI_LM":
             print("loading MRI landmarks...")
-            MRI_landmarks = self.mriReader.getLandmarks(filename)
-            lm_actors = []
-            self.landmarkPoints['MRI'] = MRI_landmarks
-            for landmark in MRI_landmarks:
-                lm_actors.append(self.create_spheres_landmarks(landmark, "blue", 5.0))
-                self.view.ren.AddActor(lm_actors[-1])
+            self.mriLMReader.setFilePath(filename)
+            mri_lm_actor = self.mriLMReader.getVTKActor()
+            self.view.ren.AddActor(mri_lm_actor)
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
-            self.actors[type] = lm_actors
+            self.actors[type] = mri_lm_actor
+            # MRI_landmarks = self.mriReader.getLandmarks(filename)
+            # lm_actors = []
+            # self.landmarkPoints['MRI'] = MRI_landmarks
+            # for landmark in MRI_landmarks:
+            #     lm_actors.append(self.create_spheres_landmarks(landmark, "blue", 5.0))
+            #     self.view.ren.AddActor(lm_actors[-1])
+            # self.view.ren.ResetCamera()
+            # self.view.vtkWidget.Render()
+            # self.actors[type] = lm_actors
 
     def executeReader(self, type):
         if type in self.actors.keys():
@@ -120,44 +158,64 @@ class Controller(object):
 
     def checkboxUpdate(self, type, isChecked):
         # Checkbox update for modalities
-        if type in self.actors and type[-2:] != 'LM':
+        if type in self.actors:
             if isChecked:
                 self.actors[type].VisibilityOn()
             else:
                 self.actors[type].VisibilityOff()
-        # Checkbox update for landmarks. Type which ends with LM are landmarks
-        elif type in self.actors and type[-2:] == 'LM':
-            if isChecked:
-                for actor in self.actors[type]:
-                    actor.VisibilityOn()
-            else:
-                for actor in self.actors[type]:
-                    actor.VisibilityOff()
         self.view.vtkWidget.Render()
 
-    def performRigitRegistration(self):
+    def performRegistration(self, type):
         # check if we have all the actors needed for the registration:
         if ('MRI_LM' in self.actors and 'MRI' in self.actors and
-                'SurfaceLM' in self.actors and 'Surface' in self.actors
-                and 'XRayLM' in self.actors and 'XRay' in self.actors):
+                'Surface_LM' in self.actors and 'Surface' in self.actors
+                and 'XRay_LM' in self.actors and 'XRay' in self.actors):
 
             # Trandfrom Surface onto XRay
             # Get the Translation matrix
-            Transrigid = self.rigid.SurfaceXRayRegistration(self.landmarkPoints['Surface'], self.landmarkPoints['XRay_Ext'])
-            self.actors['Surface'].SetUserTransform(Transrigid)
+            if type == 'articulated':
+                ST_Xray_Trans = self.articulated.SurfaceXRayRegistration(self.landmarkPoints['Surface'], self.landmarkPoints['XRay_Ext'])
+                ftps_sze = vtk.vtkTransformPolyDataFilter()
+                ftps_sze.SetInputData(self.szeReader.getPolyData())
+                ftps_sze.SetTransform(ST_Xray_Trans)
 
-            # Transform Surface landmarks onto Xray landmarks
-            for actor in self.actors['SurfaceLM']:
-                actor.SetUserTransform(Transrigid)
+                actor = vtk.vtkActor()
+                # Rotate actor (adopted from Rola's code)
+                actor.RotateZ(-90)
+                actor.RotateX(90)
 
-            # Trandfrom Surface onto XRay
-            # Get the Translation matrix
-            Transrigid = self.rigid.MRIXRayRegistration(self.landmarkPoints['MRI'], self.landmarkPoints['XRay_Vert'])
-            self.actors['MRI'].SetUserTransform(Transrigid)
+                mapper = vtk.vtkPolyDataMapper()
+                mapper.SetInputConnection(ftps_sze.GetOutputPort())
 
+                actor.SetMapper(mapper)
+
+                actor.GetProperty().SetInterpolationToFlat()
+                actor.GetProperty().SetEdgeColor(1.0, 0.0, 0.0)
+                actor.GetProperty().SetOpacity(0.25)
+                actor.GetProperty().EdgeVisibilityOn()
+
+                self.view.ren.AddActor(actor)
+                self.view.ren.ResetCamera()
+                self.view.vtkWidget.Render()
+
+                ftps_sze.Update()
+
+            else:
+                ST_Xray_Trans = self.rigid.SurfaceXRayRegistration(self.landmarkPoints['Surface'], self.landmarkPoints['XRay_Ext'])
+                self.actors['Surface'].SetUserTransform(ST_Xray_Trans)
+                # Transform Surface landmarks onto Xray landmarks
+                for actor in self.actors['Surface_LM']:
+                    actor.SetUserTransform(ST_Xray_Trans)
+
+            MRI_XRay_Trans = self.rigid.MRIXRayRegistration(self.landmarkPoints['MRI'], self.landmarkPoints['XRay_Vert'])
+
+
+
+            # Trandfrom MRI onto XRay
+            self.actors['MRI'].SetUserTransform(MRI_XRay_Trans)
             # Transform Surface landmarks onto Xray landmarks
             for actor in self.actors['MRI_LM']:
-                actor.SetUserTransform(Transrigid)
+                actor.SetUserTransform(MRI_XRay_Trans)
 
         self.view.vtkWidget.Render()
 
@@ -224,7 +282,7 @@ class Controller(object):
 
         self.view.vtkWidget.Render()
 
-    def checkRequirementsForRigidRegistration(self):
+    def checkRequirementsForRegistration(self):
         for key, value in self.check.items():
             if value == False:
                 return False
@@ -236,6 +294,57 @@ class Controller(object):
                 self.view.ren.RemoveActor(actor)
         else:
             self.view.ren.RemoveActor(actors)
+
+    def reload(self):
+        print("Reloading")
+        for key in self.actors.keys():
+            if key[-2:] == 'LM':
+                self.removeActors(self.actors[key], True)
+            else:
+                self.removeActors(self.actors[key])
+        self.view.vtkWidget.Render()
+
+        if self.mriReader.filepath:
+            self.executeReader('MRI')
+        if self.szeReader.filepath:
+            self.executeReader('Surface')
+        if self.wrlReader.filepath:
+            self.executeReader('XRay')
+
+        if self.mriReader.landmarks_filepath:
+            self.loadLandmarks('MRI_LM', self.mriReader.landmarks_filepath)
+        if self.szeReader.landmarks_filepath:
+            self.loadLandmarks('Surface_LM', self.szeReader.landmarks_filepath)
+        if self.wrlReader.landmarks_filepath:
+            self.loadLandmarks('XRay_LM', self.wrlReader.landmarks_filepath)
+
+
+    # def process_st_xray_landmarks(self):
+    #     # Sort Data by name
+    #     self.landmarkPoints['Surface'].sort(key=operator.itemgetter('name'))
+    #     self.landmarkPoints['XRay_Ext'].sort(key=operator.itemgetter('name'))
+    #
+    #     # matching points extraction
+    #     landmarkXrayPositions = set()
+    #     landmarkSurfacePositions = set()
+    #
+    #     for data in self.landmarkPoints['XRay_Ext']:
+    #         landmarkXrayPositions.add(data['name'])
+    #
+    #     for data in self.landmarkPoints['Surface']:
+    #         landmarkSurfacePositions.add(data['name'])
+    #
+    #     matchingPosition = landmarkSurfacePositions.intersection(landmarkXrayPositions)
+    #     st_landmarks_to_remove = []
+    #     for data in self.landmarkPoints['Surface']:rigid
+    #         if data['name'] not in matchingPosition:
+    #             st_landmarks_to_remove.append(data)
+    #     for el in st_landmarks_to_remove:
+    #         self.landmarkPoints['Surface']
+    #
+    #     for data in self.landmarkPoints['XRay_Ext']:
+    #         if data['name'] in matchingPosition:
+    #             xrayLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
 
 
 

@@ -177,12 +177,15 @@ class Controller(object):
                 # Transform Surface landmarks onto Xray landmarks
                 self.actors['Surface_LM'].SetUserTransform(ST_Xray_Trans)
 
-            MRI_XRay_Trans = self.rigid.MRIXRayRegistration(self.mriLMReader.landmarks, self.wrlLMReader.landmarks[0])
+            # MRI_Xray_Trans = self.rigid.MRIXRayRegistration(self.mriLMReader.points, self.wrlLMReader)
+            registered_actors = self.rigid.MRIXRayRegistration(self.mriLMReader, self.wrlLMReader, self.mriReader)
 
             # Trandfrom MRI onto XRay
-            self.actors['MRI'].SetUserTransform(MRI_XRay_Trans)
+            # self.actors['MRI'].SetUserTransform(MRI_Xray_Trans)
+            self.actors['MRI'] = registered_actors[0]
             # Transform Surface landmarks onto Xray landmarks
-            self.actors['MRI_LM'].SetUserTransform(MRI_XRay_Trans)
+            # self.actors['MRI_LM'].SetUserTransform(MRI_Xray_Trans)
+            self.actors['MRI_LM'] = registered_actors[1]
 
         self.view.vtkWidget.Render()
 

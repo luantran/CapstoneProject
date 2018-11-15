@@ -52,45 +52,47 @@ class RigidRegistration(registration.Registration):
 
         return Transrigid
 
-    def MRIXRayRegistration(self, mriLMData, xrayLMData):
+    def MRIXRayRegistration(self, mriLMReader, wrlLMReader, mriReader):
         # Sort Data by name
-        mriLMData.sort(key=operator.itemgetter('name'))
-        xrayLMData.sort(key=operator.itemgetter('name'))
+        # mriLMData.sort(key=operator.itemgetter('name'))
+        # xrayLMData.sort(key=operator.itemgetter('name'))
+        #
+        #
+        # # matching points extraction
+        # landmarkXrayPositions = set()
+        # landmarkMRIPositions = set()
+        #
+        #
+        # for data in xrayLMData:
+        #     landmarkXrayPositions.add(data['name'])
+        #
+        # for data in mriLMData:
+        #     landmarkMRIPositions.add(data['name'])
 
-
-        # matching points extraction
-        landmarkXrayPositions = set()
-        landmarkMRIPositions = set()
-
-
-        for data in xrayLMData:
-            landmarkXrayPositions.add(data['name'])
-
-        for data in mriLMData:
-            landmarkMRIPositions.add(data['name'])
-
-        matchingPosition = landmarkMRIPositions.intersection(landmarkXrayPositions)
+        # matchingPosition = landmarkMRIPositions.intersection(landmarkXrayPositions)
 
         # Points to vtkPoints
-        xrayLMPoints = vtk.vtkPoints()
-        surfaceLMPoints = vtk.vtkPoints()
-        for data in mriLMData:
-            if data['name'] in matchingPosition:
-                surfaceLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
-
-        for data in xrayLMData:
-            if data['name'] in matchingPosition:
-                xrayLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
+        # xrayLMPoints = vtk.vtkPoints()
+        # surfaceLMPoints = vtk.vtkPoints()
+        # for data in mriLMData:
+        #     if data['name'] in matchingPosition:
+        #         surfaceLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
+        #
+        # for data in xrayLMData:
+        #     if data['name'] in matchingPosition:
+        #         xrayLMPoints.InsertNextPoint(data['x'], data['y'], data['z'])
 
 
         # 1st register the topo to the xray using tps and external landmarks
         # find the rigid registration using correspondances
         Transrigid = vtk.vtkLandmarkTransform()
-        Transrigid.SetSourceLandmarks(surfaceLMPoints)
-        Transrigid.SetTargetLandmarks(xrayLMPoints)
+        Transrigid.SetSourceLandmarks(mriLMReader.points)
+        Transrigid.SetTargetLandmarks(wrlLMReader.vertebrae_points)
         Transrigid.SetModeToRigidBody()
         Transrigid.Update()
-        return Transrigid
+        mriReader.actor.SetUserTransform(Transrigid)
+        mriLMReader.actor.SetUserTransform(Transrigid)
+        return mriReader.actor, mriLMReader.actor
 
 
 

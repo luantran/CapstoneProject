@@ -12,13 +12,13 @@ class WRLReaderLM(landmarksReader.LandmarksReader):
 
     def getPolyData(self):
         # Some of the function are comment becasue they are not used
-        vertebrae_points, capteurs_points = self.getVTKPoints()
+        self.vertebrae_points, self.capteurs_points = self.getVTKPoints()
         # poly data
         self.vertebrae_polydata = vtk.vtkPolyData()
-        self.vertebrae_polydata.SetPoints(vertebrae_points)
+        self.vertebrae_polydata.SetPoints(self.vertebrae_points)
 
         self.capteurs_polydata = vtk.vtkPolyData()
-        self.capteurs_polydata.SetPoints(capteurs_points)
+        self.capteurs_polydata.SetPoints(self.capteurs_points)
         return self.vertebrae_polydata, self.capteurs_polydata
 
     def getVTKActor(self):
@@ -106,19 +106,19 @@ class WRLReaderLM(landmarksReader.LandmarksReader):
         return processed_landmarks
 
     def updateVertVTKActor(self):
-        points = vtk.vtkPoints()
+        self.vertebrae_points = vtk.vtkPoints()
         for point in self.landmarks[0]:
-            points.InsertNextPoint(point['x'], point['y'], point['z'])
+            self.vertebrae_points.InsertNextPoint(point['x'], point['y'], point['z'])
 
-        self.vertebrae_polydata.SetPoints(points)
+        self.vertebrae_polydata.SetPoints(self.vertebrae_points)
         self.vertebrae_polydata.GetPoints().Modified()
         return self.actor[0]
 
     def updateExtVTKActor(self):
-        points = vtk.vtkPoints()
+        self.capteurs_points = vtk.vtkPoints()
         for point in self.landmarks[1]:
-            points.InsertNextPoint(point['x'], point['y'], point['z'])
+            self.capteurs_points.InsertNextPoint(point['x'], point['y'], point['z'])
 
-        self.capteurs_polydata.SetPoints(points)
+        self.capteurs_polydata.SetPoints(self.capteurs_points)
         self.capteurs_polydata.GetPoints().Modified()
         return self.actor[1]

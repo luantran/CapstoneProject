@@ -9,5 +9,5 @@ class Registration(ABC):
         pass
 
     @abstractmethod
-    def MRIXRayRegistration(self, mriLMData, xrayLMData):
+    def MRIXRayRegistration(self, mriLMReader, wrlLMReader, mriReader):
         pass

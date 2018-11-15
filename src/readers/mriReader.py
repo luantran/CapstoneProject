@@ -93,11 +93,11 @@ class MRIReader(reader.Reader):
         color.SetInputConnection(self.reslice.GetOutputPort())
 
         # Display the image
-        actor = vtk.vtkImageActor()
-        actor.GetProperty().SetOpacity(0.65)
-        actor.GetMapper().SetInputConnection(color.GetOutputPort())
+        self.actor = vtk.vtkImageActor()
+        self.actor.GetProperty().SetOpacity(0.65)
+        self.actor.GetMapper().SetInputConnection(color.GetOutputPort())
 
-        return actor
+        return self.actor
 
     def get_spacing(self, filepath):
         lstFilesDICOM = []

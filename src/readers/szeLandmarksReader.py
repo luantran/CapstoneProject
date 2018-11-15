@@ -1,5 +1,5 @@
 import vtk
-from src.readers import reader, landmarksReader
+from src.readers import landmarksReader
 
 
 class SZEReaderLM(landmarksReader.LandmarksReader):
@@ -13,7 +13,6 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
         pass
 
     def getPolyData(self):
-
         # Some of the function are comment becasue they are not used
         points = self.getVTKPoints()
         # poly data
@@ -25,6 +24,9 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
         self.actor = super().getVTKActor(10, "blue", self.getPolyData())
         return self.actor
 
+    def getVTKPoints(self):
+        return super().getVTKPoints(self.getLandmarks(self.filepath))
+
     def getLandmarks(self, filename):
         with open(filename, 'r') as f:
             data = f.read()
@@ -32,10 +34,8 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
             datalines = datalines.split("\n")
             datalines = datalines[2:]
             st_capteurs = self._getSTExternalLandmarks(datalines)
-        return st_capteurs
-
-    def getVTKPoints(self):
-        return super().getVTKPoints(self.getLandmarks(self.filepath))
+        self.landmarks = st_capteurs
+        return self.landmarks
 
     ########## Helper Methods ##########
 

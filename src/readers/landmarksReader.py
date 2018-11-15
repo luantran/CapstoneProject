@@ -3,6 +3,7 @@ import vtk
 class LandmarksReader(ABC):
     def __init__(self):
         self.filepath = ''
+        self.landmarks = None
         super().__init__()
 
     @abstractmethod
@@ -45,7 +46,6 @@ class LandmarksReader(ABC):
         points = vtk.vtkPoints()
         for point in landmarks:
             points.InsertNextPoint(point['x'], point['y'], point['z'])
-        print(points)
         return points
 
     @abstractmethod

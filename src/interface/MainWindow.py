@@ -420,7 +420,6 @@ class Ui_MainWindow(QMainWindow):
                     errorStatus = True
                 for file in files:
                     if file.rsplit('.', 1)[1].lower() != "dcm" and file.rsplit('.', 1)[1].lower() != "ima":
-                        print(file.rsplit('.', 1)[1].lower())
                         errorStatus = True
                         break
 

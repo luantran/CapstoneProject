@@ -9,34 +9,35 @@ class WRLReaderLM(landmarksReader.LandmarksReader):
     def setFilePath(self, filepath):
         super().setFilePath(filepath)
 
-    def getLandmarks(self, filename):
-        pass
 
     def getPolyData(self):
         # Some of the function are comment becasue they are not used
         vertebrae_points, capteurs_points = self.getVTKPoints()
         # poly data
-        vertebrae_polydata = vtk.vtkPolyData()
-        vertebrae_polydata.SetPoints(vertebrae_points)
+        self.vertebrae_polydata = vtk.vtkPolyData()
+        self.vertebrae_polydata.SetPoints(vertebrae_points)
 
-        capteurs_polydata = vtk.vtkPolyData()
-        capteurs_polydata.SetPoints(capteurs_points)
-        return vertebrae_polydata, capteurs_polydata
+        self.capteurs_polydata = vtk.vtkPolyData()
+        self.capteurs_polydata.SetPoints(capteurs_points)
+        return self.vertebrae_polydata, self.capteurs_polydata
 
     def getVTKActor(self):
         self.actor = []
+        self.mapper = []
         polydatas = self.getPolyData()
-        vert_actor = super().getVTKActor(5, "white", polydatas[0])
-        capt_actor = super().getVTKActor(10, "violet", polydatas[1])
+        vert_actor, vert_mapper = super().getVTKActor(5, "white", polydatas[0])
+        capt_actor, capt_mapper = super().getVTKActor(10, "violet", polydatas[1])
         self.actor.append(vert_actor)
         self.actor.append(capt_actor)
+        self.mapper.append(vert_mapper)
+        self.mapper.append(capt_mapper)
         return self.actor
 
     def getVTKPoints(self):
         landmarks = self.getLandmarks(self.filepath)
-        self.vertebrae_points = super().getVTKPoints(landmarks[0])
-        self.capteurs_points = super().getVTKPoints(landmarks[1])
-        return self.vertebrae_points, self.capteurs_points
+        vertebrae_points = super().getVTKPoints(landmarks[0])
+        capteurs_points = super().getVTKPoints(landmarks[1])
+        return vertebrae_points, capteurs_points
 
     def getLandmarks(self, filename):
         vertebrae = []
@@ -103,3 +104,21 @@ class WRLReaderLM(landmarksReader.LandmarksReader):
                     point['name'] = id+"-"+point['name']
                     processed_landmarks.append(point)
         return processed_landmarks
+
+    def updateVertVTKActor(self):
+        points = vtk.vtkPoints()
+        for point in self.landmarks[0]:
+            points.InsertNextPoint(point['x'], point['y'], point['z'])
+
+        self.vertebrae_polydata.SetPoints(points)
+        self.vertebrae_polydata.GetPoints().Modified()
+        return self.actor[0]
+
+    def updateExtVTKActor(self):
+        points = vtk.vtkPoints()
+        for point in self.landmarks[1]:
+            points.InsertNextPoint(point['x'], point['y'], point['z'])
+
+        self.capteurs_polydata.SetPoints(points)
+        self.capteurs_polydata.GetPoints().Modified()
+        return self.actor[1]

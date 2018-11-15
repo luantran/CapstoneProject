@@ -16,12 +16,12 @@ class MRIReaderLM(landmarksReader.LandmarksReader):
         # Some of the function are comment becasue they are not used
         points = self.getVTKPoints()
         # poly data
-        polydata = vtk.vtkPolyData()
-        polydata.SetPoints(points)
-        return polydata
+        self.polydata = vtk.vtkPolyData()
+        self.polydata.SetPoints(points)
+        return self.polydata
 
     def getVTKActor(self):
-        self.actor = super().getVTKActor(5, "green", self.getPolyData())
+        self.actor, self.mapper = super().getVTKActor(5, "green", self.getPolyData())
         return self.actor
 
     def getVTKPoints(self):
@@ -45,3 +45,12 @@ class MRIReaderLM(landmarksReader.LandmarksReader):
                 landmark['z'] = float(coordinates[2].strip())
                 self.landmarks.append(landmark)
         return self.landmarks
+
+    def updateVTKActor(self):
+        points = vtk.vtkPoints()
+        for point in self.landmarks:
+            points.InsertNextPoint(point['x'], point['y'], point['z'])
+
+        self.polydata.SetPoints(points)
+        self.polydata.GetPoints().Modified()
+        return self.actor

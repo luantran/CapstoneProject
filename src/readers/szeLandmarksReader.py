@@ -16,12 +16,12 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
         # Some of the function are comment becasue they are not used
         points = self.getVTKPoints()
         # poly data
-        polydata = vtk.vtkPolyData()
-        polydata.SetPoints(points)
-        return polydata
+        self.polydata = vtk.vtkPolyData()
+        self.polydata.SetPoints(points)
+        return self.polydata
 
     def getVTKActor(self):
-        self.actor = super().getVTKActor(10, "blue", self.getPolyData())
+        self.actor, self.mapper = super().getVTKActor(10, "blue", self.getPolyData())
         return self.actor
 
     def getVTKPoints(self):
@@ -52,6 +52,15 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
                 landmark['t'] = coordinates[4].strip()
             list_external_landmarks.append(landmark)
         return list_external_landmarks
+
+    def updateVTKActor(self):
+        points = vtk.vtkPoints()
+        for point in self.landmarks:
+            points.InsertNextPoint(point['x'], point['y'], point['z'])
+
+        self.polydata.SetPoints(points)
+        self.polydata.GetPoints().Modified()
+        return self.actor
 
 
 

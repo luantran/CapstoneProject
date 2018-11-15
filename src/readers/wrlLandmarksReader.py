@@ -1,55 +1,54 @@
-import json
 import vtk
 from src.readers import reader
 
 
-class WRLReader(reader.Reader):
+class WRLReaderLM(reader.Reader):
 
     ########## Overriding abstract methods ##########
 
     def setFilePath(self, filepath):
         super().setFilePath(filepath)
 
+    def getLandmarks(self, filename):
+        pass
+
     def getPolyData(self):
-        # VRML importer
-        importer = vtk.vtkVRMLImporter()
-        # WRL file to upload
-        importer.SetFileName(self.filepath)
-        # Read data
-        importer.Read()
+        # Some of the function are comment becasue they are not used
+        vertebrae_points, capteurs_points = self.getVTKPoints(self.filepath)
+        # poly data
+        vertebrae_polydata = vtk.vtkPolyData()
+        vertebrae_polydata.SetPoints(vertebrae_points)
 
-        self.polydata = vtk.vtkPolyData()
-        append = vtk.vtkAppendPolyData()
-        renActors = importer.GetRenderer().GetActors()
-        renActors.InitTraversal()
-        actor = renActors.GetNextActor()
-
-        i = 0
-        while (actor != None):
-            actor.GetProperty().SetAmbientColor(i, 1 - i, 0.0)
-            actor.GetProperty().SetAmbient(1)
-            append.AddInputData(actor.GetMapper().GetInput())
-            actor = renActors.GetNextActor()
-            i += 0.05
-
-        append.Update()
-        self.polydata.DeepCopy(append.GetOutput())
-
-        return self.polydata
+        capteurs_polydata = vtk.vtkPolyData()
+        capteurs_polydata.SetPoints(capteurs_points)
+        return vertebrae_polydata, capteurs_polydata
 
     def getVTKActor(self):
-        self.actor = vtk.vtkActor()
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(self.getPolyData())
-        self.actor.SetMapper(mapper)
-        return self.actor
+        self.actors = []
+        for polydata in self.getPolyData():
+            sphere_source = vtk.vtkSphereSource()
+            glyph3D = vtk.vtkGlyph3D()
+            glyph3D.SetSourceConnection(sphere_source.GetOutputPort())
+            glyph3D.SetInputData(polydata)
+            glyph3D.Update()
+            sphere_source.SetThetaResolution(64)
+            sphere_source.SetPhiResolution(64)
+            sphere_source.SetRadius(10)
 
-    def getLandmarks(self, filename):
-        self.setLandmarksFilePath(filename)
+            mapper = vtk.vtkPolyDataMapper()
+            mapper.SetInputConnection(glyph3D.GetOutputPort())
+            mapper.Update()
+
+            actor = vtk.vtkActor()
+            actor.SetMapper(mapper)
+            actor.GetProperty().SetColor(0.0, 1.0, 0.0)
+            self.actors.append(actor)
+        return self.actors
+
+    def getVTKPoints(self, filename):
         vertebrae = []
         capteurs = []
         with open(filename, 'r') as f:
-            landmark = {}
             landmarks = f.read().split('# ---- ---- ---- ---- ---- ---- DATA 3D  ---- ---- ---- ---- ---- ----')[
                 1].rstrip()
             actual_landmarks = landmarks.split("Objet:")[1:]
@@ -60,7 +59,16 @@ class WRLReader(reader.Reader):
                 else:
                     vertebrae.append(data)
         vertebrae = self.process(vertebrae)
-        return vertebrae, capteurs
+
+        self.vertebrae_points = vtk.vtkPoints()
+        for point in vertebrae:
+            self.vertebrae_points.InsertNextPoint(point['x'], point['y'], point['z'])
+
+        self.capteurs_points = vtk.vtkPoints()
+        for point in capteurs:
+            self.capteurs_points.InsertNextPoint(point['x'], point['y'], point['z'])
+
+        return self.vertebrae_points, self.capteurs_points
 
     #### Helper Methods ####
 

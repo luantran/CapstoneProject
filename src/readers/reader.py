@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-
 class Reader(ABC):
     def __init__(self):
         self.filepath = ''
@@ -16,8 +15,4 @@ class Reader(ABC):
 
     @abstractmethod
     def getVTKActor(self):
-        pass
-
-    @abstractmethod
-    def getLandmarks(self, filepath):
         pass

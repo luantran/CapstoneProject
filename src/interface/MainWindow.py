@@ -124,10 +124,9 @@ class Ui_MainWindow(QMainWindow):
         self.loadLabel.setText(_translate("MainWindow", "Load"))
         self.rigidRegistrationButton.setText(_translate("MainWindow", "Rigid Registration"))
         self.articulatedRegistrationButton.setText(_translate("MainWindow", "Articulated Registration"))
-
+        self.reloadButton.setText(_translate("MainWindow", "Reload modalities"))
         self.regitsrationLabel.setText(_translate("MainWindow", "Registration"))
         self.xRayCheckBox.setText(_translate("MainWindow", "X-Ray"))
-        self.mriVertebraeCheckBox.setText(_translate("MainWindow", "MRI vertebrae"))
         self.mriLMCheckBox.setText(_translate("MainWindow", "MRI Landmarks"))
         self.sliceLabel.setText(_translate("MainWindow", "View registered slice"))
         self.stCheckBox.setText(_translate("MainWindow", "Surface"))
@@ -240,6 +239,14 @@ class Ui_MainWindow(QMainWindow):
         self.stLoadText.setText("No ST file selected...")
         self.loadLayout.addWidget(self.stLoadText)
 
+        self.reloadButton = QtWidgets.QPushButton(self.centralwidget)
+        self.reloadButton.setEnabled(True)
+        self.reloadButton.setObjectName("reloadButton")
+        self.reloadButton.clicked.connect(self.reload)
+        self.loadLayout.addWidget(self.reloadButton)
+
+
+
         self.panelVerticalLayout.addLayout(self.loadLayout)
 
     def createRegistrationLayout(self):
@@ -258,13 +265,15 @@ class Ui_MainWindow(QMainWindow):
         self.rigidRegistrationButton.setEnabled(False)
         self.rigidRegistrationButton.setObjectName("rigidRegistrationButton")
         self.registrationLayout.addWidget(self.rigidRegistrationButton)
-        self.rigidRegistrationButton.clicked.connect(self.selectRigitRegister)
+        self.rigidRegistrationButton.clicked.connect(self.selectRigidRegister)
 
         #Articulated Registration Button
         self.articulatedRegistrationButton = QtWidgets.QPushButton(self.centralwidget)
         self.articulatedRegistrationButton.setEnabled(False)
         self.articulatedRegistrationButton.setObjectName("articulatedRegistrationButton")
         self.registrationLayout.addWidget(self.articulatedRegistrationButton)
+        self.articulatedRegistrationButton.clicked.connect(self.selectArticulatedRegister)
+
 
         self.panelVerticalLayout.addLayout(self.registrationLayout)
 
@@ -333,12 +342,6 @@ class Ui_MainWindow(QMainWindow):
         self.surfaceExtLMCheckBox.setEnabled(False)
         self.surfaceExtLMCheckBox.stateChanged.connect(self.checkExternalSurfaceLM)
         self.viewLayout.addWidget(self.surfaceExtLMCheckBox)
-
-        # MRI Vertebrae Checkbox
-        self.mriVertebraeCheckBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.mriVertebraeCheckBox.setObjectName("mriVertebraeCheckBox")
-        self.mriVertebraeCheckBox.setEnabled(False)
-        self.viewLayout.addWidget(self.mriVertebraeCheckBox)
 
         # Second Spacer
         self.spacerItem2 = QtWidgets.QSpacerItem(40, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -441,7 +444,7 @@ class Ui_MainWindow(QMainWindow):
             self.mriCheckBox.setChecked(False)
             self.controller.check['MRI'] = False
             self.mriLoadText.setText("No MRI directory selected...")
-        self.checkRigidRegistration()
+        self.checkRegistration()
 
     def selectMRILandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
@@ -454,12 +457,12 @@ class Ui_MainWindow(QMainWindow):
             self.mriLMCheckBox.setEnabled(False)
             self.mriLMCheckBox.setChecked(False)
             self.controller.check['MRI_LM'] = False
-        self.checkRigidRegistration()
+        self.checkRegistration()
 
     def selectXRayLandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
         if filename[0]:
-            self.controller.loadLandmarks("XRayLM", filename[0])
+            self.controller.loadLandmarks("XRay_LM", filename[0])
             self.xRayExtLMCheckBox.setEnabled(True)
             self.xRayExtLMCheckBox.setChecked(True)
             self.xRayVertLMCheckBox.setEnabled(True)
@@ -472,7 +475,7 @@ class Ui_MainWindow(QMainWindow):
             self.xRayVertLMCheckBox.setEnabled(False)
             self.xRayVertLMCheckBox.setChecked(False)
             self.controller.check['XRay_LM'] = False
-        self.checkRigidRegistration()
+        self.checkRegistration()
 
     def selectXRayFile(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
@@ -488,12 +491,12 @@ class Ui_MainWindow(QMainWindow):
             self.xRayCheckBox.setChecked(False)
             self.controller.check['XRay'] = False
             self.xrayLoadText.setText("No X-ray file selected...")
-        self.checkRigidRegistration()
+        self.checkRegistration()
 
     def selectSurfaceTopographyLandmark(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
         if filename[0]:
-            self.controller.loadLandmarks("SurfaceLM", filename[0])
+            self.controller.loadLandmarks("Surface_LM", filename[0])
             self.surfaceExtLMCheckBox.setEnabled(True)
             self.surfaceExtLMCheckBox.setChecked(True)
             self.controller.check['ST_LM'] = True
@@ -501,7 +504,7 @@ class Ui_MainWindow(QMainWindow):
             self.surfaceExtLMCheckBox.setEnabled(False)
             self.surfaceExtLMCheckBox.setChecked(False)
             self.controller.check['ST_LM'] = False
-        self.checkRigidRegistration()
+        self.checkRegistration()
 
     def selectSurfaceTopography(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")
@@ -517,7 +520,7 @@ class Ui_MainWindow(QMainWindow):
             self.stCheckBox.setChecked(False)
             self.controller.check['ST'] = False
             self.stLoadText.setText("No ST file selected...")
-        self.checkRigidRegistration()
+        self.checkRegistration()
 
     def checkXRay(self):
         self.controller.checkboxUpdate('XRay', self.xRayCheckBox.isChecked())
@@ -529,24 +532,21 @@ class Ui_MainWindow(QMainWindow):
         self.controller.checkboxUpdate('MRI', self.mriCheckBox.isChecked())
 
     def checkExternalSurfaceLM(self):
-        self.controller.checkboxUpdate('SurfaceLM', self.surfaceExtLMCheckBox.isChecked())
+        self.controller.checkboxUpdate('Surface_LM', self.surfaceExtLMCheckBox.isChecked())
 
     def checkMRI_LM(self):
         self.controller.checkboxUpdate('MRI_LM', self.mriLMCheckBox.isChecked())
 
     def checkExternalXRayLM(self):
-        self.controller.checkboxUpdate('XRayLM', self.xRayExtLMCheckBox.isChecked())
+        self.controller.checkboxUpdate('XRay_LM', self.xRayExtLMCheckBox.isChecked())
 
     def checkVertebraeXRayLM(self):
-        self.controller.checkboxUpdate('vertebrae_XRayLM', self.xRayVertLMCheckBox.isChecked())
+        self.controller.checkboxUpdate('vertebrae_XRay_LM', self.xRayVertLMCheckBox.isChecked())
 
 
-    def checkRigidRegistration(self):
-        if self.controller.checkRequirementsForRigidRegistration():
+    def checkRegistration(self):
+        if self.controller.checkRequirementsForRegistration():
             self.rigidRegistrationButton.setEnabled(True)
-
-    def checkArticulatedRegistration(self):
-        if self.controller.setWRL and self.controller.setST and self.controller.setMRI:
             self.articulatedRegistrationButton.setEnabled(True)
 
     def openDocumentationWindow(self):
@@ -565,7 +565,16 @@ class Ui_MainWindow(QMainWindow):
         self.controller.changeSlice(self.sliceSpinBox.value())
 
 
-    def selectRigitRegister(self):
-        self.controller.performRigitRegistration()
+    def selectRigidRegister(self):
+        self.controller.performRegistration("rigid")
+        self.articulatedRegistrationButton.setEnabled(False)
+        self.rigidRegistrationButton.setEnabled(False)
 
+    def selectArticulatedRegister(self):
+        self.controller.performRegistration("articulated")
+        self.articulatedRegistrationButton.setEnabled(False)
+        self.rigidRegistrationButton.setEnabled(False)
 
+    def reload(self):
+        self.controller.reload()
+        self.checkRegistration()

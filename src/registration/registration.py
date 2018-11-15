@@ -5,7 +5,7 @@ class Registration(ABC):
         super().__init__()
 
     @abstractmethod
-    def SurfaceXRayRegistration(self, surfaceLMData, xrayLMData):
+    def SurfaceXRayRegistration(self, szeLMReader, wrlLMReader, szeReader):
         pass
 
     @abstractmethod

@@ -1,5 +1,5 @@
 import vtk
-from src.readers import landmarksReader
+from src.landmarks_readers import landmarksReader
 
 
 class MRIReaderLM(landmarksReader.LandmarksReader):

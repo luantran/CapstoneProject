@@ -43,21 +43,29 @@ class SZEReader(reader.Reader):
         self._addingVTKPolygonCells()
 
         # poly data
-        polydata = vtk.vtkPolyData()
-        polydata.SetPoints(self.points)
-        polydata.SetPolys(self.polys)
+        self.polydata = vtk.vtkPolyData()
+        self.polydata.SetPoints(self.points)
+        self.polydata.SetPolys(self.polys)
 
-        return polydata
+        return self.polydata
 
     def getVTKActor(self):
         self.actor = vtk.vtkActor()
         # Rotate actor (adopted from Rola's code)
-        self.actor.RotateZ(-90)
-        self.actor.RotateX(90)
+        # self.actor.RotateZ(-90)
+        # self.actor.RotateX(90)
+
+        gen_trans = vtk.vtkGeneralTransform()
+        gen_trans.RotateZ(-90)
+        gen_trans.RotateX(90)
+
+        gen_trans_filter = vtk.vtkTransformPolyDataFilter()
+        gen_trans_filter.SetInputData(self.getPolyData())
+        gen_trans_filter.SetTransform(gen_trans)
 
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputData(self.getPolyData())
-
+        # mapper.SetInputData(self.getPolyData())
+        mapper.SetInputConnection(gen_trans_filter.GetOutputPort())
         self.actor.SetMapper(mapper)
 
         self.actor.GetProperty().SetInterpolationToFlat()

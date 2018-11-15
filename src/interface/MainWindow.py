@@ -92,6 +92,10 @@ class Ui_MainWindow(QMainWindow):
         # Interactor
         self.iren = self.vtkWidget.GetRenderWindow().GetInteractor()
 
+        InteractorStyle = vtk.vtkInteractorStyleTrackballCamera()
+        # InteractorStyle = vtk.vtkInteractorStyleTrackball()
+        self.iren.SetInteractorStyle(InteractorStyle)
+
         self.iren.Initialize()
         self.iren.Start()
         #add vtk widget to vtk grid
@@ -110,7 +114,6 @@ class Ui_MainWindow(QMainWindow):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
     #Add text to all objects
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -374,10 +377,10 @@ class Ui_MainWindow(QMainWindow):
 
         # Save Button
         self.saveButton = QtWidgets.QPushButton(self.centralwidget)
-        self.saveButton.setEnabled(False)
+        # self.saveButton.setEnabled(False)
         self.saveButton.setObjectName("saveButton")
         self.saveLayout.addWidget(self.saveButton)
-
+        self.saveButton.clicked.connect(self.save)
 
         self.panelVerticalLayout.addLayout(self.saveLayout)
 
@@ -448,6 +451,7 @@ class Ui_MainWindow(QMainWindow):
     def selectMRILandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
         if filename[0]:
+            self.controller.setMRILandmarks(filename[0])
             self.controller.loadLandmarks("MRI_LM", filename[0])
             self.mriLMCheckBox.setEnabled(True)
             self.mriLMCheckBox.setChecked(True)
@@ -461,6 +465,7 @@ class Ui_MainWindow(QMainWindow):
     def selectXRayLandmarks(self):
         filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
         if filename[0]:
+            self.controller.setXRayLandmarks(filename[0])
             self.controller.loadLandmarks("XRay_LM", filename[0])
             self.xRayExtLMCheckBox.setEnabled(True)
             self.xRayExtLMCheckBox.setChecked(True)
@@ -495,6 +500,7 @@ class Ui_MainWindow(QMainWindow):
     def selectSurfaceTopographyLandmark(self):
         filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
         if filename[0]:
+            self.controller.setSurfaceLandmarks(filename[0])
             self.controller.loadLandmarks("Surface_LM", filename[0])
             self.surfaceExtLMCheckBox.setEnabled(True)
             self.surfaceExtLMCheckBox.setChecked(True)
@@ -568,12 +574,24 @@ class Ui_MainWindow(QMainWindow):
         self.controller.performRegistration("rigid")
         self.articulatedRegistrationButton.setEnabled(False)
         self.rigidRegistrationButton.setEnabled(False)
+        self.saveButton.setEnabled(True)
 
     def selectArticulatedRegister(self):
         self.controller.performRegistration("articulated")
         self.articulatedRegistrationButton.setEnabled(False)
         self.rigidRegistrationButton.setEnabled(False)
+        self.saveButton.setEnabled(True)
 
     def reload(self):
         self.controller.reload()
+        self.saveButton.setEnabled(False)
         self.checkRegistration()
+
+    def save(self):
+        default_name = self.controller.szeReader.filepath
+        name, mask = QFileDialog.getSaveFileName(self, 'Save Registered SZE File', "registered_"+default_name, "SZE (*.sze);;All files (*.*)")
+        actual_filename = name+".sze"
+        pass
+
+    def changeStatusMessage(self, message):
+        self.statusbar.showMessage(message)

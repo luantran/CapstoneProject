@@ -1,10 +1,10 @@
-from src.readers import szeReader, wrlReader, mriReader, szeLandmarksReader, mriLandmarksReader, wrlLandmarksReader
+from src.readers import szeReader, wrlReader, mriReader
+from src.landmarks_readers import szeLandmarksReader, wrlLandmarksReader, mriLandmarksReader
 from src.registration import rigidRegistration
 from src.registration import articulatedRegistration
 import operator
 
 import vtk
-
 
 class Controller(object):
     def __init__(self, view):
@@ -60,46 +60,33 @@ class Controller(object):
         self.szeLMReader.setFilePath(filename)
 
     def loadLandmarks(self, type, filename):
+        self.view.changeStatusMessage("Loading " + type[:-3] + " landmarks...")
+
         if type in self.actors.keys():
-            self.removeActors(self.actors[type], True)
+            self.removeActors(self.actors[type])
+
         if type is "XRay_LM":
-            print("Loading XRay landmarks")
-            self.wrlLMReader.setFilePath(filename)
             vert_actor, capt_actor = self.wrlLMReader.getVTKActor()
-
             self.view.ren.AddActor(capt_actor)
-            self.view.ren.ResetCamera()
-            self.view.vtkWidget.Render()
             self.actors[type] = capt_actor
-
             self.view.ren.AddActor(vert_actor)
-            self.view.ren.ResetCamera()
-            self.view.vtkWidget.Render()
             self.actors["vertebrae_"+type] = vert_actor
-
         elif type is "Surface_LM":
-            print("Loading Surface landmarks...")
-            self.szeLMReader.setFilePath(filename)
             surface_lm_actor = self.szeLMReader.getVTKActor()
             self.view.ren.AddActor(surface_lm_actor)
-            self.view.ren.ResetCamera()
-            self.view.vtkWidget.Render()
             self.actors[type] = surface_lm_actor
-
         elif type is "MRI_LM":
-            print("loading MRI landmarks...")
-            self.mriLMReader.setFilePath(filename)
             mri_lm_actor = self.mriLMReader.getVTKActor()
             self.view.ren.AddActor(mri_lm_actor)
-            self.view.ren.ResetCamera()
-            self.view.vtkWidget.Render()
             self.actors[type] = mri_lm_actor
+        self.view.vtkWidget.Render()
+        self.view.changeStatusMessage("Finished Loading " + type[:-3] + " landmarks!")
 
     def executeReader(self, type):
+        self.view.changeStatusMessage("Loading " + type + " data...")
         if type in self.actors.keys():
             self.removeActors(self.actors[type])
         if type is "XRay":
-            print("Getting X-Ray data...")
             xray_actor = self.wrlReader.getVTKActor()
             self.view.ren.AddActor(xray_actor)
             self.view.ren.ResetCamera()
@@ -107,7 +94,6 @@ class Controller(object):
             self.actors[type] = xray_actor
 
         elif type is "Surface":
-            print("Getting Surface data...")
             surface_actor = self.szeReader.getVTKActor()
             self.view.ren.AddActor(surface_actor)
             self.view.ren.ResetCamera()
@@ -115,7 +101,6 @@ class Controller(object):
             self.actors[type] = surface_actor
 
         elif type is "MRI":
-            print("Getting MRI data...")
             mri_actor = self.mriReader.getVTKActor()
             self.view.ren.AddActor(mri_actor)
             self.view.sliceSpinBox.setMaximum(self.mriReader.max_number_of_slices)
@@ -124,6 +109,7 @@ class Controller(object):
             self.view.ren.ResetCamera()
             self.view.vtkWidget.Render()
             self.actors[type] = mri_actor
+        self.view.changeStatusMessage("Finished loading " + type + " data!")
 
     def checkboxUpdate(self, type, isChecked):
         # Checkbox update for modalities
@@ -141,53 +127,26 @@ class Controller(object):
         if ('MRI_LM' in self.actors and 'MRI' in self.actors and
                 'Surface_LM' in self.actors and 'Surface' in self.actors
                 and 'XRay_LM' in self.actors and 'XRay' in self.actors):
-
+            self.view.changeStatusMessage("Starting " + type + " registration...")
             # Trandfrom Surface onto XRay
             # Get the Translation matrix
             if type == 'articulated':
-                ST_Xray_Trans = self.articulated.SurfaceXRayRegistration(self.szeLMReader.landmarks, self.wrlLMReader.landmarks[1])
-                ftps_sze = vtk.vtkTransformPolyDataFilter()
-                ftps_sze.SetInputData(self.szeReader.getPolyData())
-                ftps_sze.SetTransform(ST_Xray_Trans)
-
-                actor = vtk.vtkActor()
-                # Rotate actor (adopted from Rola's code)
-                actor.RotateZ(-90)
-                actor.RotateX(90)
-
-                mapper = vtk.vtkPolyDataMapper()
-                mapper.SetInputConnection(ftps_sze.GetOutputPort())
-
-                actor.SetMapper(mapper)
-
-                actor.GetProperty().SetInterpolationToFlat()
-                actor.GetProperty().SetEdgeColor(1.0, 0.0, 0.0)
-                actor.GetProperty().SetOpacity(0.25)
-                actor.GetProperty().EdgeVisibilityOn()
-
-                self.view.ren.AddActor(actor)
-                self.view.ren.ResetCamera()
-                self.view.vtkWidget.Render()
-
-                ftps_sze.Update()
-
+                registered_actors = self.articulated.SurfaceXRayRegistration(self.szeLMReader, self.wrlLMReader,
+                                                                       self.szeReader)
+                self.actors['MRI'] = registered_actors[0]
+                self.actors['MRI_LM'] = registered_actors[1]
             else:
-                ST_Xray_Trans = self.rigid.SurfaceXRayRegistration(self.szeLMReader.landmarks, self.wrlLMReader.landmarks[1])
-                self.actors['Surface'].SetUserTransform(ST_Xray_Trans)
-                # Transform Surface landmarks onto Xray landmarks
-                self.actors['Surface_LM'].SetUserTransform(ST_Xray_Trans)
+                registered_actors = self.rigid.SurfaceXRayRegistration(self.szeLMReader, self.wrlLMReader, self.szeReader)
+                self.actors['Surface'] = registered_actors[0]
+                self.actors['Surface_LM'] = registered_actors[1]
 
-            # MRI_Xray_Trans = self.rigid.MRIXRayRegistration(self.mriLMReader.points, self.wrlLMReader)
             registered_actors = self.rigid.MRIXRayRegistration(self.mriLMReader, self.wrlLMReader, self.mriReader)
-
             # Trandfrom MRI onto XRay
-            # self.actors['MRI'].SetUserTransform(MRI_Xray_Trans)
             self.actors['MRI'] = registered_actors[0]
-            # Transform Surface landmarks onto Xray landmarks
-            # self.actors['MRI_LM'].SetUserTransform(MRI_Xray_Trans)
             self.actors['MRI_LM'] = registered_actors[1]
 
-        self.view.vtkWidget.Render()
+            self.view.vtkWidget.Render()
+            self.view.changeStatusMessage("Finished " + type + " registration!")
 
     def changeSlice(self, spinBoxValue):
         transform = vtk.vtkTransform()
@@ -236,22 +195,11 @@ class Controller(object):
                 return False
         return True
 
-    def removeActors(self, actors, multiple=False):
-        if multiple:
-            for actor in actors:
-                self.view.ren.RemoveActor(actor)
-        else:
-            self.view.ren.RemoveActor(actors)
+    def removeActors(self, actors):
+        self.view.ren.RemoveActor(actors)
 
     def reload(self):
-        print("Reloading")
-        for key in self.actors.keys():
-            if key[-2:] == 'LM':
-                self.removeActors(self.actors[key], True)
-            else:
-                self.removeActors(self.actors[key])
-        self.view.vtkWidget.Render()
-
+        self.view.changeStatusMessage("Reloading all modalities...")
         if self.mriReader.filepath:
             self.executeReader('MRI')
         if self.szeReader.filepath:
@@ -265,6 +213,8 @@ class Controller(object):
             self.loadLandmarks('Surface_LM', self.szeLMReader.filepath)
         if self.wrlReader.filepath:
             self.loadLandmarks('XRay_LM', self.wrlLMReader.filepath)
+        self.view.vtkWidget.Render()
+        self.view.changeStatusMessage("All modalities reloaded!")
 
     def getMatchingPoints(self, first, second):
         # Sort Data by name
@@ -284,6 +234,8 @@ class Controller(object):
         matching_points = first_set.intersection(second_set)
         return matching_points
 
+
+
     def process_st_xray_landmarks(self):
         matchingPosition = self.getMatchingPoints(self.szeLMReader.landmarks, self.wrlLMReader.landmarks[1])
 
@@ -293,9 +245,7 @@ class Controller(object):
                 new_landmarks.append(data)
         self.szeLMReader.landmarks = new_landmarks
 
-        # self.view.ren.RemoveActor(self.actors['Surface_LM'])
         new_actor = self.szeLMReader.updateVTKActor()
-        # self.view.ren.AddActor(new_actor)
         self.actors['Surface_LM'] = new_actor
 
         new_landmarks = []
@@ -304,9 +254,7 @@ class Controller(object):
                 new_landmarks.append(data)
         self.wrlLMReader.landmarks[1] = new_landmarks
 
-        # self.view.ren.RemoveActor(self.actors['XRay_LM'])
         new_actor = self.wrlLMReader.updateExtVTKActor()
-        # self.view.ren.AddActor(new_actor)
         self.actors['XRay_LM'] = new_actor
         self.view.vtkWidget.Render()
 

@@ -1,5 +1,5 @@
 import vtk
-from src.readers import landmarksReader
+from src.landmarks_readers import landmarksReader
 
 
 class SZEReaderLM(landmarksReader.LandmarksReader):
@@ -60,6 +60,7 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
 
         self.polydata.SetPoints(self.points)
         self.polydata.GetPoints().Modified()
+        self.actor.GetMapper().Update()
         return self.actor
 
 

@@ -40,6 +40,8 @@ class LandmarksReader(ABC):
             actor.GetProperty().SetColor(1.0, 1.0, 1.0)
         elif color == "violet":
             actor.GetProperty().SetColor(0.58, 0.0, 0.82)
+        elif color == "yellow":
+            actor.GetProperty().SetColor(1.0, 1.0, 0.0)
         return actor, mapper
 
     def getVTKPoints(self, landmarks):

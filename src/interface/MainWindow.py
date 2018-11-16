@@ -14,6 +14,8 @@ from src.interface import HelpWindow, LicenseWindow
 from os import walk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
+import webbrowser
+# webbrowser.open('http://stackoverflow.com')
 
 class Ui_MainWindow(QMainWindow):
 
@@ -141,9 +143,9 @@ class Ui_MainWindow(QMainWindow):
         self.surfaceExtLMCheckBox.setText(_translate("MainWindow", "External Surface Landmarks"))
         self.saveButton.setText(_translate("MainWindow", "Save"))
         self.saveLabel.setText(_translate("MainWindow", "Save Registered File"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.actionDocumentation.setText(_translate("MainWindow", "Documentation", None))
+        self.actionSourceCode.setText(_translate("MainWindow", "Go to Source Code", None))
         self.actionLicense.setText(_translate("MainWindow", "License", None))
 
     def createLoadLayout(self):
@@ -460,8 +462,6 @@ class Ui_MainWindow(QMainWindow):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1096, 25))
         self.menubar.setObjectName("menubar")
-        self.menuFile = QtWidgets.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         MainWindow.setMenuBar(self.menubar)
@@ -473,14 +473,17 @@ class Ui_MainWindow(QMainWindow):
 
         self.actionDocumentation = QtWidgets.QAction(MainWindow)
         self.actionDocumentation.setObjectName("actionDocumentation")
+        self.actionSourceCode = QtWidgets.QAction(MainWindow)
+        self.actionSourceCode.setObjectName("actionSourceCode")
         self.actionLicense = QtWidgets.QAction(MainWindow)
         self.actionLicense.setObjectName("actionLicense")
 
         self.menuHelp.addAction(self.actionDocumentation)
         self.actionDocumentation.triggered.connect(self.openDocumentationWindow)
+        self.menuHelp.addAction(self.actionSourceCode)
+        self.actionSourceCode.triggered.connect(self.goToSourceCode)
         self.menuHelp.addAction(self.actionLicense)
         self.actionLicense.triggered.connect(self.openLicenseWindow)
-        self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
     def setController(self, controller):
@@ -675,3 +678,6 @@ class Ui_MainWindow(QMainWindow):
             return text
         else:
             return text.rsplit('/', 1)[1]
+
+    def goToSourceCode(self):
+        webbrowser.open_new('https://github.com/luantran/CapstoneProject/')

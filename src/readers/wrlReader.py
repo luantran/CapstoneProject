@@ -39,6 +39,7 @@ class WRLReader(reader.Reader):
 
     def getVTKActor(self):
         self.actor = vtk.vtkActor()
+
         mapper = vtk.vtkPolyDataMapper()
         mapper.SetInputData(self.getPolyData())
         self.actor.SetMapper(mapper)

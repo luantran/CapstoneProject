@@ -69,8 +69,8 @@ class SZEReader(reader.Reader):
         self.actor.SetMapper(mapper)
 
         self.actor.GetProperty().SetInterpolationToFlat()
-        self.actor.GetProperty().SetEdgeColor(1.0, 0.0, 0.0)
-        self.actor.GetProperty().SetOpacity(0.25)
+        self.actor.GetProperty().SetEdgeColor(0.7, 0.0, 0.0)
+        self.actor.GetProperty().SetOpacity(0.10)
         self.actor.GetProperty().EdgeVisibilityOn()
         return self.actor
 

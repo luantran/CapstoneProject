@@ -284,7 +284,3 @@ class Controller(object):
         # self.view.ren.AddActor(new_actor)
         self.actors['vertebrae_XRay_LM'] = new_actor
         self.view.vtkWidget.Render()
-
-
-
-

@@ -26,7 +26,7 @@ class WRLReaderLM(landmarksReader.LandmarksReader):
         self.mapper = []
         polydatas = self.getPolyData()
         vert_actor, vert_mapper = super().getVTKActor(5, "white", polydatas[0])
-        capt_actor, capt_mapper = super().getVTKActor(10, "violet", polydatas[1])
+        capt_actor, capt_mapper = super().getVTKActor(15, "yellow", polydatas[1])
         self.actor.append(vert_actor)
         self.actor.append(capt_actor)
         self.mapper.append(vert_mapper)

@@ -127,6 +127,7 @@ class Ui_MainWindow(QMainWindow):
         self.loadMRILandmarksButton.setText(_translate("MainWindow", "Load MRI Landmarks"))
         self.loadSTButton.setText(_translate("MainWindow", "Load Surface Topography"))
         self.loadSTLandmarksButton.setText(_translate("MainWindow", "Load Surface Landmarks"))
+        self.loadQuestionnaireButton.setText(_translate("MainWindow", "Load Questionnaire"))
         self.loadLabel.setText(_translate("MainWindow", "Load"))
         self.rigidRegistrationButton.setText(_translate("MainWindow", "Rigid Registration"))
         self.articulatedRegistrationButton.setText(_translate("MainWindow", "Articulated Registration"))
@@ -149,177 +150,164 @@ class Ui_MainWindow(QMainWindow):
         self.actionLicense.setText(_translate("MainWindow", "License", None))
 
     def createLoadLayout(self):
-        self.loadLayout = QtWidgets.QVBoxLayout()
-        self.loadLayout.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
-        self.loadLayout.setObjectName("loadLayout")
+
+        self.gridLoadLayout = QtWidgets.QGridLayout()
+        self.gridLoadLayout.setVerticalSpacing(10)
+        self.gridLoadLayout.setSizeConstraint(QtWidgets.QLayout.SetMinimumSize)
+        self.gridLoadLayout.setObjectName("gridloadLayout")
 
         loadFont = QtGui.QFont()
         loadFont.setPointSize(10)
         loadFont.setItalic(True)
 
+        ########################################################################### Row 0
+
         #Load Label
         self.loadLabel = QtWidgets.QLabel(self.centralwidget)
         self.loadLabel.setFont(self.font)
         self.loadLabel.setObjectName("loadLabel")
-        self.loadLayout.addWidget(self.loadLabel)
+        self.gridLoadLayout.addWidget(self.loadLabel, 0, 0)
 
-        self.MRIloader = QtWidgets.QHBoxLayout()
-        self.MRIloader.setObjectName("MRIloader")
-
-        ###########################################################################
+        ########################################################################### Row 1
 
         #Load MRI Button
         self.loadMRIButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadMRIButton.setEnabled(True)
         self.loadMRIButton.setObjectName("loadMRIButton")
-        self.MRIloader.addWidget(self.loadMRIButton)
         self.loadMRIButton.clicked.connect(self.selectMRIDirectory)
+        self.gridLoadLayout.addWidget(self.loadMRIButton, 1, 0)
 
         # MRI Text
         self.mriLoadText = QtWidgets.QLabel(self.centralwidget)
         self.mriLoadText.setFont(loadFont)
         self.mriLoadText.setObjectName("mriLoadText")
         self.mriLoadText.setText("No MRI directory selected...")
-        # self.mriLoadText.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.MRIloader.addWidget(self.mriLoadText)
+        self.gridLoadLayout.addWidget(self.mriLoadText, 1, 1)
 
-        self.loadLayout.addLayout(self.MRIloader)
-
-        ###########################################################################
-
-        self.XRayloader = QtWidgets.QHBoxLayout()
-        self.XRayloader.setObjectName("XRayloader")
+        ########################################################################### Row 2
 
         #Load XRay Button
         self.loadXRayButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadXRayButton.setEnabled(True)
         self.loadXRayButton.setObjectName("loadXRayButton")
-        self.XRayloader.addWidget(self.loadXRayButton)
         self.loadXRayButton.clicked.connect(self.selectXRayFile)
+        self.gridLoadLayout.addWidget(self.loadXRayButton, 2, 0)
 
         #XRay Text
         self.xrayLoadText = QtWidgets.QLabel(self.centralwidget)
         self.xrayLoadText.setFont(loadFont)
         self.xrayLoadText.setObjectName("xrayLoadText")
         self.xrayLoadText.setText("No X-ray file selected...")
-        # self.xrayLoadText.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.gridLoadLayout.addWidget(self.xrayLoadText, 2, 1)
 
-        self.XRayloader.addWidget(self.xrayLoadText)
-
-        self.loadLayout.addLayout(self.XRayloader)
-
-        ###########################################################################
-
-        self.STloader = QtWidgets.QHBoxLayout()
-        self.STloader.setObjectName("STloader")
+        ########################################################################### Row 3
 
         #Load Surface Topography Button
         self.loadSTButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadSTButton.setEnabled(True)
         self.loadSTButton.setObjectName("loadSTButton")
-        self.STloader.addWidget(self.loadSTButton)
         self.loadSTButton.clicked.connect(self.selectSurfaceTopography)
+        self.gridLoadLayout.addWidget(self.loadSTButton, 3, 0)
 
         # ST Text
         self.stLoadText = QtWidgets.QLabel(self.centralwidget)
         self.stLoadText.setFont(loadFont)
         self.stLoadText.setObjectName("stLoadText")
         self.stLoadText.setText("No ST file selected...")
-        # self.stLoadText.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.STloader.addWidget(self.stLoadText)
+        self.gridLoadLayout.addWidget(self.stLoadText, 3, 1)
 
-
-        self.loadLayout.addLayout(self.STloader)
-
-        ###########################################################################
+        ########################################################################### Row 4
 
         # First Spacer
-        self.spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.loadLayout.addItem(self.spacerItem3)
+        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 4, 0)
 
-        ###########################################################################
-
-        self.MRILMLoader = QtWidgets.QHBoxLayout()
-        self.MRILMLoader.setObjectName("MRILMloader")
+        ########################################################################### Row 5
 
         # Load MRI Landmark Button
         self.loadMRILandmarksButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadMRILandmarksButton.setEnabled(True)
         self.loadMRILandmarksButton.setObjectName("loadMRILandmarksButton")
-        self.MRILMLoader.addWidget(self.loadMRILandmarksButton)
         self.loadMRILandmarksButton.clicked.connect(self.selectMRILandmarks)
+        self.gridLoadLayout.addWidget(self.loadMRILandmarksButton, 5, 0)
 
         # MRI Landmarks Text
         self.mriLMLoadText = QtWidgets.QLabel(self.centralwidget)
         self.mriLMLoadText.setFont(loadFont)
         self.mriLMLoadText.setObjectName("mriLMLoadText")
         self.mriLMLoadText.setText("No MRI landmarks selected...")
-        # self.mriLMLoadText.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.MRILMLoader.addWidget(self.mriLMLoadText)
+        self.gridLoadLayout.addWidget(self.mriLMLoadText, 5, 1)
 
-        self.loadLayout.addLayout(self.MRILMLoader)
-
-        ###########################################################################
-
-        self.XRayLMloader = QtWidgets.QHBoxLayout()
-        self.XRayLMloader.setObjectName("XRayLMloader")
+        ########################################################################### Row 6
 
         #Load XRay landmarks Button
         self.loadXRaylandmarksButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadXRaylandmarksButton.setEnabled(True)
         self.loadXRaylandmarksButton.setObjectName("loadXRayButton")
-        self.XRayLMloader.addWidget(self.loadXRaylandmarksButton)
         self.loadXRaylandmarksButton.clicked.connect(self.selectXRayLandmarks)
+        self.gridLoadLayout.addWidget(self.loadXRaylandmarksButton, 6, 0)
 
         # XRay Landmarks Text
         self.xrayLMLoadText = QtWidgets.QLabel(self.centralwidget)
         self.xrayLMLoadText.setFont(loadFont)
         self.xrayLMLoadText.setObjectName("xrayLoadText")
         self.xrayLMLoadText.setText("No X-ray landmarks selected...")
-        # self.xrayLMLoadText.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.XRayLMloader.addWidget(self.xrayLMLoadText)
+        self.gridLoadLayout.addWidget(self.xrayLMLoadText, 6, 1)
 
-        self.loadLayout.addLayout(self.XRayLMloader)
-
-        ###########################################################################
-
-        self.STLMloader = QtWidgets.QHBoxLayout()
-        self.STLMloader.setObjectName("STLMloader")
+        ########################################################################### Row 7
 
         # Load Surface Topography Landmarks Button
         self.loadSTLandmarksButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadSTLandmarksButton.setEnabled(True)
         self.loadSTLandmarksButton.setObjectName("loadSTButton")
-        self.STLMloader.addWidget(self.loadSTLandmarksButton)
         self.loadSTLandmarksButton.clicked.connect(self.selectSurfaceTopographyLandmark)
+        self.gridLoadLayout.addWidget(self.loadSTLandmarksButton, 7, 0)
 
         # ST Landmarks Text
         self.stLMLoadText = QtWidgets.QLabel(self.centralwidget)
         self.stLMLoadText.setFont(loadFont)
         self.stLMLoadText.setObjectName("stLoadText")
         self.stLMLoadText.setText("No ST landmarks selected...")
-        # self.stLMLoadText.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
-        self.STLMloader.addWidget(self.stLMLoadText)
+        self.gridLoadLayout.addWidget(self.stLMLoadText, 7, 1)
 
-        self.loadLayout.addLayout(self.STLMloader)
 
-        ###########################################################################
+        ########################################################################### Row 8
 
-        # First Spacer
-        self.spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.loadLayout.addItem(self.spacerItem4)
+        # Load Questionnaire Button
+        self.loadQuestionnaireButton = QtWidgets.QPushButton(self.centralwidget)
+        self.loadQuestionnaireButton.setEnabled(True)
+        self.loadQuestionnaireButton.setObjectName("loadSTButton")
+        self.loadQuestionnaireButton.clicked.connect(self.selectQuestionnaire)
+        self.gridLoadLayout.addWidget(self.loadQuestionnaireButton, 8, 0)
 
-        ###########################################################################
+        # Questionnaire Text
+        self.questionnaireLoadText = QtWidgets.QLabel(self.centralwidget)
+        self.questionnaireLoadText.setFont(loadFont)
+        self.questionnaireLoadText.setObjectName("qtLoadText")
+        self.questionnaireLoadText.setText("No questionnaire selected...")
+        self.gridLoadLayout.addWidget(self.questionnaireLoadText, 8, 1)
 
+        ########################################################################### Row 9
+
+        # Second Spacer
+        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 9, 0)
+
+        ########################################################################### Row 10
 
         self.reloadButton = QtWidgets.QPushButton(self.centralwidget)
         self.reloadButton.setEnabled(True)
         self.reloadButton.setObjectName("reloadButton")
         self.reloadButton.clicked.connect(self.reload)
-        self.loadLayout.addWidget(self.reloadButton)
+        self.gridLoadLayout.addWidget(self.reloadButton, 10, 0)
 
+        # Second Spacer
+        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 9, 0)
 
-        self.panelVerticalLayout.addLayout(self.loadLayout)
+        ########################################################################### Row 11
+
+        # Third Spacer
+        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 11, 0)
+
+        self.panelVerticalLayout.addLayout(self.gridLoadLayout)
 
     def createRegistrationLayout(self):
         self.registrationLayout = QtWidgets.QVBoxLayout()
@@ -603,6 +591,11 @@ class Ui_MainWindow(QMainWindow):
             self.controller.check['ST'] = False
             self.stLoadText.setText("No ST file selected...")
         self.checkRegistration()
+
+
+    def selectQuestionnaire(self):
+        pass
+
 
     def checkXRay(self):
         self.controller.checkboxUpdate('XRay', self.xRayCheckBox.isChecked())

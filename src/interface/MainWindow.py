@@ -5,7 +5,7 @@
 # Created by: PyQt5 UI code generator 5.9
 #
 # WARNING! All changes made in this file will be lost!
-
+import csv
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
@@ -28,7 +28,7 @@ class Ui_MainWindow(QMainWindow):
 
         #Main Window
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1200, 900)
+        MainWindow.resize(1200, 1200)
 
 
         #Central Widget
@@ -283,7 +283,7 @@ class Ui_MainWindow(QMainWindow):
         self.questionnaireLoadText = QtWidgets.QLabel(self.centralwidget)
         self.questionnaireLoadText.setFont(loadFont)
         self.questionnaireLoadText.setObjectName("qtLoadText")
-        self.questionnaireLoadText.setText("No questionnaire selected...")
+        self.questionnaireLoadText.setText("No Questionnaire selected...")
         self.gridLoadLayout.addWidget(self.questionnaireLoadText, 8, 1)
 
         ########################################################################### Row 9
@@ -477,8 +477,9 @@ class Ui_MainWindow(QMainWindow):
     def setController(self, controller):
         self.controller = controller
 
-    def selectMRIDirectory(self):
-        dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
+    def selectMRIDirectory(self, dirName=None):
+        if not dirName:
+            dirName = QFileDialog.getExistingDirectory(self, 'Open MRI Directory', "")
         if dirName:
             errorStatus = False
             for root, dirs, files in walk(dirName):
@@ -511,8 +512,9 @@ class Ui_MainWindow(QMainWindow):
             self.mriLoadText.setText("No MRI directory selected...")
         self.checkRegistration()
 
-    def selectMRILandmarks(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
+    def selectMRILandmarks(self, filename=None):
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self, 'Open Landmark file', "", ".scp  file (*.scp)")
         if filename[0]:
             self.mriLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setMRILandmarks(filename[0])
@@ -526,8 +528,9 @@ class Ui_MainWindow(QMainWindow):
             self.controller.check['MRI_LM'] = False
         self.checkRegistration()
 
-    def selectXRayLandmarks(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
+    def selectXRayLandmarks(self, filename=None):
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self, 'Open XRay Landmarks file', "", "o3 file (*.o3)")
         if filename[0]:
             self.xrayLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setXRayLandmarks(filename[0])
@@ -545,8 +548,9 @@ class Ui_MainWindow(QMainWindow):
             self.controller.check['XRay_LM'] = False
         self.checkRegistration()
 
-    def selectXRayFile(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
+    def selectXRayFile(self, filename=None):
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self, 'Open XRay File', "", "WRL files (*.wrl)")
         if filename[0]:
             self.xrayLoadText.setText(self.processFilename(filename[0]))
             self.controller.setXRay(filename[0])
@@ -561,8 +565,9 @@ class Ui_MainWindow(QMainWindow):
             self.xrayLoadText.setText("No X-ray file selected...")
         self.checkRegistration()
 
-    def selectSurfaceTopographyLandmark(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
+    def selectSurfaceTopographyLandmark(self, filename=None):
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography Landamrk', "", ".ext files (*.ext)")
         if filename[0]:
             self.stLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setSurfaceLandmarks(filename[0])
@@ -576,8 +581,9 @@ class Ui_MainWindow(QMainWindow):
             self.controller.check['ST_LM'] = False
         self.checkRegistration()
 
-    def selectSurfaceTopography(self):
-        filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")
+    def selectSurfaceTopography(self, filename=None):
+        if not filename:
+            filename = QFileDialog.getOpenFileName(self, 'Open Surface Topography', "", "SZE files (*.sze)")
         if filename[0]:
             self.stLoadText.setText(self.processFilename(filename[0]))
             self.controller.setSurface(filename[0])
@@ -594,7 +600,28 @@ class Ui_MainWindow(QMainWindow):
 
 
     def selectQuestionnaire(self):
-        pass
+        filename = QFileDialog.getOpenFileName(self, 'Open Questionnaire', "", "CSV files (*.csv)")
+        if filename[0]:
+            self.questionnaireLoadText.setText(self.processFilename(filename[0]))
+            with open(filename[0]) as csvFile:
+                filePaths = csv.reader(csvFile, delimiter=',')
+                for fileData in filePaths:
+                    if fileData[0] == "Surface Topography":
+                        self.selectSurfaceTopography([fileData[1]])
+                    elif fileData[0] == "X-Ray":
+                        self.selectXRayFile([fileData[1]])
+                    elif fileData[0] == "MRI":
+                        self.selectMRIDirectory(fileData[1])
+                    elif fileData[0] == "MRI Landmarks":
+                        self.selectMRILandmarks([fileData[1]])
+                    elif fileData[0] == "X-Ray Landmarks":
+                        self.selectXRayLandmarks([fileData[1]])
+                    elif fileData[0] == "Surface Topography Landmarks":
+                        self.selectSurfaceTopographyLandmark([fileData[1]])
+
+        else:
+            self.questionnaireLoadText.setText("No Questionnaire file selected...")
+        self.checkRegistration()
 
 
     def checkXRay(self):

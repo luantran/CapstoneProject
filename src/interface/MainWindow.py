@@ -269,27 +269,26 @@ class Ui_MainWindow(QMainWindow):
         self.stLMLoadText.setText("No ST landmarks selected...")
         self.gridLoadLayout.addWidget(self.stLMLoadText, 7, 1)
 
-
         ########################################################################### Row 8
+
+        # Second Spacer
+        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 8, 0)
+
+        ########################################################################### Row 9
 
         # Load Questionnaire Button
         self.loadQuestionnaireButton = QtWidgets.QPushButton(self.centralwidget)
         self.loadQuestionnaireButton.setEnabled(True)
         self.loadQuestionnaireButton.setObjectName("loadSTButton")
         self.loadQuestionnaireButton.clicked.connect(self.selectQuestionnaire)
-        self.gridLoadLayout.addWidget(self.loadQuestionnaireButton, 8, 0)
+        self.gridLoadLayout.addWidget(self.loadQuestionnaireButton, 9, 0)
 
         # Questionnaire Text
         self.questionnaireLoadText = QtWidgets.QLabel(self.centralwidget)
         self.questionnaireLoadText.setFont(loadFont)
         self.questionnaireLoadText.setObjectName("qtLoadText")
         self.questionnaireLoadText.setText("No Questionnaire selected...")
-        self.gridLoadLayout.addWidget(self.questionnaireLoadText, 8, 1)
-
-        ########################################################################### Row 9
-
-        # Second Spacer
-        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 9, 0)
+        self.gridLoadLayout.addWidget(self.questionnaireLoadText, 9, 1)
 
         ########################################################################### Row 10
 
@@ -297,15 +296,9 @@ class Ui_MainWindow(QMainWindow):
         self.reloadButton.setEnabled(True)
         self.reloadButton.setObjectName("reloadButton")
         self.reloadButton.clicked.connect(self.reload)
-        self.gridLoadLayout.addWidget(self.reloadButton, 10, 0)
-
-        # Second Spacer
-        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 9, 0)
+        self.gridLoadLayout.addWidget(self.reloadButton, 10, 0, 1, 2)
 
         ########################################################################### Row 11
-
-        # Third Spacer
-        self.gridLoadLayout.addWidget(QtWidgets.QLabel(self.centralwidget), 11, 0)
 
         self.panelVerticalLayout.addLayout(self.gridLoadLayout)
 

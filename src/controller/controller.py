@@ -200,6 +200,8 @@ class Controller(object):
 
     def reload(self):
         self.view.changeStatusMessage("Reloading all modalities...")
+        for type in self.actors:
+            self.removeActors(self.actors[type])
         if self.mriReader.filepath:
             self.executeReader('MRI')
         if self.szeReader.filepath:

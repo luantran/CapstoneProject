@@ -6,4 +6,4 @@ __pycache__/
 /misc/MyHead
 *.json
 **/.pytest_cache
-*.csv
+

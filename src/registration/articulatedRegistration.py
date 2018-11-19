@@ -6,6 +6,10 @@ class ArticulatedRegistration(registration.Registration):
         pass
 
     def SurfaceXRayRegistration(self, szeLMReader, wrlLMReader, szeReader):
+
+        # Rotate surface because it is not aligned with landmarks
+        self.AlignSurfaceLM(szeReader)
+
         # 1st register the topo to the xray using tps and external landmarks
         thin_plate_trans = vtk.vtkThinPlateSplineTransform()
         thin_plate_trans.SetSourceLandmarks(szeLMReader.points)
@@ -13,22 +17,20 @@ class ArticulatedRegistration(registration.Registration):
         thin_plate_trans.SetBasisToR2LogR()
         thin_plate_trans.Update()
 
-        lm_trans = vtk.vtkTransformPolyDataFilter()
-        lm_trans.SetInputData(szeLMReader.actor.GetMapper().GetInput())
-        lm_trans.SetTransform(thin_plate_trans)
-        szeLMReader.actor.GetMapper().SetInputConnection(lm_trans.GetOutputPort())
-        szeLMReader.actor.GetMapper().Update()
+        # Apply transformation to landmarks
+        self.ApplyTransform(szeLMReader.actor, thin_plate_trans)
 
-        sze_trans = vtk.vtkTransformPolyDataFilter()
-        sze_trans.SetInputData(szeReader.actor.GetMapper().GetInput())
-        sze_trans.SetTransform(thin_plate_trans)
-        szeReader.actor.GetMapper().SetInputConnection(sze_trans.GetOutputPort())
-        szeReader.actor.GetMapper().Update()
-
-        return szeReader.actor, szeLMReader.actor
+        # Apply transformation to Surface
+        self.ApplyTransform(szeReader.actor, thin_plate_trans)
 
     def MRIXRayRegistration(self,  mriLMReader, wrlLMReader, mriReader):
-        pass
+        Transrigid = vtk.vtkLandmarkTransform()
+        Transrigid.SetSourceLandmarks(mriLMReader.points)
+        Transrigid.SetTargetLandmarks(wrlLMReader.vertebrae_points)
+        Transrigid.SetModeToRigidBody()
+        Transrigid.Update()
+        mriReader.actor.SetUserTransform(Transrigid)
+        mriLMReader.actor.SetUserTransform(Transrigid)
 
 
 

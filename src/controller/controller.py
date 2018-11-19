@@ -288,11 +288,11 @@ class Controller(object):
     def executeWriter(self, dirName):
         if "Surface" in self.actors:
             self.view.changeStatusMessage("Saving data!")
-            # try:
-            self.szeWriter.save(dirName, self.actors['Surface'])
-            self.view.changeStatusMessage("Saved data!")
-            # except:
-            #     self.view.changeStatusMessage("Data not saved!")
+            try:
+                self.szeWriter.save(dirName, self.actors['Surface'])
+                self.view.changeStatusMessage("Saved data!")
+            except:
+                self.view.changeStatusMessage("Data not saved!")
 
 
 

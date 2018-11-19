@@ -52,12 +52,11 @@ class SZEReader(reader.Reader):
     def getVTKActor(self):
         self.actor = vtk.vtkActor()
         # Rotate actor (adopted from Rola's code)
-        # self.actor.RotateZ(-90)
-        # self.actor.RotateX(90)
-
+        # Can rotate here or during transformation process
+        # lets keep the code for rotating here for now.
         gen_trans = vtk.vtkGeneralTransform()
-        gen_trans.RotateZ(-90)
-        gen_trans.RotateX(90)
+        gen_trans.RotateZ(0)
+        gen_trans.RotateX(0)
 
         gen_trans_filter = vtk.vtkTransformPolyDataFilter()
         gen_trans_filter.SetInputData(self.getPolyData())

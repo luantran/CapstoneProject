@@ -678,10 +678,9 @@ class Ui_MainWindow(QMainWindow):
         self.checkRegistration()
 
     def save(self):
-        default_name = self.controller.szeReader.filepath
-        name, mask = QFileDialog.getSaveFileName(self, 'Save Registered SZE File', "registered_"+default_name, "SZE (*.sze);;All files (*.*)")
-        actual_filename = name+".sze"
-        pass
+        dirName = QFileDialog.getExistingDirectory(self, 'Directory Location', "")
+        self.controller.executeWriter(dirName)
+
 
     def changeStatusMessage(self, message):
         self.statusbar.showMessage(message)

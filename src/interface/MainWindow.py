@@ -293,7 +293,7 @@ class Ui_MainWindow(QMainWindow):
         ########################################################################### Row 10
 
         self.reloadButton = QtWidgets.QPushButton(self.centralwidget)
-        self.reloadButton.setEnabled(True)
+        self.reloadButton.setEnabled(False)
         self.reloadButton.setObjectName("reloadButton")
         self.reloadButton.clicked.connect(self.reload)
         self.gridLoadLayout.addWidget(self.reloadButton, 10, 0, 1, 2)
@@ -432,7 +432,7 @@ class Ui_MainWindow(QMainWindow):
 
         # Save Button
         self.saveButton = QtWidgets.QPushButton(self.centralwidget)
-        # self.saveButton.setEnabled(False)
+        self.saveButton.setEnabled(False)
         self.saveButton.setObjectName("saveButton")
         self.saveLayout.addWidget(self.saveButton)
         self.saveButton.clicked.connect(self.save)
@@ -643,6 +643,7 @@ class Ui_MainWindow(QMainWindow):
         if self.controller.checkRequirementsForRegistration():
             self.rigidRegistrationButton.setEnabled(True)
             self.articulatedRegistrationButton.setEnabled(True)
+            self.reloadButton.setEnabled(True)
 
     def openDocumentationWindow(self):
         dialog = QtWidgets.QDialog()

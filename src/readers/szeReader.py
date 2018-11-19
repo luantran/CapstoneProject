@@ -42,11 +42,22 @@ class SZEReader(reader.Reader):
         self._addingVTKCoords()
         self._addingVTKPolygonCells()
 
+        # # poly data
+        # polydata = vtk.vtkPolyData()
+        # polydata.SetPoints(self.points)
+        # polydata.SetPolys(self.polys)
+        #
+        # decimate = vtk.vtkDecimatePro()
+        # decimate.SetInputData(polydata)
+        # decimate.SetTargetReduction(0.90)
+        # decimate.Update()
+        # self.polydata = vtk.vtkPolyData()
+        # self.polydata.ShallowCopy(decimate.GetOutput())
+
         # poly data
         self.polydata = vtk.vtkPolyData()
         self.polydata.SetPoints(self.points)
         self.polydata.SetPolys(self.polys)
-
         return self.polydata
 
     def getVTKActor(self):
@@ -61,9 +72,7 @@ class SZEReader(reader.Reader):
         gen_trans_filter = vtk.vtkTransformPolyDataFilter()
         gen_trans_filter.SetInputData(self.getPolyData())
         gen_trans_filter.SetTransform(gen_trans)
-
         mapper = vtk.vtkPolyDataMapper()
-        # mapper.SetInputData(self.getPolyData())
         mapper.SetInputConnection(gen_trans_filter.GetOutputPort())
         self.actor.SetMapper(mapper)
 

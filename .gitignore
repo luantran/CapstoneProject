@@ -6,5 +6,5 @@ __pycache__/
 /misc/MyHead
 *.json
 **/.pytest_cache
-/misc/questionnaire.csv
+**/questionnaire.csv
 

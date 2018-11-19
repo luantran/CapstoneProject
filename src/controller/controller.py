@@ -1,7 +1,9 @@
 from src.readers import szeReader, wrlReader, mriReader
+from src.writers import szeWriter
 from src.landmarks_readers import szeLandmarksReader, wrlLandmarksReader, mriLandmarksReader
 from src.registration import rigidRegistration
 from src.registration import articulatedRegistration
+from src.registration import registrationContext
 import operator
 
 import vtk
@@ -21,6 +23,8 @@ class Controller(object):
         self.readers['XRay'] = wrlReader
         self.readers['MRI'] = mriReader
         self.readers['Surface'] = szeReader
+
+        self.szeWriter = szeWriter.SZEWriter()
 
         self.rigid = rigidRegistration.RigidRegistration()
         self.articulated = articulatedRegistration.ArticulatedRegistration()
@@ -124,26 +128,20 @@ class Controller(object):
         # check if we have all the actors needed for the registration:
         self.process_mri_xray_landmarks()
         self.process_st_xray_landmarks()
+
         if ('MRI_LM' in self.actors and 'MRI' in self.actors and
                 'Surface_LM' in self.actors and 'Surface' in self.actors
                 and 'XRay_LM' in self.actors and 'XRay' in self.actors):
             self.view.changeStatusMessage("Starting " + type + " registration...")
             # Trandfrom Surface onto XRay
             # Get the Translation matrix
+            context = None
             if type == 'articulated':
-                registered_actors = self.articulated.SurfaceXRayRegistration(self.szeLMReader, self.wrlLMReader,
-                                                                       self.szeReader)
-                self.actors['MRI'] = registered_actors[0]
-                self.actors['MRI_LM'] = registered_actors[1]
+                context = registrationContext.RegistrationContext(self.articulated)
             else:
-                registered_actors = self.rigid.SurfaceXRayRegistration(self.szeLMReader, self.wrlLMReader, self.szeReader)
-                self.actors['Surface'] = registered_actors[0]
-                self.actors['Surface_LM'] = registered_actors[1]
+                context = registrationContext.RegistrationContext(self.rigid)
 
-            registered_actors = self.rigid.MRIXRayRegistration(self.mriLMReader, self.wrlLMReader, self.mriReader)
-            # Trandfrom MRI onto XRay
-            self.actors['MRI'] = registered_actors[0]
-            self.actors['MRI_LM'] = registered_actors[1]
+            context.Registration(self.szeReader,  self.szeLMReader, self.mriLMReader, self.mriReader, self.wrlLMReader)
 
             self.view.vtkWidget.Render()
             self.view.changeStatusMessage("Finished " + type + " registration!")
@@ -287,6 +285,14 @@ class Controller(object):
         self.actors['vertebrae_XRay_LM'] = new_actor
         self.view.vtkWidget.Render()
 
+    def executeWriter(self, dirName):
+        if "Surface" in self.actors:
+            self.view.changeStatusMessage("Saving data!")
+            # try:
+            self.szeWriter.save(dirName, self.actors['Surface'])
+            self.view.changeStatusMessage("Saved data!")
+            # except:
+            #     self.view.changeStatusMessage("Data not saved!")
 
 
 

@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 import vtk
+from src.landmarks_readers.szeLandmarksReader import SZEReaderLM
+from src.landmarks_readers.mriLandmarksReader import MRIReaderLM
 
 class Registration(ABC):
     def __init__(self):
@@ -12,6 +14,62 @@ class Registration(ABC):
     @abstractmethod
     def MRIXRayRegistration(self, mriLMReader, wrlLMReader, mriReader):
         pass
+
+    def getMetrics(self, otherReader, wrlLMReader, Transrigid):
+        LMAfter = []
+        points = self.getTransformedLandmarksPoints(otherReader.points, Transrigid)
+        for i in range(0, points.GetNumberOfPoints()):
+            LMAfter.append((points.GetPoint(i)[0], points.GetPoint(i)[1], points.GetPoint(i)[2]))
+
+        wrlLM = []
+        if isinstance(otherReader, SZEReaderLM):
+            for i in range(0, wrlLMReader.capteurs_points.GetNumberOfPoints()):
+                wrlLM.append((wrlLMReader.capteurs_points.GetPoint(i)[0], wrlLMReader.capteurs_points.GetPoint(i)[1],
+                              wrlLMReader.capteurs_points.GetPoint(i)[2]))
+        elif isinstance(otherReader, MRIReaderLM):
+            for i in range(0, wrlLMReader.vertebrae_points.GetNumberOfPoints()):
+                wrlLM.append((wrlLMReader.vertebrae_points.GetPoint(i)[0], wrlLMReader.vertebrae_points.GetPoint(i)[1],
+                              wrlLMReader.vertebrae_points.GetPoint(i)[2]))
+        if len(wrlLM) != len(LMAfter):
+            print("Error")
+            return None
+        print("---------------------------------")
+        self.getMeanSquaredError(wrlLM, LMAfter)
+        print("---------------------------------")
+        self.getAccuracy(wrlLM, LMAfter)
+        print("---------------------------------")
+
+    def getMeanSquaredError(self, target, result):
+        sumX=0
+        sumY=0
+        sumZ=0
+        sumOverall=0
+        length=len(target)
+        for i in range(0, length):
+            sumX+=(target[i][0] - result[i][0])**2
+            sumY+=(target[i][1] - result[i][1])**2
+            sumZ+=(target[i][2] - result[i][2])**2
+            sumOverall+=(sumX+sumY+sumZ)
+        print("MSE on X coordinates: "+str(float(sumX)/float(length)))
+        print("MSE on Y coordinates: "+str(float(sumY)/float(length)))
+        print("MSE on Z coordinates: "+str(float(sumZ)/float(length)))
+        print("MSE overall of coordinates: "+str(float(sumOverall)/float(3*length)))
+
+    def getAccuracy(self, target, result):
+        accX = 0
+        accY = 0
+        accZ = 0
+        accOverall = 0
+        length = len(target)
+        for i in range(0, length):
+            accX += ((target[i][0] - result[i][0])/target[i][0])
+            accY += ((target[i][1] - result[i][1])/target[i][1])
+            accZ += ((target[i][2] - result[i][2])/target[i][2])
+            accOverall += (accX + accY + accZ)
+        print("Accuracy on X coordinates: " + str(float(accX) / float(length)))
+        print("Accuracy on Y coordinates: " + str(float(accY) / float(length)))
+        print("Accuracy on Z coordinates: " + str(float(accZ) / float(length)))
+        print("Accuracy overall of coordinates: " + str(float(accOverall) / float(3 * length)))
 
     def AlignSurfaceLM(self, szeReader):
         # Rotate surface because it is not aligned with landmarks
@@ -32,3 +90,23 @@ class Registration(ABC):
         lm_trans.SetTransform(trans)
         actor.GetMapper().SetInputConnection(lm_trans.GetOutputPort())
         actor.GetMapper().Update()
+
+    def getTransformedLandmarksPoints(self, points, transform):
+        actor = vtk.vtkActor()
+
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(points)
+
+        lm_trans = vtk.vtkTransformPolyDataFilter()
+        lm_trans.SetInputData(polydata)
+        lm_trans.SetTransform(transform)
+
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputConnection(lm_trans.GetOutputPort())
+        actor.SetMapper(mapper)
+        actor.GetMapper().Update()
+
+        transformed_points = vtk.vtkPoints()
+        return actor.GetMapper().GetInput().GetPoints()
+
+

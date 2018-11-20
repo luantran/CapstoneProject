@@ -19,7 +19,8 @@ class ArticulatedRegistration(registration.Registration):
 
         # Apply transformation to landmarks
         self.ApplyTransform(szeLMReader.actor, thin_plate_trans)
-
+        print("-----Performance Metrics of Surface Topography to X-Ray using Thin Plate Spline Registration-----")
+        self.getMetrics(szeLMReader, wrlLMReader, thin_plate_trans)
         # Apply transformation to Surface
         self.ApplyTransform(szeReader.actor, thin_plate_trans)
 
@@ -31,6 +32,9 @@ class ArticulatedRegistration(registration.Registration):
         Transrigid.Update()
         mriReader.actor.SetUserTransform(Transrigid)
         mriLMReader.actor.SetUserTransform(Transrigid)
+        print("-----Performance Metrics of MRI to X-Ray using Rigid Registration-----")
+        self.getMetrics(mriLMReader, wrlLMReader, Transrigid)
+
 
 
 

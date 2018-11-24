@@ -42,22 +42,26 @@ class SZEReader(reader.Reader):
         self._addingVTKCoords()
         self._addingVTKPolygonCells()
 
-        # # poly data
-        # polydata = vtk.vtkPolyData()
-        # polydata.SetPoints(self.points)
-        # polydata.SetPolys(self.polys)
-        #
-        # decimate = vtk.vtkDecimatePro()
-        # decimate.SetInputData(polydata)
-        # decimate.SetTargetReduction(0.90)
-        # decimate.Update()
-        # self.polydata = vtk.vtkPolyData()
-        # self.polydata.ShallowCopy(decimate.GetOutput())
+        # poly data
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(self.points)
+        polydata.SetPolys(self.polys)
+
+        decimate = vtk.vtkDecimatePro()
+        decimate.SetInputData(polydata)
+        decimate.SetTargetReduction(0.95)
+        decimate.Update()
+
+
+        self.polydata = vtk.vtkPolyData()
+        self.polydata.ShallowCopy(decimate.GetOutput())
+
+
 
         # poly data
-        self.polydata = vtk.vtkPolyData()
-        self.polydata.SetPoints(self.points)
-        self.polydata.SetPolys(self.polys)
+        # self.polydata = vtk.vtkPolyData()
+        # self.polydata.SetPoints(self.points)
+        # self.polydata.SetPolys(self.polys)
         return self.polydata
 
     def getVTKActor(self):
@@ -65,21 +69,20 @@ class SZEReader(reader.Reader):
         # Rotate actor (adopted from Rola's code)
         # Can rotate here or during transformation process
         # lets keep the code for rotating here for now.
-        gen_trans = vtk.vtkGeneralTransform()
-        gen_trans.RotateZ(0)
-        gen_trans.RotateX(0)
 
-        gen_trans_filter = vtk.vtkTransformPolyDataFilter()
-        gen_trans_filter.SetInputData(self.getPolyData())
-        gen_trans_filter.SetTransform(gen_trans)
+        extract = vtk.vtkExtractEdges()
+        extract.SetInputData(self.getPolyData())
+        extract.Update()
+
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputConnection(gen_trans_filter.GetOutputPort())
+        mapper.SetInputConnection(extract.GetOutputPort())
         self.actor.SetMapper(mapper)
 
+
         self.actor.GetProperty().SetInterpolationToFlat()
-        self.actor.GetProperty().SetEdgeColor(1.0, 0.0, 0.0)
-        self.actor.GetProperty().SetOpacity(0.25)
-        self.actor.GetProperty().EdgeVisibilityOn()
+        self.actor.GetProperty().SetColor(1.0, 0.0, 0.0)
+        self.actor.GetProperty().SetOpacity(0.5)
+        # self.actor.GetProperty().EdgeVisibilityOn()
         return self.actor
 
     def getLandmarks(self, filename):

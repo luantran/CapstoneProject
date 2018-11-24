@@ -21,7 +21,7 @@ class SZEReaderLM(landmarksReader.LandmarksReader):
         return self.polydata
 
     def getVTKActor(self):
-        self.actor, self.mapper = super().getVTKActor(10, "blue", self.getPolyData())
+        self.actor, self.mapper = super().getVTKActor(15, "yellow", self.getPolyData())
         return self.actor
 
     def getVTKPoints(self):

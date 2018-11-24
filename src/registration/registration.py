@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import vtk
 from src.landmarks_readers.szeLandmarksReader import SZEReaderLM
 from src.landmarks_readers.mriLandmarksReader import MRIReaderLM
-
+import numpy
 class Registration(ABC):
     def __init__(self):
         super().__init__()
@@ -49,11 +49,14 @@ class Registration(ABC):
             sumX+=(target[i][0] - result[i][0])**2
             sumY+=(target[i][1] - result[i][1])**2
             sumZ+=(target[i][2] - result[i][2])**2
-            sumOverall+=(sumX+sumY+sumZ)
-        print("MSE on X coordinates: "+str(float(sumX)/float(length)))
-        print("MSE on Y coordinates: "+str(float(sumY)/float(length)))
-        print("MSE on Z coordinates: "+str(float(sumZ)/float(length)))
-        print("MSE overall of coordinates: "+str(float(sumOverall)/float(3*length)))
+            a_target = numpy.array((target[i][0], target[i][1], target[i][2]))
+            b_result = numpy.array((result[i][0], result[i][1], result[i][2]))
+            distance = numpy.linalg.norm(a_target-b_result)
+            sumOverall+=(distance**2)
+        # print("MSE on X coordinates: "+str(float(sumX)/float(length)))
+        # print("MSE on Y coordinates: "+str(float(sumY)/float(length)))
+        # print("MSE on Z coordinates: "+str(float(sumZ)/float(length)))
+        print("MSE overall of coordinates: "+str(float(sumOverall)/float(length)))
 
     def getAccuracy(self, target, result):
         accX = 0
@@ -61,15 +64,17 @@ class Registration(ABC):
         accZ = 0
         accOverall = 0
         length = len(target)
+        count = 0
         for i in range(0, length):
-            accX += ((target[i][0] - result[i][0])/target[i][0])
-            accY += ((target[i][1] - result[i][1])/target[i][1])
-            accZ += ((target[i][2] - result[i][2])/target[i][2])
-            accOverall += (accX + accY + accZ)
-        print("Accuracy on X coordinates: " + str(float(accX) / float(length)))
-        print("Accuracy on Y coordinates: " + str(float(accY) / float(length)))
-        print("Accuracy on Z coordinates: " + str(float(accZ) / float(length)))
-        print("Accuracy overall of coordinates: " + str(float(accOverall) / float(3 * length)))
+
+            accX = ((target[i][0] - result[i][0])/target[i][0]) * 100
+            accY = ((target[i][1] - result[i][1])/target[i][1]) * 100
+            accZ = ((target[i][2] - result[i][2])/target[i][2]) * 100
+            accOverall += float(accX + accY + accZ)/float(3)
+        # print("Accuracy on X coordinates: " + str(float(accX) / float(length)))
+        # print("Accuracy on Y coordinates: " + str(float(accY) / float(length)))
+        # print("Accuracy on Z coordinates: " + str(float(accZ) / float(length)))
+        print("Accuracy overall of coordinates: " + str(100 - abs(float(accOverall) / float(length))))
 
     def AlignSurfaceLM(self, szeReader):
         # Rotate surface because it is not aligned with landmarks

@@ -24,13 +24,25 @@ class RigidRegistration(registration.Registration):
         self.ApplyTransform(szeReader.actor, Transrigid)
 
     def MRIXRayRegistration(self, mriLMReader, wrlLMReader, mriReader):
+
         Transrigid = vtk.vtkLandmarkTransform()
         Transrigid.SetSourceLandmarks(mriLMReader.points)
         Transrigid.SetTargetLandmarks(wrlLMReader.vertebrae_points)
         Transrigid.SetModeToRigidBody()
         Transrigid.Update()
-        mriReader.actor.SetUserTransform(Transrigid)
-        mriLMReader.actor.SetUserTransform(Transrigid)
+
+        # Apply transformation to landmarks
+        self.ApplyTransform(mriLMReader.actor, Transrigid)
+        # Apply transformation to surface
+        self.ApplyTransform(mriReader.actor, Transrigid)
+
+        # Transrigid = vtk.vtkLandmarkTransform()
+        # Transrigid.SetSourceLandmarks(mriLMReader.points)
+        # Transrigid.SetTargetLandmarks(wrlLMReader.vertebrae_points)
+        # Transrigid.SetModeToRigidBody()
+        # Transrigid.Update()
+        # mriReader.actor.SetUserTransform(Transrigid)
+        # mriLMReader.actor.SetUserTransform(Transrigid)
         print("-----Performance Metrics of MRI to X-Ray using Rigid Registration-----")
         self.getMetrics(mriLMReader, wrlLMReader, Transrigid)
 

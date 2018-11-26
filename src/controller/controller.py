@@ -203,14 +203,14 @@ class Controller(object):
 
     def reload(self):
         self.view.changeStatusMessage("Reloading all modalities...")
-        print(self.actorsCheckBox)
         for type in self.actors:
+            # Landmarks loading
             if type[-2:] == 'LM':
                 self.loadLandmarks(type)
-            else:
+            else: # modality loading
                 self.executeReader(type)
 
-            #self.checkboxUpdate(type, self.actorsCheckBox[type])
+            self.checkboxUpdate(type, self.actorsCheckBox[type])
 
         self.view.vtkWidget.Render()
         self.view.changeStatusMessage("All modalities reloaded!")

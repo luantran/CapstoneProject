@@ -511,7 +511,7 @@ class Ui_MainWindow(QMainWindow):
         if filename[0]:
             self.mriLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setMRILandmarks(filename[0])
-            self.controller.loadLandmarks("MRI_LM", filename[0])
+            self.controller.loadLandmarks("MRI_LM")
             self.mriLMCheckBox.setEnabled(True)
             self.mriLMCheckBox.setChecked(True)
             self.controller.check['MRI_LM'] = True
@@ -527,7 +527,7 @@ class Ui_MainWindow(QMainWindow):
         if filename[0]:
             self.xrayLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setXRayLandmarks(filename[0])
-            self.controller.loadLandmarks("XRay_LM", filename[0])
+            self.controller.loadLandmarks("XRay_LM")
             self.xRayExtLMCheckBox.setEnabled(True)
             self.xRayExtLMCheckBox.setChecked(True)
             self.xRayVertLMCheckBox.setEnabled(True)
@@ -564,7 +564,7 @@ class Ui_MainWindow(QMainWindow):
         if filename[0]:
             self.stLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setSurfaceLandmarks(filename[0])
-            self.controller.loadLandmarks("Surface_LM", filename[0])
+            self.controller.loadLandmarks("Surface_LM")
             self.surfaceExtLMCheckBox.setEnabled(True)
             self.surfaceExtLMCheckBox.setChecked(True)
             self.controller.check['ST_LM'] = True

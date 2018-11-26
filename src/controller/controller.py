@@ -63,7 +63,7 @@ class Controller(object):
     def setSurfaceLandmarks(self, filename):
         self.szeLMReader.setFilePath(filename)
 
-    def loadLandmarks(self, type, filename):
+    def loadLandmarks(self, type):
         self.view.changeStatusMessage("Loading " + type[:-3] + " landmarks...")
 
         if type in self.actors.keys():
@@ -208,11 +208,11 @@ class Controller(object):
             self.executeReader('XRay')
 
         if self.mriLMReader.filepath:
-            self.loadLandmarks('MRI_LM', self.mriLMReader.filepath)
+            self.loadLandmarks('MRI_LM')
         if self.szeLMReader.filepath:
-            self.loadLandmarks('Surface_LM', self.szeLMReader.filepath)
+            self.loadLandmarks('Surface_LM')
         if self.wrlReader.filepath:
-            self.loadLandmarks('XRay_LM', self.wrlLMReader.filepath)
+            self.loadLandmarks('XRay_LM')
         self.view.vtkWidget.Render()
         self.view.changeStatusMessage("All modalities reloaded!")
 

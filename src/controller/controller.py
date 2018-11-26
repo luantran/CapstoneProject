@@ -299,7 +299,7 @@ class Controller(object):
         if "Surface" in self.actors:
             self.view.changeStatusMessage("Saving data!")
             try:
-                self.szeWriter.save(dirName, self.actors['Surface'])
+                self.szeWriter.save(dirName, self.szeReader.actor)
                 self.view.changeStatusMessage("Saved data!")
             except:
                 self.view.changeStatusMessage("Data not saved!")

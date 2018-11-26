@@ -433,7 +433,7 @@ class Ui_MainWindow(QMainWindow):
 
         # Save Button
         self.saveButton = QtWidgets.QPushButton(self.centralwidget)
-        self.saveButton.setEnabled(False)
+        self.saveButton.setEnabled(True)
         self.saveButton.setObjectName("saveButton")
         self.saveLayout.addWidget(self.saveButton)
         self.saveButton.clicked.connect(self.save)

@@ -21,6 +21,7 @@ class RigidRegistration(registration.Registration):
         print("-----Performance Metrics of Surface Topography to X-Ray using Rigid Registration-----")
         self.getMetrics(szeLMReader, wrlLMReader, Transrigid)
         # Apply transformation to surface
+        self.ApplyTransform(szeReader.actorCopy, Transrigid)
         self.ApplyTransform(szeReader.actor, Transrigid)
 
     def MRIXRayRegistration(self, mriLMReader, wrlLMReader, mriReader):

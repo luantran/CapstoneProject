@@ -83,10 +83,15 @@ class Registration(ABC):
         gen_trans.RotateX(90)
 
         gen_trans_filter = vtk.vtkTransformPolyDataFilter()
+        gen_trans_filterCopy = vtk.vtkTransformPolyDataFilter()
         gen_trans_filter.SetInputData(szeReader.actor.GetMapper().GetInput())
+        gen_trans_filterCopy.SetInputData(szeReader.actorCopy.GetMapper().GetInput())
         gen_trans_filter.SetTransform(gen_trans)
+        gen_trans_filterCopy.SetTransform(gen_trans)
 
+        szeReader.actorCopy.GetMapper().SetInputConnection(gen_trans_filterCopy.GetOutputPort())
         szeReader.actor.GetMapper().SetInputConnection(gen_trans_filter.GetOutputPort())
+        szeReader.actorCopy.GetMapper().Update()
         szeReader.actor.GetMapper().Update()
 
     def ApplyTransform(self, actor, trans):

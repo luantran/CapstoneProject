@@ -31,6 +31,7 @@ class Controller(object):
 
         self.landmarkPoints = {}
         self.actors = {}
+        self.actorsCheckBox = {}
         self.matchingSTXRayPoints = None
 
         self.check = self.initializeChecks()
@@ -70,11 +71,13 @@ class Controller(object):
             self.removeActors(self.actors[type])
 
         if type is "XRay_LM":
-            vert_actor, capt_actor = self.wrlLMReader.getVTKActor()
+            _, capt_actor = self.wrlLMReader.getVTKActor()
             self.view.ren.AddActor(capt_actor)
             self.actors[type] = capt_actor
+        elif type is "Vertebrae_XRay_LM":
+            vert_actor, _ = self.wrlLMReader.getVTKActor()
             self.view.ren.AddActor(vert_actor)
-            self.actors["vertebrae_"+type] = vert_actor
+            self.actors[type] = vert_actor
         elif type is "Surface_LM":
             surface_lm_actor = self.szeLMReader.getVTKActor()
             self.view.ren.AddActor(surface_lm_actor)
@@ -120,8 +123,10 @@ class Controller(object):
         if type in self.actors:
             if isChecked:
                 self.actors[type].VisibilityOn()
+                self.actorsCheckBox[type] = True
             else:
                 self.actors[type].VisibilityOff()
+                self.actorsCheckBox[type] = False
         self.view.vtkWidget.Render()
 
     def performRegistration(self, type):
@@ -198,21 +203,15 @@ class Controller(object):
 
     def reload(self):
         self.view.changeStatusMessage("Reloading all modalities...")
+        print(self.actorsCheckBox)
         for type in self.actors:
-            self.removeActors(self.actors[type])
-        if self.mriReader.filepath:
-            self.executeReader('MRI')
-        if self.szeReader.filepath:
-            self.executeReader('Surface')
-        if self.wrlReader.filepath:
-            self.executeReader('XRay')
+            if type[-2:] == 'LM':
+                self.loadLandmarks(type)
+            else:
+                self.executeReader(type)
 
-        if self.mriLMReader.filepath:
-            self.loadLandmarks('MRI_LM')
-        if self.szeLMReader.filepath:
-            self.loadLandmarks('Surface_LM')
-        if self.wrlReader.filepath:
-            self.loadLandmarks('XRay_LM')
+            #self.checkboxUpdate(type, self.actorsCheckBox[type])
+
         self.view.vtkWidget.Render()
         self.view.changeStatusMessage("All modalities reloaded!")
 
@@ -282,7 +281,7 @@ class Controller(object):
         # self.view.ren.RemoveActor(self.actors['vertebrae_XRay_LM'])
         new_actor = self.wrlLMReader.updateVertVTKActor()
         # self.view.ren.AddActor(new_actor)
-        self.actors['vertebrae_XRay_LM'] = new_actor
+        self.actors['Vertebrae_XRay_LM'] = new_actor
         self.view.vtkWidget.Render()
 
     def executeWriter(self, dirName):

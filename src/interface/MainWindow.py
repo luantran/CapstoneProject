@@ -9,6 +9,7 @@ import csv
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
+from functools import partial
 
 from src.interface import HelpWindow, LicenseWindow
 from os import walk
@@ -352,21 +353,21 @@ class Ui_MainWindow(QMainWindow):
         self.mriCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.mriCheckBox.setObjectName("mriCheckBox")
         self.mriCheckBox.setEnabled(False)
-        self.mriCheckBox.stateChanged.connect(self.checkMRI)
+        self.mriCheckBox.stateChanged.connect(lambda: self.checkType("MRI", self.mriCheckBox.isChecked()))
         self.viewLayout.addWidget(self.mriCheckBox)
 
         # X-Ray Checkbox
         self.xRayCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.xRayCheckBox.setObjectName("xRayCheckBox")
         self.xRayCheckBox.setEnabled(False)
-        self.xRayCheckBox.stateChanged.connect(self.checkXRay)
+        self.xRayCheckBox.stateChanged.connect(lambda: self.checkType("XRay", self.xRayCheckBox.isChecked()))
         self.viewLayout.addWidget(self.xRayCheckBox)
 
         # Surface Topography Checkbox
         self.stCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.stCheckBox.setObjectName("stCheckBox")
         self.stCheckBox.setEnabled(False)
-        self.stCheckBox.stateChanged.connect(self.checkST)
+        self.stCheckBox.stateChanged.connect(lambda: self.checkType("Surface", self.stCheckBox.isChecked()))
         self.viewLayout.addWidget(self.stCheckBox)
 
         # First Spacer
@@ -377,28 +378,28 @@ class Ui_MainWindow(QMainWindow):
         self.mriLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.mriLMCheckBox.setObjectName("mriLMCheckBox")
         self.mriLMCheckBox.setEnabled(False)
-        self.mriLMCheckBox.stateChanged.connect(self.checkMRI_LM)
+        self.mriLMCheckBox.stateChanged.connect(lambda: self.checkType("MRI_LM", self.mriLMCheckBox.isChecked()))
         self.viewLayout.addWidget(self.mriLMCheckBox)
 
         # XRay Landmarks Checkbox
         self.xRayExtLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.xRayExtLMCheckBox.setObjectName("xRayExtLMCheckBox")
         self.xRayExtLMCheckBox.setEnabled(False)
-        self.xRayExtLMCheckBox.stateChanged.connect(self.checkExternalXRayLM)
+        self.xRayExtLMCheckBox.stateChanged.connect(lambda: self.checkType("XRay_LM", self.xRayExtLMCheckBox.isChecked()))
         self.viewLayout.addWidget(self.xRayExtLMCheckBox)
 
         # XRay Vertebrae Landmarks Checkbox
         self.xRayVertLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.xRayVertLMCheckBox.setObjectName("xRayVertLMCheckBox")
         self.xRayVertLMCheckBox.setEnabled(False)
-        self.xRayVertLMCheckBox.stateChanged.connect(self.checkVertebraeXRayLM)
+        self.xRayVertLMCheckBox.stateChanged.connect(lambda: self.checkType("Vertebrae_XRay_LM", self.xRayVertLMCheckBox.isChecked()))
         self.viewLayout.addWidget(self.xRayVertLMCheckBox)
 
         # Surface Landmarks Checkbox
         self.surfaceExtLMCheckBox = QtWidgets.QCheckBox(self.centralwidget)
         self.surfaceExtLMCheckBox.setObjectName("surfaceExtLMCheckBox")
         self.surfaceExtLMCheckBox.setEnabled(False)
-        self.surfaceExtLMCheckBox.stateChanged.connect(self.checkExternalSurfaceLM)
+        self.surfaceExtLMCheckBox.stateChanged.connect(lambda: self.checkType("Surface_LM", self.surfaceExtLMCheckBox.isChecked()))
         self.viewLayout.addWidget(self.surfaceExtLMCheckBox)
 
         # Second Spacer
@@ -493,11 +494,11 @@ class Ui_MainWindow(QMainWindow):
                 self.sliceSpinBox.setEnabled(True)
                 self.sliceSpinBox.setProperty("value", 0)
                 self.currentSliceValue = self.sliceSpinBox.value()
+                self.controller.setMRIDirectory(dirName)
+                self.controller.executeReader("MRI")
                 self.mriCheckBox.setEnabled(True)
                 self.mriCheckBox.setChecked(True)
                 self.controller.check['MRI'] = True
-                self.controller.setMRIDirectory(dirName)
-                self.controller.executeReader("MRI")
         else:
             self.mriCheckBox.setEnabled(False)
             self.mriCheckBox.setChecked(False)
@@ -528,6 +529,7 @@ class Ui_MainWindow(QMainWindow):
             self.xrayLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setXRayLandmarks(filename[0])
             self.controller.loadLandmarks("XRay_LM")
+            self.controller.loadLandmarks("Vertebrae_XRay_LM")
             self.xRayExtLMCheckBox.setEnabled(True)
             self.xRayExtLMCheckBox.setChecked(True)
             self.xRayVertLMCheckBox.setEnabled(True)
@@ -616,28 +618,8 @@ class Ui_MainWindow(QMainWindow):
             self.questionnaireLoadText.setText("No Questionnaire file selected...")
         self.checkRegistration()
 
-
-    def checkXRay(self):
-        self.controller.checkboxUpdate('XRay', self.xRayCheckBox.isChecked())
-
-    def checkST(self):
-        self.controller.checkboxUpdate('Surface', self.stCheckBox.isChecked())
-
-    def checkMRI(self):
-        self.controller.checkboxUpdate('MRI', self.mriCheckBox.isChecked())
-
-    def checkExternalSurfaceLM(self):
-        self.controller.checkboxUpdate('Surface_LM', self.surfaceExtLMCheckBox.isChecked())
-
-    def checkMRI_LM(self):
-        self.controller.checkboxUpdate('MRI_LM', self.mriLMCheckBox.isChecked())
-
-    def checkExternalXRayLM(self):
-        self.controller.checkboxUpdate('XRay_LM', self.xRayExtLMCheckBox.isChecked())
-
-    def checkVertebraeXRayLM(self):
-        self.controller.checkboxUpdate('vertebrae_XRay_LM', self.xRayVertLMCheckBox.isChecked())
-
+    def checkType(self, type, isChecked):
+        self.controller.checkboxUpdate(type, isChecked)
 
     def checkRegistration(self):
         if self.controller.checkRequirementsForRegistration():

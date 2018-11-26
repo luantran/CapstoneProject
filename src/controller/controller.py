@@ -31,7 +31,6 @@ class Controller(object):
 
         self.landmarkPoints = {}
         self.actors = {}
-        self.actorsCheckBox = {}
         self.matchingSTXRayPoints = None
 
         self.check = self.initializeChecks()
@@ -121,10 +120,8 @@ class Controller(object):
         if type in self.actors:
             if isChecked:
                 self.actors[type].VisibilityOn()
-                self.actorsCheckBox[type] = True
             else:
                 self.actors[type].VisibilityOff()
-                self.actorsCheckBox[type] = False
         self.view.vtkWidget.Render()
 
     def performRegistration(self, type):
@@ -202,6 +199,8 @@ class Controller(object):
 
     def reload(self):
         self.view.changeStatusMessage("Reloading all modalities...")
+        for type in self.actors:
+            self.removeActors(self.actors[type])
 
         if self.mriReader.filepath:
             self.executeReader('MRI')

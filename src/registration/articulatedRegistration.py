@@ -22,6 +22,7 @@ class ArticulatedRegistration(registration.Registration):
         print("-----Performance Metrics of Surface Topography to X-Ray using Thin Plate Spline Registration-----")
         self.getMetrics(szeLMReader, wrlLMReader, thin_plate_trans)
         # Apply transformation to Surface
+        self.ApplyTransform(szeReader.actorCopy, thin_plate_trans)
         self.ApplyTransform(szeReader.actor, thin_plate_trans)
 
     def MRIXRayRegistration(self,  mriLMReader, wrlLMReader, mriReader):

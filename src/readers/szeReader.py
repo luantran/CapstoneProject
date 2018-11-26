@@ -43,29 +43,23 @@ class SZEReader(reader.Reader):
         self._addingVTKPolygonCells()
 
         # poly data
-        polydata = vtk.vtkPolyData()
-        polydata.SetPoints(self.points)
-        polydata.SetPolys(self.polys)
+        self.polydata = vtk.vtkPolyData()
+        self.polydata.SetPoints(self.points)
+        self.polydata.SetPolys(self.polys)
 
         decimate = vtk.vtkDecimatePro()
-        decimate.SetInputData(polydata)
+        decimate.SetInputData(self.polydata)
         decimate.SetTargetReduction(0.95)
         decimate.Update()
 
+        self.polydataCopy = vtk.vtkPolyData()
+        self.polydataCopy.ShallowCopy(decimate.GetOutput())
 
-        self.polydata = vtk.vtkPolyData()
-        self.polydata.ShallowCopy(decimate.GetOutput())
-
-
-
-        # poly data
-        # self.polydata = vtk.vtkPolyData()
-        # self.polydata.SetPoints(self.points)
-        # self.polydata.SetPolys(self.polys)
-        return self.polydata
+        return self.polydataCopy
 
     def getVTKActor(self):
         self.actor = vtk.vtkActor()
+        self.actorCopy = vtk.vtkActor()
         # Rotate actor (adopted from Rola's code)
         # Can rotate here or during transformation process
         # lets keep the code for rotating here for now.
@@ -74,16 +68,20 @@ class SZEReader(reader.Reader):
         extract.SetInputData(self.getPolyData())
         extract.Update()
 
+        mapperCopy = vtk.vtkPolyDataMapper()
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputConnection(extract.GetOutputPort())
+
+        mapper.SetInputData(self.polydata)
+        mapperCopy.SetInputConnection(extract.GetOutputPort())
+        self.actorCopy.SetMapper(mapperCopy)
         self.actor.SetMapper(mapper)
 
 
-        self.actor.GetProperty().SetInterpolationToFlat()
-        self.actor.GetProperty().SetColor(1.0, 0.0, 0.0)
-        self.actor.GetProperty().SetOpacity(0.5)
+        self.actorCopy.GetProperty().SetInterpolationToFlat()
+        self.actorCopy.GetProperty().SetColor(1.0, 0.0, 0.0)
+        self.actorCopy.GetProperty().SetOpacity(0.5)
         # self.actor.GetProperty().EdgeVisibilityOn()
-        return self.actor
+        return self.actorCopy
 
     def getLandmarks(self, filename):
         pass

@@ -141,6 +141,7 @@ class Controller(object):
             context = None
             if type == 'articulated':
                 context = registrationContext.RegistrationContext(self.articulated)
+                self.actors["MRI_LM"] = self.mriLMReader.actor
             else:
                 context = registrationContext.RegistrationContext(self.rigid)
 

@@ -529,7 +529,6 @@ class Ui_MainWindow(QMainWindow):
             self.xrayLMLoadText.setText(self.processFilename(filename[0]))
             self.controller.setXRayLandmarks(filename[0])
             self.controller.loadLandmarks("XRay_LM")
-            self.controller.loadLandmarks("Vertebrae_XRay_LM")
             self.xRayExtLMCheckBox.setEnabled(True)
             self.xRayExtLMCheckBox.setChecked(True)
             self.xRayVertLMCheckBox.setEnabled(True)

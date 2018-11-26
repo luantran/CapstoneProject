@@ -71,13 +71,11 @@ class Controller(object):
             self.removeActors(self.actors[type])
 
         if type is "XRay_LM":
-            _, capt_actor = self.wrlLMReader.getVTKActor()
+            vert_actor, capt_actor = self.wrlLMReader.getVTKActor()
             self.view.ren.AddActor(capt_actor)
             self.actors[type] = capt_actor
-        elif type is "Vertebrae_XRay_LM":
-            vert_actor, _ = self.wrlLMReader.getVTKActor()
             self.view.ren.AddActor(vert_actor)
-            self.actors[type] = vert_actor
+            self.actors["Vertebrae_"+type] = vert_actor
         elif type is "Surface_LM":
             surface_lm_actor = self.szeLMReader.getVTKActor()
             self.view.ren.AddActor(surface_lm_actor)
@@ -203,14 +201,27 @@ class Controller(object):
 
     def reload(self):
         self.view.changeStatusMessage("Reloading all modalities...")
-        for type in self.actors:
-            # Landmarks loading
-            if type[-2:] == 'LM':
-                self.loadLandmarks(type)
-            else: # modality loading
-                self.executeReader(type)
 
-            self.checkboxUpdate(type, self.actorsCheckBox[type])
+        if self.mriReader.filepath:
+            self.executeReader('MRI')
+            self.view.mriCheckBox.setChecked(True)
+        if self.szeReader.filepath:
+            self.executeReader('Surface')
+            self.view.stCheckBox.setChecked(True)
+        if self.wrlReader.filepath:
+            self.executeReader('XRay')
+            self.view.xRayCheckBox.setChecked(True)
+
+        if self.mriLMReader.filepath:
+            self.loadLandmarks('MRI_LM')
+            self.view.mriLMCheckBox.setChecked(True)
+        if self.szeLMReader.filepath:
+            self.loadLandmarks('Surface_LM')
+            self.view.surfaceExtLMCheckBox.setChecked(True)
+        if self.wrlReader.filepath:
+            self.loadLandmarks('XRay_LM')
+            self.view.xRayExtLMCheckBox.setChecked(True)
+            self.view.xRayVertLMCheckBox.setChecked(True)
 
         self.view.vtkWidget.Render()
         self.view.changeStatusMessage("All modalities reloaded!")

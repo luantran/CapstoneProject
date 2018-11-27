@@ -16,7 +16,6 @@ from os import walk
 from vtk.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 import vtk
 import webbrowser
-# webbrowser.open('http://stackoverflow.com')
 
 class Ui_MainWindow(QMainWindow):
 

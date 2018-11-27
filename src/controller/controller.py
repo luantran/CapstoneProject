@@ -1,12 +1,14 @@
-from src.readers import szeReader, wrlReader, mriReader
-from src.writers import szeWriter
-from src.landmarks_readers import szeLandmarksReader, wrlLandmarksReader, mriLandmarksReader
-from src.registration import rigidRegistration
-from src.registration import articulatedRegistration
-from src.registration import registrationContext
 import operator
 
 import vtk
+
+from src.landmarks_readers import szeLandmarksReader, wrlLandmarksReader, mriLandmarksReader
+from src.readers import szeReader, wrlReader, mriReader
+from src.registration import articulatedRegistration
+from src.registration import registrationContext
+from src.registration import rigidRegistration
+from src.writers import szeWriter
+
 
 class Controller(object):
     def __init__(self, view):
@@ -74,7 +76,8 @@ class Controller(object):
             self.view.ren.AddActor(capt_actor)
             self.actors[type] = capt_actor
             self.view.ren.AddActor(vert_actor)
-            self.actors["Vertebrae_"+type] = vert_actor
+            self.actors["vertebrae_" + type] = vert_actor
+
         elif type is "Surface_LM":
             surface_lm_actor = self.szeLMReader.getVTKActor()
             self.view.ren.AddActor(surface_lm_actor)
@@ -142,7 +145,7 @@ class Controller(object):
             else:
                 context = registrationContext.RegistrationContext(self.rigid)
 
-            context.Registration(self.szeReader,  self.szeLMReader, self.mriLMReader, self.mriReader, self.wrlLMReader)
+            context.Registration(self.szeReader, self.szeLMReader, self.mriLMReader, self.mriReader, self.wrlLMReader)
 
             self.view.vtkWidget.Render()
             self.view.changeStatusMessage("Finished " + type + " registration!")
@@ -150,7 +153,7 @@ class Controller(object):
     def changeSlice(self, spinBoxValue):
         transform = vtk.vtkTransform()
         sliceSpacing = self.mriReader.thickness
-        transform.Translate(0, 0, self.view.currentSliceValue*sliceSpacing)
+        transform.Translate(0, 0, self.view.currentSliceValue * sliceSpacing)
         self.mriReader.reslice.SetResliceTransform(transform)
 
         if spinBoxValue > self.view.currentSliceValue:
@@ -244,8 +247,6 @@ class Controller(object):
         matching_points = first_set.intersection(second_set)
         return matching_points
 
-
-
     def process_st_xray_landmarks(self):
         matchingPosition = self.getMatchingPoints(self.szeLMReader.landmarks, self.wrlLMReader.landmarks[1])
 
@@ -282,7 +283,6 @@ class Controller(object):
         # self.view.ren.AddActor(new_actor)
         self.actors['MRI_LM'] = new_actor
 
-
         new_landmarks = []
         for data in self.wrlLMReader.landmarks[0]:
             if data['name'] in matchingPosition:
@@ -303,6 +303,3 @@ class Controller(object):
                 self.view.changeStatusMessage("Saved data!")
             except:
                 self.view.changeStatusMessage("Data not saved!")
-
-
-

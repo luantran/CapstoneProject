@@ -11,7 +11,7 @@ class SZEWriter():
         numOfPolygons = surfacePolyData.GetPolys().GetNumberOfCells()
         numofVertex = surfacePolyData.GetCell(0).GetPointIds().GetNumberOfIds()
         # open file
-        fileName = dirName + "/custom.sze"
+        fileName = dirName + "/registered.sze"
         print(fileName)
         with open(fileName , 'w') as szeFile:
 

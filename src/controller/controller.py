@@ -76,7 +76,7 @@ class Controller(object):
             self.view.ren.AddActor(capt_actor)
             self.actors[type] = capt_actor
             self.view.ren.AddActor(vert_actor)
-            self.actors["vertebrae_" + type] = vert_actor
+            self.actors["Vertebrae_" + type] = vert_actor
 
         elif type is "Surface_LM":
             surface_lm_actor = self.szeLMReader.getVTKActor()

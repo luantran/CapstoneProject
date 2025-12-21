@@ -105,7 +105,7 @@ class MRIReader(reader.Reader):
             for filename in fileList:
                 if ".dcm" in filename.lower() or ".ima" in filename.lower():  # check whether the file's DICOM
                     lstFilesDICOM.append(os.path.join(dirName, filename))
-        RefDs = dicom.read_file(lstFilesDICOM[0])
+        RefDs = dicom.dcmread(lstFilesDICOM[0], force=True)
         spacing = float(RefDs.SliceThickness)
         return spacing
 
@@ -115,6 +115,6 @@ class MRIReader(reader.Reader):
             for filename in fileList:
                 if ".dcm" in filename.lower() or ".ima" in filename.lower():  # check whether the file's DICOM
                     lstFilesDICOM.append(os.path.join(dirName, filename))
-        RefDs = dicom.read_file(lstFilesDICOM[0])
+        RefDs = dicom.dcmread(lstFilesDICOM[0], force=True)
         origin = [float(RefDs[('0020', '0032')].value[0]), float(RefDs[('0020', '0032')].value[1])]
         return origin

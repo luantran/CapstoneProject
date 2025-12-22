@@ -15,7 +15,11 @@ class Ui_Dialog(object):
         Dialog.resize(800, 800)
 
         # remove question mark button
-        Dialog.setWindowFlags(Dialog.windowFlags() & ~QtCore.Qt.WindowContextHelpButtonHint)
+        Dialog.setWindowFlags(
+            QtCore.Qt.Window |
+            QtCore.Qt.WindowMaximizeButtonHint |
+            QtCore.Qt.WindowCloseButtonHint
+        )
 
         # set dialog icon
         current_dir = path.dirname(path.abspath(__file__))

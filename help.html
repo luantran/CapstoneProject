@@ -2,23 +2,288 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multimodal Torso Image Reconstruction - Help Documentation</title>
 </head>
-<body>
-<h1>3D Image Reconstruction of a Human Torso</h1>
-<p>
-    For better and more complete documentation, go to: <a href="https://github.com/luantran/MultimodalTorsoImageReconstruction/">https://github.com/luantran/CapstoneProject/</a>
-    This is where the open-source code for this software is located.
-</p>
-<h3>Loading the modalities</h3>
-<p>
-    Before starting you must load the three modalities into the software. CLicking the first three buttons will allow you to do so.
-    The text next to each button will confirm if you loaded the three modalities successfully.
-</p>
-<h3>Loading the landmarks</h3>
-<p>
-    Next, you will need to load the landmarks. Note that these do not need to be done in order.
-</p>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 15px; background-color: #ffffff; font-size: 13px;">
 
+    <h1 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px; font-size: 24px; margin-top: 10px; margin-bottom: 15px;">Multimodal Image Fusion for the Reconstruction of a Human Torso</h1>
+
+    <p style="margin: 8px 0;"><strong>By The-Luan Tran & Abdullah Sumbal</strong></p>
+
+    <p style="margin: 8px 0;">This is a PyQt5/VTK-based desktop application for visualizing and registering multimodal medical imaging data (MRI, X-Ray, and Surface Topography) to create comprehensive 3D models of the human torso for scoliosis surgical planning.</p>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/ui_view.png" alt="Application Screenshot" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Main application interface showing registered 3D torso model</div>
+    </div>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Overview</h2>
+
+    <p style="margin: 8px 0;">The Multimodal Image Fusion for the Reconstruction of a Human Torso software is a user-friendly tool for visualizing human torso using three modalities including X-Ray, MRI and surface topography. The application allows user to load and perform registration on the modalities. This application can assist researcher to develop surgical simulator for predicting surgery outcome of scoliosis patients.</p>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Key Features</h2>
+
+    <ul style="margin: 8px 0; padding-left: 25px; list-style-type: none;">
+        <li style="margin: 5px 0;"> Load and visualize MRI (DICOM), X-Ray (VRML), and Surface Topography (.sze) files</li>
+        <li style="margin: 5px 0;"> Register multiple modalities using rigid or articulated registration</li>
+        <li style="margin: 5px 0;"> Interactive 3D visualization with individual modality toggling</li>
+        <li style="margin: 5px 0;"> Navigate through MRI slices in 3D space</li>
+        <li style="margin: 5px 0;"> Save registered models for further analysis</li>
+    </ul>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">User Guide</h2>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Running the Application</h3>
+
+    <pre style="background-color: #2c3e50; color: #ecf0f1; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px; margin: 10px 0;"><code style="background-color: transparent; color: #ecf0f1; padding: 0; font-family: 'Courier New', monospace; font-size: 0.9em;">python -m src.app.py</code></pre>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Loading Data</h3>
+
+    <h4 style="color: #7f8c8d; margin-top: 15px; margin-bottom: 8px; font-size: 14px;">1. Load Individual Modalities</h4>
+
+    <p style="margin: 8px 0;"><strong>Load MRI:</strong></p>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Load MRI" and select a DICOM directory</li>
+        <li style="margin: 5px 0;">The user can view different slices through the "View registered slice" spinner</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/load_mri.png" alt="Load MRI slices' directory" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Load MRI slices' directory</div>
+    </div>
+
+    <p style="margin: 8px 0;"><strong>Load X-Ray:</strong></p>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Load X-Ray" and select a <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.wrl</code> file</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/load_xray.png" alt="Load XRay file" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Load XRay file (.wrl file)</div>
+    </div>
+
+    <p style="margin: 8px 0;"><strong>Load Surface Topography:</strong></p>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Load Surface Topography" and select a <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.sze</code> file</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/load_surface.png" alt="Load Surface Topology file" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Load Surface Topology file (.sze file)</div>
+    </div>
+
+    <h4 style="color: #7f8c8d; margin-top: 15px; margin-bottom: 8px; font-size: 14px;">2. Load Landmarks</h4>
+
+    <div style="background-color: #e8f4f8; border-left: 3px solid #3498db; padding: 10px; margin: 12px 0; border-radius: 3px; font-size: 13px;">
+        <strong>Note:</strong> Landmarks are required for registration
+    </div>
+
+    <p style="margin: 8px 0;"><strong>Load MRI Landmarks:</strong></p>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Load MRI Landmarks" and select a <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.scp</code> file</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/load_mri_landmarks.png" alt="Load MRI landmarks (.scp file)" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Load MRI landmarks (.scp file)</div>
+    </div>
+
+    <p style="margin: 8px 0;"><strong>Load X-Ray Landmarks:</strong></p>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Load X-Ray Landmarks" and select a <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.o3</code> file</li>
+        <li style="margin: 5px 0;">Notice the window shows both External landmarks (pink spheres) and Vertebrae landmarks (white spheres)</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/load_xray_landmarks.png" alt="Load XRay landmarks file (.o3 file)" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Load Xray landmarks (.o3 file)</div>
+    </div>
+
+    <p style="margin: 8px 0;"><strong>Load Surface Topography Landmarks:</strong></p>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Load Surface Landmarks" and select a <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.ext</code> file</li>
+        <li style="margin: 5px 0;">The landmarks are shown as yellow spheres</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/load_surface_landmarks.png" alt="Load Surface landmarks file (.ext file)" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Load Surface topology landmarks (.ext file)</div>
+    </div>
+
+    <h4 style="color: #7f8c8d; margin-top: 15px; margin-bottom: 8px; font-size: 14px;">3. Quick Load (Recommended for Testing)</h4>
+
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Prepare a CSV questionnaire with file paths</li>
+        <li style="margin: 5px 0;">Click "Load Questionnaire" to load all modalities at once</li>
+    </ul>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Registration</h3>
+
+    <ol style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Ensure all modalities and landmarks are loaded</li>
+        <li style="margin: 5px 0;">Click either:
+            <ul style="margin: 8px 0; padding-left: 25px;">
+                <li style="margin: 5px 0;"><strong>Rigid Registration</strong> - Linear transformation (faster)</li>
+                <li style="margin: 5px 0;"><strong>Articulated Registration</strong> - Thin plate spline transformation (more accurate)</li>
+            </ul>
+        </li>
+        <li style="margin: 5px 0;">View the registered model in the 3D render window</li>
+    </ol>
+
+    <table style="width: 100%; margin: 15px 0;">
+        <tr>
+            <td style="width: 50%; padding: 8px; text-align: center; vertical-align: top;">
+                <img src="docs/images/before_registration.png" alt="Before Registration" width="400" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+                <div style="font-weight: bold; font-size: 13px; margin-top: 5px;">Before Registration</div>
+            </td>
+            <td style="width: 50%; padding: 8px; text-align: center; vertical-align: top;">
+                <img src="docs/images/ui_view.png" alt="After Registration" width="400" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+                <div style="font-weight: bold; font-size: 13px; margin-top: 5px;">After Registration</div>
+            </td>
+        </tr>
+    </table>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Visualization</h3>
+
+    <h4 style="color: #7f8c8d; margin-top: 15px; margin-bottom: 8px; font-size: 14px;">View Controls</h4>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Check/uncheck modality boxes to toggle visibility (MRI, X-Ray, Surface)</li>
+        <li style="margin: 5px 0;">Check/uncheck landmark boxes to show/hide landmark points</li>
+        <li style="margin: 5px 0;">Use "View registered slice" spinner to navigate through MRI slices (0 to max slices)</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/gifs/mri_nav_.gif" alt="MRI Slice Navigation" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Navigating through MRI slices in the registered 3D model</div>
+    </div>
+
+    <h4 style="color: #7f8c8d; margin-top: 15px; margin-bottom: 8px; font-size: 14px;">3D Interaction</h4>
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;"><strong>Rotate:</strong> Left-click and drag / or CTRL + click and drag</li>
+        <li style="margin: 5px 0;"><strong>Zoom:</strong> Mouse wheel or right-click and drag</li>
+        <li style="margin: 5px 0;"><strong>Pan:</strong> Middle-click and drag / or SHIFT + click and drag</li>
+    </ul>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/gifs/ui_demo.gif" alt="UI 3D interactions" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">UI 3D interactions</div>
+    </div>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Saving Results</h3>
+
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Save" under "Save Registered File"</li>
+        <li style="margin: 5px 0;">Select destination folder</li>
+        <li style="margin: 5px 0;">Registered surface topography is saved as <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">registered.sze</code></li>
+    </ul>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Reloading</h3>
+
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;">Click "Reload modalities" to reset the application and start a new session</li>
+    </ul>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">File Formats</h2>
+
+    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 12px;">
+        <thead>
+            <tr>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #3498db; color: white;">Modality</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #3498db; color: white;">Format</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #3498db; color: white;">Extension</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #3498db; color: white;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">X-Ray</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">VRML</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;"><code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.wrl</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">3D spine reconstruction mesh</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">MRI</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">DICOM</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;"><code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.dcm</code>, <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.ima</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Soft tissue slices (directory)</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Surface Topography</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Inspeck</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;"><code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.sze</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">External torso surface mesh</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">X-Ray Landmarks</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Custom</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;"><code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.o3</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">External & vertebral landmarks</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">MRI Landmarks</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Custom</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;"><code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.scp</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Vertebral landmarks</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Surface Landmarks</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">Custom</td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;"><code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">.ext</code></td>
+                <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">External landmarks</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Architecture</h2>
+
+    <p style="margin: 8px 0;">The application follows a Model-View-Controller (MVC) architecture:</p>
+
+    <ul style="margin: 8px 0; padding-left: 25px;">
+        <li style="margin: 5px 0;"><strong>Model:</strong> Reader classes (WRLReader, MRIReader, SZEReader) and Registration classes (RigidRegistration, ArticulatedRegistration)</li>
+        <li style="margin: 5px 0;"><strong>View:</strong> PyQt5-based GUI with embedded VTK render window</li>
+        <li style="margin: 5px 0;"><strong>Controller:</strong> Mediates between Model and View, handles user events</li>
+    </ul>
+
+    <h3 style="color: #34495e; margin-top: 18px; margin-bottom: 10px; font-size: 15px;">Registration Process</h3>
+
+    <div style="text-align: center; margin: 15px 0;">
+        <img src="docs/images/registration_process.png" alt="Registration process" width="500" style="border: 1px solid #ddd; border-radius: 4px; display: block; margin: 0 auto;">
+        <div style="font-style: italic; color: #7f8c8d; font-size: 12px; margin-top: 5px;">Registration process</div>
+    </div>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Known Issues</h2>
+
+    <div style="background-color: #fff3cd; border-left: 3px solid #ffc107; padding: 10px; margin: 12px 0; border-radius: 3px; font-size: 13px;">
+        <strong>⚠ Known Issue:</strong> The <code style="background-color: #f4f4f4; padding: 2px 5px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 0.9em;">Reload modalities</code> button does not completely reset the modalities and is a feature to be implemented correctly later.
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 25px;">
+        <h2 style="color: #34495e; margin-top: 0; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Authors</h2>
+        <ul style="margin: 8px 0; padding-left: 25px;">
+            <li style="margin: 5px 0;">Muhammad Abdullah Sumbal</li>
+            <li style="margin: 5px 0;">The-Luan Tran</li>
+        </ul>
+
+        <p style="margin: 8px 0;"><strong>Supervisors:</strong> Prof. Frank Ferrie & Dr. Rola Harmouche</p>
+        <p style="margin: 8px 0;"><strong>Affiliation:</strong> McGill University, Department of Electrical and Computer Engineering</p>
+    </div>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">License</h2>
+
+    <p style="margin: 8px 0;">MIT License - See project documentation for details.</p>
+    <p style="margin: 8px 0;"><strong>Note:</strong> Registration algorithms and data reading processes are copyright of Dr. Rola Harmouche and École Polytechnique de Montréal.</p>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Acknowledgments</h2>
+
+    <p style="margin: 8px 0;">Special thanks to Dr. Rola Harmouche for supervision, LIV4D lab at École Polytechnique Montreal for providing medical imaging data and documentation, and the Artificial Perception Lab at McGill for workspace.</p>
+
+    <h2 style="color: #34495e; margin-top: 25px; margin-bottom: 12px; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; font-size: 18px;">Citation</h2>
+
+    <p style="margin: 8px 0;">If you use this software in your research, please cite:</p>
+
+    <pre style="background-color: #2c3e50; color: #ecf0f1; padding: 12px; border-radius: 4px; overflow-x: auto; font-size: 12px; margin: 10px 0;"><code style="background-color: transparent; color: #ecf0f1; padding: 0; font-family: 'Courier New', monospace; font-size: 0.9em;">Harmouche, R., Cheriet, F., Labelle, H., & Dansereau, J. (2013).
+Multimodal image registration of the scoliotic torso for surgical planning.
+BMC Medical Imaging, 13(1). https://doi.org/10.1186/1471-2342-13-1</code></pre>
 </body>
 </html>

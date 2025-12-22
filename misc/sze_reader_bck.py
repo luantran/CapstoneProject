@@ -55,17 +55,6 @@ class SZEReader(reader.Reader):
         self.actor.SetMapper(mapper)
         return self.actor
 
-    def getLandmarks(self):
-        filepath = '/home/luantran/EncryptedCapstoneData/2353729_debout.ext'
-        st_capteurs = []
-        with open(filepath, 'r') as f:
-            data = f.read()
-            datalines = data.rstrip().split("Objet:")[1]
-            datalines = datalines.split("\n")
-            datalines = datalines[2:]
-            st_capteurs = self._getSTExternalLandmarks(datalines)
-        return st_capteurs
-
     ########## Helper Methods ##########
 
     def _getSTExternalLandmarks(self,datalines):
@@ -194,10 +183,3 @@ class SZEReader(reader.Reader):
         vtk_connects = list(self.connect)
         for vtk_connect in vtk_connects:
             self.polys.InsertNextCell(self._mkVtkIdList(vtk_connect))
-
-if __name__ == "__main__":
-    sze = SZEReader()
-    sze.setFilePath('/home/luantran/Downloads/2353729.sze')
-    sze.getPolyData()
-
-

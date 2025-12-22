@@ -121,7 +121,7 @@ Landmarks are required for registration
 - Use "View registered slice" spinner to navigate through MRI slices (0 to max slices)
 
 <p align="center">
-  <img src="docs/gifs/mri_nav_.gif" alt="MRI Slice Navigation" width="500"/>
+  <img src="docs/gifs/mri_nav.gif" alt="MRI Slice Navigation" width="500"/>
   <br/>
   <em>Navigating through MRI slices in the registered 3D model</em>
 </p>

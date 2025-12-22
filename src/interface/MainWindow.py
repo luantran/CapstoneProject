@@ -6,6 +6,8 @@
 #
 # WARNING! All changes made in this file will be lost!
 import csv
+import os
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMainWindow
@@ -28,8 +30,15 @@ class Ui_MainWindow(QMainWindow):
 
         #Main Window
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1200, 1200)
+        MainWindow.resize(1200, 800)
 
+        # Get the root directory (go up 2 levels from src/interface)
+        current_dir = os.path.dirname(os.path.abspath(__file__))  # src/interface
+        root_dir = os.path.dirname(os.path.dirname(current_dir))  # root
+        icon_path = os.path.join(root_dir, 'assets', 'icons', 'main-window-icon.png')
+
+        if os.path.exists(icon_path):
+            MainWindow.setWindowIcon(QtGui.QIcon(icon_path))
 
         #Central Widget
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -673,4 +682,4 @@ class Ui_MainWindow(QMainWindow):
             return text.rsplit('/', 1)[1]
 
     def goToSourceCode(self):
-        webbrowser.open_new('https://github.com/luantran/CapstoneProject/')
+        webbrowser.open_new('https://github.com/luantran/MultimodalTorsoImageReconstruction')
